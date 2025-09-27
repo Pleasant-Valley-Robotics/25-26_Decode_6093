@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-@Autonomous(name="Blue Big Leave", group="Robot")
+@Autonomous(name="Blue Big Leave ver 2", group="Robot")
 public class BigBlue2 extends AutoTemplate {
     @Override
     public void runOpMode() {
