@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="Simple Tank Drive - 100%", group="Linear Opmode")
-public class SimpleTankDriveFullSpeed extends LinearOpMode {
+@TeleOp(name="Simple Tank Drive - 45%", group="Linear Opmode")
+public class SimpleTankDrive45 extends LinearOpMode {
 
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
@@ -36,8 +36,8 @@ public class SimpleTankDriveFullSpeed extends LinearOpMode {
             double rightPower = drive - turn;
 
             // Clip values to stay within -1 and 1
-            leftPower  = Math.max(-1.0, Math.min(1.0, leftPower));
-            rightPower = Math.max(-1.0, Math.min(1.0, rightPower));
+            leftPower  = Math.max(-0.45, Math.min(0.45, leftPower));
+            rightPower = Math.max(-0.45, Math.min(0.45, rightPower));
 
             // Send power to motors
             leftDrive.setPower(leftPower);
