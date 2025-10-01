@@ -28,16 +28,19 @@ public class SimpleTankDrive75 extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Tank drive: left stick = forward/back, right stick X = turn
-            double drive = -gamepad1.left_stick_y;   // forward/back
-            double turn  =  gamepad1.right_stick_x;  // rotation
+            double driveSpeed = 0.75;
+            double turnSpeed = 0.65;
+
+            double drive = -gamepad1.left_stick_y * driveSpeed;   // forward/back
+            double turn  =  gamepad1.right_stick_x * turnSpeed;  // rotation
 
             // Mix drive and turn for each side
             double leftPower  = drive + turn;
             double rightPower = drive - turn;
 
             // Clip values to stay within -1 and 1
-            leftPower  = Math.max(-0.75, Math.min(0.75, leftPower));
-            rightPower = Math.max(-0.75, Math.min(0.75, rightPower));
+            leftPower  = Math.max(-1, Math.min(1, leftPower));
+            rightPower = Math.max(-1, Math.min(1, rightPower));
 
             // Send power to motors
             leftDrive.setPower(leftPower);
