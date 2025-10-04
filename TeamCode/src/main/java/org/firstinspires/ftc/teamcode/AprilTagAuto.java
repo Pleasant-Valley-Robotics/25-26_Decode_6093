@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode;
-
+// It uses the logitech camera to identify the id of the april tags and then it decides to left or right (we just did this because to see if the code works)
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
