@@ -49,6 +49,7 @@ public class SimpleTankDrive35 extends LinearOpMode {
             // Telemetry
             telemetry.addData("Left Power", "%.2f", leftPower);
             telemetry.addData("Right Power", "%.2f", rightPower);
+            telemetry.addData("Encoder L", leftDrive.getCurrentPosition());
             telemetry.update();
         }
     }
