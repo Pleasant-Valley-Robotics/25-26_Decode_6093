@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name="Katie's Auto", group="Gigi's")
-public class KatieAuto extends AutoTemplate{
+@Autonomous(name="Katie's Auto", group="Gigi's")  // All of these auto's were written and tested on the robot with the 312 motors, meaning this one will likely be
+public class KatieAuto extends AutoTemplate{ // slightly off on it's intended robot
     final double HOLDTIME = 0.75;
     @Override
     public void runOpMode() {

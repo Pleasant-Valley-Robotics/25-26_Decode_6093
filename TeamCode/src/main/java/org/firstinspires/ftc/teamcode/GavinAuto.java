@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Disabled
-@Autonomous(name="Gavin's Auto", group="Gigi's")
-public class GavinAuto extends AutoTemplate{
+@Autonomous(name="Gavin's Auto", group="Gigi's") // All of these auto's were written and tested on the robot with the 312 motors, meaning this one will be the only
+public class GavinAuto extends AutoTemplate{ // one that will work as intended
     final double HOLDTIME = 0.75;
 
     @Override
