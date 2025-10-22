@@ -37,10 +37,13 @@ public abstract class AutoTemplate extends LinearOpMode {
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
     static final double     COUNTS_PER_MOTOR_REV    = 384.5;   // (312=537.7), (435=384.5), (233=751.8) THIS NEEDS TO BE CHANGED BEFORE PUSHING TO A DIFFERENT ROBOT
+
+    // Gavin=0, Abby(435) = -5.4, Katie = 5(?). CHANGE BEFORE PUSHING
+    static final double     ERRORCONST = -5.4; // This is gonna be added to COUNTS_PER_INCH and is necessary to make our previous code accurate.
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
-    static final double     WHEEL_DIAMETER_INCHES   = 3.875 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         =  (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     WHEEL_DIAMETER_INCHES   = 4 ;     // For figuring circumference
+    static final double     COUNTS_PER_INCH         =  ((COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415)) + ERRORCONST;
 
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suit the specific robot drive train.
@@ -52,7 +55,7 @@ public abstract class AutoTemplate extends LinearOpMode {
     // We define one value when Turning (larger errors), and the other is used when Driving straight (smaller errors).
     // Increase these numbers if the heading does not correct strongly enough (eg: a heavy robot or using tracks)
     // Decrease these numbers if the heading does not settle on the correct value (eg: very agile robot with omni wheels)
-    static final double     P_TURN_GAIN            = 0.02;     // Larger is more responsive, but also less stable.
+    static final double     P_TURN_GAIN            = 0.03;     // Larger is more responsive, but also less stable.
     static final double     P_DRIVE_GAIN           = 0.03;     // Larger is more responsive, but also less stable.
 
 
