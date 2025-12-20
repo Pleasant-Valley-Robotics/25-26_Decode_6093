@@ -41,13 +41,13 @@ public class OdometryTeleop extends OpMode {
     List<Action> shooterActions = new ArrayList<>();
 
     MecanumDrive drive = null;
-    Shooter shooter = null;
+    //Shooter shooter = null;
 
 
     @Override
     public void init() {
         drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose);
-        shooter = new Shooter(hardwareMap);
+        //shooter = new Shooter(hardwareMap);
 
         parkingPos = new Vector2d(39.95, -34.17 * PoseStorage.isRed);
         farPos = new Vector2d(49.05, 11.71 * PoseStorage.isRed);
@@ -64,11 +64,11 @@ public class OdometryTeleop extends OpMode {
         double rotate = 0;
 
 
-        if (gamepad2.xWasPressed()) shooterActions.add(shooter.spinUp(LAUNCHER_CLOSE_VELOCITY));
-        if (gamepad2.bWasPressed()) shooterActions.add(shooter.spinUp(LAUNCHER_CYCLE_VELOCITY));
-        if (gamepad2.yWasPressed()) shooterActions.add(shooter.spinUp(getShotPower()));
-        if (gamepad2.aWasPressed()) shooterActions.add(shooter.stopSpin());
-        if (gamepad2.right_bumper) shooterActions.add(shooter.fireBall());
+        //if (gamepad2.xWasPressed()) shooterActions.add(shooter.spinUp(LAUNCHER_CLOSE_VELOCITY));
+        //if (gamepad2.bWasPressed()) shooterActions.add(shooter.spinUp(LAUNCHER_CYCLE_VELOCITY));
+        //if (gamepad2.yWasPressed()) shooterActions.add(shooter.spinUp(getShotPower()));
+        //if (gamepad2.aWasPressed()) shooterActions.add(shooter.stopSpin());
+        //if (gamepad2.right_bumper) shooterActions.add(shooter.fireBall());
 
         slowMode = gamepad1.left_bumper;
         if (gamepad1.xWasPressed()) manualRotate = !manualRotate;
@@ -139,7 +139,7 @@ public class OdometryTeleop extends OpMode {
         telemetry.addData("Y position", drive.localizer.getPose().position.y);
         telemetry.addData("Heading", Math.toDegrees(drive.localizer.getPose().heading.toDouble()));
         telemetry.addData("launch power", getShotPower());
-        telemetry.addData("Current launcher speed", shooter.getVelocity());
+        //telemetry.addData("Current launcher speed", shooter.getVelocity());
         telemetry.update();
 
         PoseStorage.currentPose = drive.localizer.getPose();
@@ -149,7 +149,7 @@ public class OdometryTeleop extends OpMode {
 
     @Override
     public void stop() {
-        shooter.stopSpin();
+        //shooter.stopSpin();
         drive.leftFront.setPower(0);
         drive.rightFront.setPower(0);
         drive.leftBack.setPower(0);
