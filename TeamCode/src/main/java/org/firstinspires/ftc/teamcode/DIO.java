@@ -29,11 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -69,18 +69,36 @@ public class DIO extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor frontLeftDrive =null;
+    private DcMotor frontLeftDrive = null;
     private DcMotor backLeftDrive = null;
     private DcMotor frontRightDrive = null;
     private DcMotor backRightDrive = null;
+
+    private ColorSensor location1 = null;
+    private ColorSensor location2 = null;
+    private ColorSensor location3 = null;
 
     private DcMotor shooter = null;
 
     private DcMotor intake = null;
 
-    private CRServo indexServo = null;
+    private Servo indexServo = null;
+    private Servo flickerServo = null;
 
+    private IndexColors[] colors = new IndexColors[3];
+    private int minPurpleValue = 130;
+    private int minGreenValue = 270;
+    private double[] intakes = {0.73, 0.40, 0.05};
+    private double[] shoots = {0.90, 0.55, 0.22};
 
+    private int currentIntake = 0;
+    private double angle = 0;
+
+    public enum IndexColors {
+        NONE,
+        PURPLE,
+        GREEN
+    }
 
     @Override
     public void runOpMode() {
@@ -91,9 +109,13 @@ public class DIO extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+        location1 = hardwareMap.get(ColorSensor.class, "location1");
+        location2 = hardwareMap.get(ColorSensor.class, "location2");
+        location3 = hardwareMap.get(ColorSensor.class, "location3");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
-        indexServo = hardwareMap.get(CRServo.class, "index");
+        indexServo = hardwareMap.get(Servo.class, "index");
+        flickerServo = hardwareMap.get(Servo.class, "flicker");
 
 
         // ########################################################################################
@@ -125,18 +147,18 @@ public class DIO extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x;
             double intakePower = -gamepad2.right_stick_y;
             double shooterPower = -gamepad2.left_stick_y;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double frontLeftPower  = axial + lateral + yaw;
+            double frontLeftPower = axial + lateral + yaw;
             double frontRightPower = axial - lateral - yaw;
-            double backLeftPower   = axial - lateral + yaw;
-            double backRightPower  = axial + lateral - yaw;
+            double backLeftPower = axial - lateral + yaw;
+            double backRightPower = axial + lateral - yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -145,10 +167,10 @@ public class DIO extends LinearOpMode {
             max = Math.max(max, Math.abs(backRightPower));
 
             if (max > 1.0) {
-                frontLeftPower  /= max;
+                frontLeftPower /= max;
                 frontRightPower /= max;
-                backLeftPower   /= max;
-                backRightPower  /= max;
+                backLeftPower /= max;
+                backRightPower /= max;
             }
 
             // This is test code:
@@ -175,18 +197,83 @@ public class DIO extends LinearOpMode {
             backRightDrive.setPower(backRightPower);
             shooter.setPower(shooterPower);
             intake.setPower(intakePower);
-            if(gamepad2.left_bumper){
-                indexServo.setPower(0.75);
 
+
+            if (gamepad2.leftBumperWasPressed()) angle = intakes[0];
+            if (gamepad2.rightBumperWasPressed()) angle = shoots[0];
+            if (gamepad2.dpad_down) angle = intakes[1];
+            if (gamepad2.dpad_up) angle = shoots[1];
+            if (gamepad2.dpad_right) angle = intakes[2];
+            if (gamepad2.dpad_left) angle = shoots[2];
+
+
+            String color1 = "Nothing";
+            if (location1.green() > minGreenValue) {
+                color1 = "Green";
+            } else if (location1.green() > minPurpleValue) {
+                color1 = "Purple";
             }
-            else if(gamepad2.right_bumper){
-                indexServo.setPower(-1.0);
+
+            String color2 = "Nothing";
+            if (location1.green() > minGreenValue) {
+                color2 = "Green";
+            } else if (location1.green() > minPurpleValue) {
+                color2 = "Purple";
             }
+
+            String color3 = "Nothing";
+            if (location1.green() > minGreenValue) {
+                color3 = "Green";
+            } else if (location1.green() > minPurpleValue) {
+                color3 = "Purple";
+            }
+
+            if (gamepad2.aWasPressed()) {
+                flickerServo.setPosition(0.43);
+            }
+            if (gamepad2.bWasPressed()) {
+                flickerServo.setPosition(0.50);
+            }
+
+            /*
+            if (currentIntake < intakes.length && ballDetected()) {
+                currentIntake++;
+                if (currentIntake >= intakes.length) {
+                    angle = shoots[0];
+                } else {
+                    angle = intakes[currentIntake];
+                }
+            } else if (currentIntake < intakes.length) {
+                // Rattle logic
+                if (angle == intakes[currentIntake]) {
+                    angle = shoots[0];
+                } else {
+                    angle = intakes[currentIntake];
+                }
+            }
+            */
+
+
+            indexServo.setPosition(angle);
+
 
             // Show the elapsed game time and wheel power.
+
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("flkicker servo", flickerServo.getPosition());
+            telemetry.addData("Location 1", color1);
+            telemetry.addData("Location 2", color2);
+            telemetry.addData("Location 3", color3);
+            telemetry.addData("Servo Position", angle);
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
         }
-    }}
+    }
+
+    private boolean ballDetected() {
+        return location1.green() < minPurpleValue;
+    }
+
+
+}
