@@ -85,12 +85,14 @@ public class DIO extends LinearOpMode {
     private Servo indexServo = null;
     private Servo flickerServo = null;
 
-    private IndexColors[] colors = new IndexColors[3];
-    private int minPurpleValue = 130;
-    private int minGreenValue = 270;
+
+    private int minPurpleValue = 90;
+    private int minGreenValue = 260;
     private double[] intakes = {0.73, 0.40, 0.05};
     private double[] shoots = {0.90, 0.55, 0.22};
+    private IndexColors[] indexState = new IndexColors[3];
 
+    private int targetAprilTag = 22; // Two cycles
     private int currentIntake = 0;
     private double angle = intakes[2];
 
@@ -200,33 +202,12 @@ public class DIO extends LinearOpMode {
 
 
             if (gamepad2.leftBumperWasPressed()) angle = intakes[0];
-            if (gamepad2.rightBumperWasPressed()) angle = shoots[0];
             if (gamepad2.dpad_down) angle = intakes[1];
-            if (gamepad2.dpad_up) angle = shoots[1];
             if (gamepad2.dpad_right) angle = intakes[2];
+            if (gamepad2.rightBumperWasPressed()) angle = shoots[0];
+            if (gamepad2.dpad_up) angle = shoots[1];
             if (gamepad2.dpad_left) angle = shoots[2];
-
-
-            String color1 = "Nothing";
-            if (location1.green() > minGreenValue) {
-                color1 = "Green";
-            } else if (location1.green() > minPurpleValue) {
-                color1 = "Purple";
-            }
-
-            String color2 = "Nothing";
-            if (location1.green() > minGreenValue) {
-                color2 = "Green";
-            } else if (location1.green() > minPurpleValue) {
-                color2 = "Purple";
-            }
-
-            String color3 = "Nothing";
-            if (location1.green() > minGreenValue) {
-                color3 = "Green";
-            } else if (location1.green() > minPurpleValue) {
-                color3 = "Purple";
-            }
+            if (gamepad2.xWasPressed()) fireAll();
 
             if (gamepad2.aWasPressed()) {
                 flickerServo.setPosition(0.46);
@@ -235,19 +216,26 @@ public class DIO extends LinearOpMode {
                 flickerServo.setPosition(0.37);
             }
 
+            if (indexServo.getPosition() == shoots[0]) {
+                indexState = updateIndexStates(indexState);
+            }
 
-            if (currentIntake < intakes.length && ballDetected()) {
-                currentIntake++;
-                if (currentIntake >= intakes.length) {
-                    angle = shoots[0];
-                } else {
-                    angle = intakes[currentIntake];
-                }
-            } else if (currentIntake < intakes.length) {
-                if (angle == intakes[currentIntake]) {
-                    angle = shoots[0];
-                } else {
-                    angle = intakes[currentIntake];
+
+            if (intakePower < 0) {
+                if (currentIntake < intakes.length && ballDetected(currentIntake)) {
+                    currentIntake++;
+                    if (currentIntake >= intakes.length) {
+                        angle = shoots[0];
+                    } else {
+                        angle = intakes[currentIntake];
+                    }
+                } else if (currentIntake < intakes.length) {
+                    // Rattle between shoot and intake
+                    if (Math.abs(indexServo.getPosition() - intakes[currentIntake]) < 0.01) {
+                        angle = shoots[currentIntake];
+                    } else if (Math.abs(indexServo.getPosition() - shoots[currentIntake]) < 0.01){
+                        angle = intakes[currentIntake];
+                    }
                 }
             }
 
@@ -259,10 +247,14 @@ public class DIO extends LinearOpMode {
             // Show the elapsed game time and wheel power.
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("index servo", indexServo.getPosition());
             telemetry.addData("flkicker servo", flickerServo.getPosition());
-            telemetry.addData("Location 1", color1);
-            telemetry.addData("Location 2", color2);
-            telemetry.addData("Location 3", color3);
+            telemetry.addData("Location 1 raw", location1.green());
+            telemetry.addData("Location 2 raw", location2.green());
+            telemetry.addData("Location 3 raw", location3.green());
+            telemetry.addData("Location 1", indexState[0]);
+            telemetry.addData("Location 2", indexState[1]);
+            telemetry.addData("Location 3", indexState[2]);
             telemetry.addData("Servo Position", angle);
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
@@ -270,9 +262,63 @@ public class DIO extends LinearOpMode {
         }
     }
 
-    private boolean ballDetected() {
-        return location1.green() < minPurpleValue;
+    private boolean ballDetected(int currentIntake) {
+        if (currentIntake == 0) return location1.green() > minPurpleValue;
+        if (currentIntake == 1) return location2.green() > minPurpleValue;
+        return location3.green() > minPurpleValue;
     }
+    private void fireAll() {
+        for (double intakePos : intakes) {
+            indexServo.setPosition(intakePos);
+            while (Math.abs(indexServo.getPosition() - intakePos) > 0.01) {
+                continue;
+            }
+            flickerServo.setPosition(0.37);
+            while (Math.abs(flickerServo.getPosition() - 0.37) > 0.01) {
+                continue;
+            }
+            flickerServo.setPosition(0.46);
+            while (Math.abs(flickerServo.getPosition() - 0.46) > 0.01) {
+                continue;
+            }
+
+        }
+    }
+
+    private IndexColors[] updateIndexStates(IndexColors[] state) {
+        IndexColors[] newState = new IndexColors[3];
+        if (location1.green() > minPurpleValue) {
+            if (location1.green() > minGreenValue) {
+                newState[0] = IndexColors.GREEN;
+            } else {
+                newState[0] = IndexColors.PURPLE;
+            }
+        } else {
+            newState[0] = state[0];
+        }
+
+        if (location2.green() > minPurpleValue) {
+            if (location2.green() > minGreenValue) {
+                newState[1] = IndexColors.GREEN;
+            } else {
+                newState[1] = IndexColors.PURPLE;
+            }
+        } else {
+            newState[1] = state[1];
+        }
+
+        if (location3.green() > minPurpleValue) {
+            if (location3.green() > minGreenValue) {
+                newState[2] = IndexColors.GREEN;
+            } else {
+                newState[2] = IndexColors.PURPLE;
+            }
+        } else {
+            newState[2] = state[2];
+        }
+        return newState;
+    }
+
 
 
 }
