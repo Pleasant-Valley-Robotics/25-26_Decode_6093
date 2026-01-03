@@ -92,7 +92,7 @@ public class DIO extends LinearOpMode {
     private double[] shoots = {0.90, 0.55, 0.22};
 
     private int currentIntake = 0;
-    private double angle = 0;
+    private double angle = intakes[2];
 
     public enum IndexColors {
         NONE,
@@ -229,13 +229,13 @@ public class DIO extends LinearOpMode {
             }
 
             if (gamepad2.aWasPressed()) {
-                flickerServo.setPosition(0.43);
+                flickerServo.setPosition(0.46);
             }
             if (gamepad2.bWasPressed()) {
-                flickerServo.setPosition(0.50);
+                flickerServo.setPosition(0.37);
             }
 
-            /*
+
             if (currentIntake < intakes.length && ballDetected()) {
                 currentIntake++;
                 if (currentIntake >= intakes.length) {
@@ -244,14 +244,13 @@ public class DIO extends LinearOpMode {
                     angle = intakes[currentIntake];
                 }
             } else if (currentIntake < intakes.length) {
-                // Rattle logic
                 if (angle == intakes[currentIntake]) {
                     angle = shoots[0];
                 } else {
                     angle = intakes[currentIntake];
                 }
             }
-            */
+
 
 
             indexServo.setPosition(angle);
