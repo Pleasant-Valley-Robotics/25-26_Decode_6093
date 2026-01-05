@@ -29,12 +29,20 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Size;
+
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
+import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -73,29 +81,19 @@ public class DIO extends LinearOpMode {
     private DcMotor backLeftDrive = null;
     private DcMotor frontRightDrive = null;
     private DcMotor backRightDrive = null;
-
-    private ColorSensor location1 = null;
-    private ColorSensor location2 = null;
-    private ColorSensor location3 = null;
-
     private DcMotor shooter = null;
-
     private DcMotor intake = null;
 
+    private ColorSensor loc3 = null;
     private Servo indexServo = null;
     private Servo flickerServo = null;
 
-
-    private int minPurpleValue = 90;
-    private int minGreenValue = 260;
-    private double[] intakes = {0.73, 0.40, 0.05};
-    private double[] shoots = {0.90, 0.55, 0.22};
+    private double[] allLocations = {0.90, 0.73, 0.55, 0.40, 0.22, 0.05};
+    private int locIndex = 0;
     private IndexColors[] indexState = new IndexColors[3];
 
     private int targetAprilTag = 22; // Two cycles
     private int currentIntake = 0;
-    private double angle = intakes[2];
-
     public enum IndexColors {
         NONE,
         PURPLE,
@@ -111,9 +109,7 @@ public class DIO extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
-        location1 = hardwareMap.get(ColorSensor.class, "location1");
-        location2 = hardwareMap.get(ColorSensor.class, "location2");
-        location3 = hardwareMap.get(ColorSensor.class, "location3");
+        loc3 = hardwareMap.get(ColorSensor.class, "location3");
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
         indexServo = hardwareMap.get(Servo.class, "index");
@@ -136,6 +132,7 @@ public class DIO extends LinearOpMode {
         backRightDrive.setDirection(DcMotor.Direction.REVERSE);
         shooter.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotor.Direction.FORWARD);
+
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -201,13 +198,9 @@ public class DIO extends LinearOpMode {
             intake.setPower(intakePower);
 
 
-            if (gamepad2.leftBumperWasPressed()) angle = intakes[0];
-            if (gamepad2.dpad_down) angle = intakes[1];
-            if (gamepad2.dpad_right) angle = intakes[2];
-            if (gamepad2.rightBumperWasPressed()) angle = shoots[0];
-            if (gamepad2.dpad_up) angle = shoots[1];
-            if (gamepad2.dpad_left) angle = shoots[2];
-            if (gamepad2.xWasPressed()) fireAll();
+            if (gamepad2.leftBumperWasPressed()) locIndex = (locIndex + 1 )% allLocations.length;
+            if (gamepad2.rightBumperWasPressed()) locIndex = (locIndex - 1 + allLocations.length) % allLocations.length;
+
 
             if (gamepad2.aWasPressed()) {
                 flickerServo.setPosition(0.46);
@@ -216,57 +209,24 @@ public class DIO extends LinearOpMode {
                 flickerServo.setPosition(0.37);
             }
 
-            if (indexServo.getPosition() == shoots[0]) {
-                indexState = updateIndexStates(indexState);
-            }
-
-
-            if (intakePower < 0) {
-                if (currentIntake < intakes.length && ballDetected(currentIntake)) {
-                    currentIntake++;
-                    if (currentIntake >= intakes.length) {
-                        angle = shoots[0];
-                    } else {
-                        angle = intakes[currentIntake];
-                    }
-                } else if (currentIntake < intakes.length) {
-                    // Rattle between shoot and intake
-                    if (Math.abs(indexServo.getPosition() - intakes[currentIntake]) < 0.01) {
-                        angle = shoots[currentIntake];
-                    } else if (Math.abs(indexServo.getPosition() - shoots[currentIntake]) < 0.01){
-                        angle = intakes[currentIntake];
-                    }
-                }
-            }
-
-
-
-            indexServo.setPosition(angle);
-
+            indexServo.setPosition(allLocations[locIndex]);
 
             // Show the elapsed game time and wheel power.
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("index servo", indexServo.getPosition());
             telemetry.addData("flkicker servo", flickerServo.getPosition());
-            telemetry.addData("Location 1 raw", location1.green());
-            telemetry.addData("Location 2 raw", location2.green());
-            telemetry.addData("Location 3 raw", location3.green());
-            telemetry.addData("Location 1", indexState[0]);
-            telemetry.addData("Location 2", indexState[1]);
-            telemetry.addData("Location 3", indexState[2]);
-            telemetry.addData("Servo Position", angle);
+            telemetry.addData("Location 3", loc3.green());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
         }
     }
 
-    private boolean ballDetected(int currentIntake) {
-        if (currentIntake == 0) return location1.green() > minPurpleValue;
-        if (currentIntake == 1) return location2.green() > minPurpleValue;
-        return location3.green() > minPurpleValue;
+    private boolean ballDetected() {
+        return false;
     }
+    /*
     private void fireAll() {
         for (double intakePos : intakes) {
             indexServo.setPosition(intakePos);
@@ -284,39 +244,11 @@ public class DIO extends LinearOpMode {
 
         }
     }
+    */
+
 
     private IndexColors[] updateIndexStates(IndexColors[] state) {
-        IndexColors[] newState = new IndexColors[3];
-        if (location1.green() > minPurpleValue) {
-            if (location1.green() > minGreenValue) {
-                newState[0] = IndexColors.GREEN;
-            } else {
-                newState[0] = IndexColors.PURPLE;
-            }
-        } else {
-            newState[0] = state[0];
-        }
-
-        if (location2.green() > minPurpleValue) {
-            if (location2.green() > minGreenValue) {
-                newState[1] = IndexColors.GREEN;
-            } else {
-                newState[1] = IndexColors.PURPLE;
-            }
-        } else {
-            newState[1] = state[1];
-        }
-
-        if (location3.green() > minPurpleValue) {
-            if (location3.green() > minGreenValue) {
-                newState[2] = IndexColors.GREEN;
-            } else {
-                newState[2] = IndexColors.PURPLE;
-            }
-        } else {
-            newState[2] = state[2];
-        }
-        return newState;
+        return state;
     }
 
 
