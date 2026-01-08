@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
 import android.util.Size;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
@@ -36,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -81,7 +83,7 @@ public class DIO extends LinearOpMode {
     private DcMotor backLeftDrive = null;
     private DcMotor frontRightDrive = null;
     private DcMotor backRightDrive = null;
-    private DcMotor shooter = null;
+    private DcMotorEx shooter = null;
     private DcMotor intake = null;
 
     private ColorSensor loc3 = null;
@@ -90,10 +92,13 @@ public class DIO extends LinearOpMode {
 
     private double[] allLocations = {0.90, 0.73, 0.55, 0.40, 0.22, 0.05};
     private int locIndex = 0;
+    private final int GREEN_HUE = 160;
+    private final int PURPLE_HUE = 210;
     private IndexColors[] indexState = new IndexColors[3];
 
     private int targetAprilTag = 22; // Two cycles
     private int currentIntake = 0;
+
     public enum IndexColors {
         NONE,
         PURPLE,
@@ -110,7 +115,7 @@ public class DIO extends LinearOpMode {
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
         loc3 = hardwareMap.get(ColorSensor.class, "location3");
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
+        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
         indexServo = hardwareMap.get(Servo.class, "index");
         flickerServo = hardwareMap.get(Servo.class, "flicker");
@@ -133,6 +138,8 @@ public class DIO extends LinearOpMode {
         shooter.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotor.Direction.FORWARD);
 
+        float[] hsvValues = {0,0,0};
+
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -150,7 +157,6 @@ public class DIO extends LinearOpMode {
             double lateral = gamepad1.left_stick_x;
             double yaw = gamepad1.right_stick_x;
             double intakePower = -gamepad2.right_stick_y;
-            double shooterPower = -gamepad2.left_stick_y;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -194,13 +200,32 @@ public class DIO extends LinearOpMode {
             frontRightDrive.setPower(frontRightPower);
             backLeftDrive.setPower(backLeftPower);
             backRightDrive.setPower(backRightPower);
-            shooter.setPower(shooterPower);
             intake.setPower(intakePower);
 
+            if (-gamepad2.left_stick_y > 0) {
+                shooter.setVelocity(1900);
+            } else {
+                shooter.setVelocity(0);
+            }
 
-            if (gamepad2.leftBumperWasPressed()) locIndex = (locIndex + 1 )% allLocations.length;
-            if (gamepad2.rightBumperWasPressed()) locIndex = (locIndex - 1 + allLocations.length) % allLocations.length;
+            Color.RGBToHSV(loc3.red() * 8, loc3.green() * 8, loc3.blue() * 8, hsvValues);
 
+            if (intakePower == 0 && locIndex <= 6) {
+                if (gamepad2.leftBumperWasPressed())
+                    locIndex = (locIndex + 2) % allLocations.length;
+                if (gamepad2.rightBumperWasPressed())
+                    locIndex = (locIndex - 2 + allLocations.length) % allLocations.length;
+            } else {
+                if (ballDetected()) {
+                    if (Math.abs(hsvValues[0] - PURPLE_HUE) < 25) {
+                        indexState[locIndex / 2] = IndexColors.PURPLE;
+                        locIndex += 2;
+                    } else if (Math.abs(hsvValues[0] - GREEN_HUE) < 25) {
+                        indexState[locIndex / 2] = IndexColors.GREEN;
+                        locIndex += 2;
+                    }
+                }
+            }
 
             if (gamepad2.aWasPressed()) {
                 flickerServo.setPosition(0.46);
@@ -209,6 +234,7 @@ public class DIO extends LinearOpMode {
                 flickerServo.setPosition(0.37);
             }
 
+
             indexServo.setPosition(allLocations[locIndex]);
 
             // Show the elapsed game time and wheel power.
@@ -216,7 +242,9 @@ public class DIO extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("index servo", indexServo.getPosition());
             telemetry.addData("flkicker servo", flickerServo.getPosition());
-            telemetry.addData("Location 3", loc3.green());
+            telemetry.addData("Launcher speed", shooter.getVelocity());
+            telemetry.addData("Location 3 hue", hsvValues[0]);
+            telemetry.addData("Location 3 alpha", loc3.alpha());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
@@ -224,33 +252,7 @@ public class DIO extends LinearOpMode {
     }
 
     private boolean ballDetected() {
-        return false;
+        return loc3.alpha() > 30;
     }
-    /*
-    private void fireAll() {
-        for (double intakePos : intakes) {
-            indexServo.setPosition(intakePos);
-            while (Math.abs(indexServo.getPosition() - intakePos) > 0.01) {
-                continue;
-            }
-            flickerServo.setPosition(0.37);
-            while (Math.abs(flickerServo.getPosition() - 0.37) > 0.01) {
-                continue;
-            }
-            flickerServo.setPosition(0.46);
-            while (Math.abs(flickerServo.getPosition() - 0.46) > 0.01) {
-                continue;
-            }
-
-        }
-    }
-    */
-
-
-    private IndexColors[] updateIndexStates(IndexColors[] state) {
-        return state;
-    }
-
-
 
 }

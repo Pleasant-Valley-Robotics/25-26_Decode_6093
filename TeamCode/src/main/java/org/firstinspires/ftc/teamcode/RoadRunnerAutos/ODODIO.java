@@ -23,10 +23,10 @@ public class ODODIO extends OpMode {
     private boolean slowMode = false;
 
     // Initialize all positions to null, these are set in init based on blue or red
-    private Vector2d parkingPose = null;
-    private Vector2d closePose = null;
-    private Vector2d farPose = null;
-    private Vector2d humanPlayaPose = null;
+    private Vector2d parkingPose;
+    private Vector2d closePose;
+    private Vector2d farPose;
+    private Vector2d humanPlayaPose;
 
     // List of actions to be performed each tick, updated continually
     // driveActions should always be either 1 or 0 long, systemsActions can have multiple
