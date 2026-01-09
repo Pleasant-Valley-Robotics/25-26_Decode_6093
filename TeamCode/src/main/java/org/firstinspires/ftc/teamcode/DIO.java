@@ -210,13 +210,13 @@ public class DIO extends LinearOpMode {
 
             Color.RGBToHSV(loc3.red() * 8, loc3.green() * 8, loc3.blue() * 8, hsvValues);
 
-            if (intakePower == 0 && locIndex <= 6) {
+            if (intakePower == 0) {
                 if (gamepad2.leftBumperWasPressed())
-                    locIndex = (locIndex + 2) % allLocations.length;
+                    locIndex += 1;
                 if (gamepad2.rightBumperWasPressed())
-                    locIndex = (locIndex - 2 + allLocations.length) % allLocations.length;
+                    locIndex -= 1;
             } else {
-                if (ballDetected()) {
+                if (ballDetected() && indexServo.getPosition() == allLocations[locIndex] && (indexState[0] != IndexColors.NONE || indexState[1] != IndexColors.NONE || indexState[2] != IndexColors.NONE)) {
                     if (Math.abs(hsvValues[0] - PURPLE_HUE) < 25) {
                         indexState[locIndex / 2] = IndexColors.PURPLE;
                         locIndex += 2;
@@ -225,6 +225,13 @@ public class DIO extends LinearOpMode {
                         locIndex += 2;
                     }
                 }
+            }
+
+            while (locIndex < 0) {
+                locIndex += 6;
+            }
+            while (locIndex > 5) {
+                locIndex -=6;
             }
 
             if (gamepad2.aWasPressed()) {
@@ -245,6 +252,7 @@ public class DIO extends LinearOpMode {
             telemetry.addData("Launcher speed", shooter.getVelocity());
             telemetry.addData("Location 3 hue", hsvValues[0]);
             telemetry.addData("Location 3 alpha", loc3.alpha());
+            telemetry.addData("Index status", indexState[0] + ", " + indexState[1] + ", "  + indexState[2] + ", " );
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
@@ -252,7 +260,7 @@ public class DIO extends LinearOpMode {
     }
 
     private boolean ballDetected() {
-        return loc3.alpha() > 30;
+        return loc3.alpha() > 50;
     }
 
 }

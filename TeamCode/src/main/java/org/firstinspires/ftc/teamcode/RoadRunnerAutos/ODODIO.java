@@ -48,7 +48,7 @@ public class ODODIO extends OpMode {
         parkingPose = new Vector2d(39.95, -34.17 * PoseStorage.isRed);
         farPose = new Vector2d(49.05, 11.71 * PoseStorage.isRed);
         closePose = new Vector2d(-14.98, 15.181 * PoseStorage.isRed);
-        humanPlayaPose = new Vector2d(59, -55.88 * PoseStorage.isRed);
+        humanPlayaPose = new Vector2d(12, -12 * PoseStorage.isRed);
     }
 
     @Override
