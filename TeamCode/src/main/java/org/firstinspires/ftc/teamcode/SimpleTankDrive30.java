@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="Simple Tank Drive - 30%", group="Linear Opmode")
 public class SimpleTankDrive30 extends LinearOpMode {
@@ -17,8 +18,8 @@ public class SimpleTankDrive30 extends LinearOpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
         // Reverse one side so forward stick makes the robot go forward
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -32,7 +33,7 @@ public class SimpleTankDrive30 extends LinearOpMode {
             double turnSpeed = 0.25;
 
             double drive = -gamepad1.left_stick_y * driveSpeed;   // forward/back
-            double turn  =  gamepad1.right_stick_x * turnSpeed;  // rotation
+            double turn  =  -gamepad1.right_stick_x * turnSpeed;  // rotation
 
             // Mix drive and turn for each side
             double leftPower  = drive + turn;

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-
+@Disabled
 @Autonomous(name="Abby Auto", group="Gigi's") // This is finished for the robot with the 435 motors.
 public class AbbyAuto extends AutoTemplate{
     final double HOLDTIME = 1.65;
