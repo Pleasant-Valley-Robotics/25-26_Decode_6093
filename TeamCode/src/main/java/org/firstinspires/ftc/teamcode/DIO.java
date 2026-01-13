@@ -78,7 +78,6 @@ import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 public class DIO extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
-    private ElapsedTime runtime = new ElapsedTime();
     private DcMotor frontLeftDrive = null;
     private DcMotor backLeftDrive = null;
     private DcMotor frontRightDrive = null;
@@ -86,11 +85,11 @@ public class DIO extends LinearOpMode {
     private DcMotorEx shooter = null;
     private DcMotor intake = null;
 
-    private ColorSensor loc3 = null;
+    private ColorSensor loc4 = null;
     private Servo indexServo = null;
     private Servo flickerServo = null;
 
-    private double[] allLocations = {0.90, 0.73, 0.55, 0.40, 0.22, 0.05};
+    private double[] allLocations = {0.92, 0.75, 0.59, 0.42, 0.25, 0.08};
     private int locIndex = 0;
     private final int GREEN_HUE = 160;
     private final int PURPLE_HUE = 210;
@@ -98,6 +97,8 @@ public class DIO extends LinearOpMode {
 
     private int targetAprilTag = 22; // Two cycles
     private int currentIntake = 0;
+
+    double lastReadTimestamp = 0.00;
 
     public enum IndexColors {
         NONE,
@@ -110,11 +111,11 @@ public class DIO extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
-        loc3 = hardwareMap.get(ColorSensor.class, "location3");
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "frontLeftDrive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "backLeftDrive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightDrive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "backRightDrive");
+        loc4 = hardwareMap.get(ColorSensor.class, "location4");
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
         indexServo = hardwareMap.get(Servo.class, "index");
@@ -146,7 +147,6 @@ public class DIO extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -208,7 +208,7 @@ public class DIO extends LinearOpMode {
                 shooter.setVelocity(0);
             }
 
-            Color.RGBToHSV(loc3.red() * 8, loc3.green() * 8, loc3.blue() * 8, hsvValues);
+            Color.RGBToHSV(loc4.red() * 8, loc4.green() * 8, loc4.blue() * 8, hsvValues);
 
             if (intakePower == 0) {
                 if (gamepad2.leftBumperWasPressed())
@@ -216,14 +216,20 @@ public class DIO extends LinearOpMode {
                 if (gamepad2.rightBumperWasPressed())
                     locIndex -= 1;
             } else {
-                if (ballDetected() && indexServo.getPosition() == allLocations[locIndex] && (indexState[0] != IndexColors.NONE || indexState[1] != IndexColors.NONE || indexState[2] != IndexColors.NONE)) {
-                    if (Math.abs(hsvValues[0] - PURPLE_HUE) < 25) {
-                        indexState[locIndex / 2] = IndexColors.PURPLE;
+                if (ballDetected() && (indexState[0] == null || indexState[1] == null || indexState[2] == null)) {
+                    if (getRuntime() - lastReadTimestamp > 1.0) {
+                        lastReadTimestamp = getRuntime();
+                    } else if (indexState[locIndex / 2] == IndexColors.PURPLE || indexState[locIndex / 2] == IndexColors.GREEN) {
                         locIndex += 2;
-                    } else if (Math.abs(hsvValues[0] - GREEN_HUE) < 25) {
-                        indexState[locIndex / 2] = IndexColors.GREEN;
-                        locIndex += 2;
+                        lastReadTimestamp = getRuntime();
+                    } else if (getRuntime() - lastReadTimestamp > 0.2) {
+                        if (Math.abs(hsvValues[0] - PURPLE_HUE) < 25) {
+                            indexState[locIndex / 2] = IndexColors.PURPLE;
+                        } else if (Math.abs(hsvValues[0] - GREEN_HUE) < 25) {
+                            indexState[locIndex / 2] = IndexColors.GREEN;
+                        }
                     }
+
                 }
             }
 
@@ -235,10 +241,10 @@ public class DIO extends LinearOpMode {
             }
 
             if (gamepad2.aWasPressed()) {
-                flickerServo.setPosition(0.46);
+                flickerServo.setPosition(0.4);
             }
             if (gamepad2.bWasPressed()) {
-                flickerServo.setPosition(0.37);
+                flickerServo.setPosition(0.3);
             }
 
 
@@ -246,12 +252,13 @@ public class DIO extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
 
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Status", "Run Time: " + getRuntime());
+            telemetry.addData("Last read", lastReadTimestamp);
             telemetry.addData("index servo", indexServo.getPosition());
             telemetry.addData("flkicker servo", flickerServo.getPosition());
             telemetry.addData("Launcher speed", shooter.getVelocity());
             telemetry.addData("Location 3 hue", hsvValues[0]);
-            telemetry.addData("Location 3 alpha", loc3.alpha());
+            telemetry.addData("Location 3 alpha", loc4.alpha());
             telemetry.addData("Index status", indexState[0] + ", " + indexState[1] + ", "  + indexState[2] + ", " );
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
@@ -260,7 +267,8 @@ public class DIO extends LinearOpMode {
     }
 
     private boolean ballDetected() {
-        return loc3.alpha() > 50;
+        return loc4.alpha() > 40;
     }
+
 
 }
