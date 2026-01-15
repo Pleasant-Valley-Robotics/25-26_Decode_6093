@@ -203,7 +203,7 @@ public class DIO extends LinearOpMode {
             intake.setPower(intakePower);
 
             if (-gamepad2.left_stick_y > 0) {
-                shooter.setVelocity(1900);
+                shooter.setVelocity(1500);
             } else {
                 shooter.setVelocity(0);
             }
@@ -241,10 +241,10 @@ public class DIO extends LinearOpMode {
             }
 
             if (gamepad2.aWasPressed()) {
-                flickerServo.setPosition(0.4);
+                flickerServo.setPosition(0.45);
             }
             if (gamepad2.bWasPressed()) {
-                flickerServo.setPosition(0.3);
+                flickerServo.setPosition(0.365);
             }
 
 

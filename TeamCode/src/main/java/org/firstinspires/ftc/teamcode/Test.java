@@ -31,11 +31,20 @@ public class Test extends LinearOpMode {
                 indexServoPos -= 0.05;
             }
 
-            if (gamepad2.rightBumperWasPressed()) {
-                flickerServoPos += 0.05;
-            } else if (gamepad2.leftBumperWasPressed()) {
-                flickerServoPos -= 0.05;
+            if (gamepad2.a) {
+                if (gamepad2.rightBumperWasPressed()) {
+                    flickerServoPos += 0.01;
+                } else if (gamepad2.leftBumperWasPressed()) {
+                    flickerServoPos -= 0.01;
+                }
+            } else {
+                if (gamepad2.rightBumperWasPressed()) {
+                    flickerServoPos += 0.005;
+                } else if (gamepad2.leftBumperWasPressed()) {
+                    flickerServoPos -= 0.005;
+                }
             }
+
 
             indexServo.setPosition(indexServoPos);
             flickerServo.setPosition(flickerServoPos);
