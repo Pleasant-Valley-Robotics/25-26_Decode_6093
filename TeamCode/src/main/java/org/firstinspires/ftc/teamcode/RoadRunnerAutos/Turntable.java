@@ -96,6 +96,16 @@ public class Turntable {
     }
 
 
+    public int findIndexOf(IndexColors type) {
+        for (int i = 0; i < turntableBallStatus.length; i++) {
+            if (turntableBallStatus[i] == type) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
     public int getNumBalls() {return currentNumBalls;}
     public int getPositionId() {return positionId;}
 

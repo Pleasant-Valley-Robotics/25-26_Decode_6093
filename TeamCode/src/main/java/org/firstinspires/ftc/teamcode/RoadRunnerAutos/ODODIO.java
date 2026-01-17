@@ -4,9 +4,11 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -30,15 +32,21 @@ public class ODODIO extends OpMode {
     private boolean slowMode = false;
 
     // Initialize all positions to null, these are set in init based on blue or red
-    private Vector2d parkingPose;
+    private Vector2d parkingVec;
     private Vector2d closePose;
     private Vector2d farPose;
     private Vector2d humanPlayaPose;
 
+    private Pose2d parkingPose;
+
+
     // List of actions to be performed each tick, updated continually
     // driveActions should always be either 1 or 0 long, systemsActions can have multiple
-    List<Action> driveActions = new ArrayList<>();
-    List<Action> systemsActions = new ArrayList<>();
+    private List<Action> driveActions = new ArrayList<>();
+    private List<Action> systemsActions = new ArrayList<>();
+
+    private Gamepad prevGamepad1 = new Gamepad();
+    private Gamepad prevGamepad2 = new Gamepad();
 
     private double intakeTimestamp = 0;
 
@@ -58,10 +66,14 @@ public class ODODIO extends OpMode {
 
         // Set positions based on whether or not we are red
         // isRed is a integer, not boolean. Either -1 or 1
-        parkingPose = new Vector2d(39.95, -34.17 * PoseStorage.isRed);
-        farPose = new Vector2d(49.05, 11.71 * PoseStorage.isRed);
-        closePose = new Vector2d(-14.98, 15.181 * PoseStorage.isRed);
-        humanPlayaPose = new Vector2d(12, -12 * PoseStorage.isRed);
+        parkingPose = new Pose2d(42.3044, -38.5985 * PoseStorage.isRed, 0);
+        parkingVec = new Vector2d(42.3044, -38.5985 * PoseStorage.isRed);
+        farPose = new Vector2d(55.9338, -1.024 * PoseStorage.isRed); // 147.4461
+        closePose = new Vector2d(-10.0389, 11.5831 * PoseStorage.isRed); // 133.104
+        humanPlayaPose = new Vector2d(71.2383, -63.4445 * PoseStorage.isRed);
+
+        prevGamepad1.copy(gamepad1);
+        prevGamepad2.copy(gamepad2);
     }
 
     @Override
@@ -75,24 +87,26 @@ public class ODODIO extends OpMode {
         // R-Bumper: Clockwise
         // L-Bumper: Rotate counter-clockwise
         if (gamepad2.right_stick_y != 0) {
-            if (gamepad2.right_stick_y > 0) {
-                if (getRuntime() - intakeTimestamp > 0.2 && intake.autoIntake(camera, turntable)) {
-                    intakeTimestamp = getRuntime();
-                }
+            if (gamepad2.right_stick_y > 0 && prevGamepad2.right_stick_y == 0) {
+                systemsActions.add(intake.autoIntake(camera, turntable));
             }
             intake.setPower(gamepad2.right_stick_y);
         } else {
             intake.stopIntake();
         }
 
-        if (gamepad2.rightBumperWasPressed()) turntable.turnLeft();
-        if (gamepad2.leftBumperWasPressed()) turntable.turnRight();
-        if (gamepad2.right_trigger > 0) shooter.spinUp(2500);
+        if (gamepad2.rightBumperWasPressed()) {
+            turntable.turnLeft();
+        }
+        if (gamepad2.leftBumperWasPressed()) {
+            turntable.turnRight();
+            if (shooter.isMoving() && turntable.getPositionId() % 2 != 0) turntable.removeBall(turntable.getPositionId());
+        }
+        if (gamepad2.right_trigger > 0) shooter.spinUp(1800);
         if (gamepad2.left_trigger > 0) shooter.stop();
-        if (gamepad2.aWasPressed()) shooter.raiseServo(turntable);
-        if (gamepad2.aWasReleased()) shooter.lowerServo();
-        if (gamepad2.xWasPressed()) shooter.fireAllR(turntable);
-        if (gamepad2.yWasPressed()) shooter.fireAllL(turntable);
+        if (gamepad2.aWasPressed()) systemsActions.add(shooter.fireOnce(turntable));
+        if (gamepad2.xWasPressed()) systemsActions.add(shooter.shootAll(turntable));
+        //if (gamepad2.bWasPressed()) systemsActions.add(shooter.shootInPattern(turntable));
 
 
         double rotate = 0;
@@ -105,6 +119,22 @@ public class ODODIO extends OpMode {
         if (gamepad1.xWasPressed()) manualRotate = !manualRotate;
         if (gamepad1.bWasPressed()) drive.localizer.setPose(new Pose2d(0, 0, Math.toRadians(90 * PoseStorage.isRed)));
         if (gamepad1.aWasPressed()) drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(90)));
+        if (gamepad1.right_trigger > 0) driveActions.clear();
+
+        slowMode = gamepad1.left_trigger > 0;
+
+        if (gamepad1.dpadDownWasPressed()) {
+            TrajectoryActionBuilder goFar = drive.actionBuilder(drive.localizer.getPose()).splineToConstantHeading(parkingVec, 0);
+            goFar.lineToXLinearHeading(0, Math.toRadians(147.4461 * PoseStorage.isRed));
+            driveActions.clear();
+            driveActions.add(goFar.build());
+        }
+
+        if (gamepad1.dpadRightWasPressed()) {
+            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).splineTo(parkingVec, Math.toRadians(0));
+            driveActions.clear();
+            driveActions.add(goPark.build());
+        }
 
         // Update running actions based on current
         List<Action> newDriveActions = new ArrayList<>();
@@ -140,10 +170,14 @@ public class ODODIO extends OpMode {
         }
         systemsActions = newSystemsActions;
 
+        prevGamepad1.copy(gamepad1);
+        prevGamepad2.copy(gamepad2);
+
         PoseStorage.currentPose = drive.localizer.getPose();
 
         telemetry.addData("Shooter is at speed?", shooter.isAtSpeed());
         telemetry.addData("Current shooter speed", shooter.getVelocity());
+        telemetry.addData("Num systems actions", systemsActions.size());
         telemetry.addData("Turntable status", turntable.toString());
         telemetry.update();
 
@@ -158,6 +192,9 @@ public class ODODIO extends OpMode {
         drive.rightFront.setPower(0);
         drive.leftBack.setPower(0);
         drive.rightBack.setPower(0);
+
+        systemsActions.clear();
+        driveActions.clear();
     }
 
     public double autoLockAngle() {
@@ -177,14 +214,6 @@ public class ODODIO extends OpMode {
         double deviation = drive.localizer.getPose().heading.toDouble() - realTargetHeading;
         // Normalize within -360, 360 so it doesn't try to spin multiple times
         deviation = AngleUnit.normalizeRadians(deviation);
-
-        /*
-        telemetry.addData("Raw Target Heading", Math.toDegrees(rawTargetHeading));
-        telemetry.addData("Real Target Heading", Math.toDegrees(realTargetHeading));
-        telemetry.addData("X difference", xDif);
-        telemetry.addData("Y difference", yDif);
-        telemetry.addData("Deviation", Math.toDegrees(deviation));
-        */
 
 
         if (Math.abs(deviation) > tolerance) {

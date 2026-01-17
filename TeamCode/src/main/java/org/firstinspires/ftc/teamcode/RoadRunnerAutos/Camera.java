@@ -61,7 +61,7 @@ public class Camera {
     }
 
     public boolean ballDetected() {
-        return colorSensor.alpha() > 40;
+        return colorSensor.alpha() > 32;
     }
 
 

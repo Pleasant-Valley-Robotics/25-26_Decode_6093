@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Shooter {
 
@@ -21,7 +22,7 @@ public class Shooter {
 
     private boolean servoIsUp = false;
     private boolean inProcess = false;
-    private double timeStamp = 0;
+
 
     private int lastSpeed = 0;
     public Shooter(HardwareMap hardwareMap) {
@@ -35,29 +36,103 @@ public class Shooter {
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
     }
 
-    public void raiseServo(Turntable turntable) {
-        if (turntable.getPositionId() % 2 != 0) {
-            turntable.turnLeft();
-        }
-        if (turntable.getBallAt(turntable.getPositionId()) != null && isMoving()) {
-            turntable.removeBall(turntable.getPositionId());
-        }
-        servoIsUp = true;
-        flickerServo.setPosition(upPos);
+    public Action fireOnce(Turntable turntable) {
+        return new Action() {
+            ElapsedTime timer = new ElapsedTime();
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (turntable.getNumBalls() == 0) {
+                    return false;
+                }
+
+                while (turntable.getBallAt(turntable.getPositionId()) == null) {
+                    turntable.turnLeft();
+                }
+
+                if (timer.seconds() < 0.2) {
+                    flickerServo.setPosition(upPos);
+                    turntable.removeBall(turntable.getNumBalls());
+                } else {
+                    turntable.turnLeft();
+                    flickerServo.setPosition(downPos);
+                    return false;
+                }
+
+                return true;
+            }
+        };
     }
 
-    public void lowerServo() {
-        servoIsUp = false;
-        flickerServo.setPosition(downPos);
+    public Action shootInPattern(Turntable turntable) {
+        return new Action() {
+            private ElapsedTime feederTimer = new ElapsedTime();
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!isMoving()) return false;
+                switch (turntable.getNumBalls()) {
+                    case 3:
+                        turntable.turnToPosition(turntable.getPositionId() + turntable.findIndexOf(Turntable.IndexColors.GREEN) - 4);
+                        for (int i = 0; i < PoseStorage.shotsToCycle; i++) {
+                            turntable.turnLeft();
+                            turntable.turnLeft();
+                        }
+                        flickerServo.setPosition(upPos);
+                        break;
+                    case 2:
+                    case 1:
+                        turntable.turnLeft();
+                        turntable.turnLeft();
+                        break;
+                    default:
+                        turntable.turnLeft();
+                        flickerServo.setPosition(downPos);
+                        return false;
+                }
+                return true;
+            }
+        };
     }
 
+    public Action shootAll(Turntable turntable) {
+        return new Action() {
+            ElapsedTime timer = new ElapsedTime();
+            boolean initialized = false;
 
-    public void fireAllR(Turntable turntable) {
-        turntable.freeSpinR();
-    }
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!isMoving()) return false;
+                if (!initialized) {
+                    if (turntable.getPositionId() % 2 != 0) {
+                        turntable.turnLeft();
+                    }
+                    initialized = true;
+                }
 
-    public void fireAllL(Turntable turntable) {
-        turntable.freeSpinL();
+                switch (turntable.getNumBalls()) {
+                    case 3:
+                    case 2:
+                    case 1:
+                        if (timer.seconds() < 0.5 && timer.seconds() > 0.2) {
+                            flickerServo.setPosition(upPos);
+                        } else if (timer.seconds() > 0.5 ){
+                            flickerServo.setPosition(downPos);
+                            turntable.removeBall(turntable.getPositionId());
+                            turntable.turnLeft();
+                            turntable.turnLeft();
+                            timer.reset();
+                        }
+
+                        break;
+                    default:
+                        if (timer.seconds() > 0.2) {
+                            turntable.turnLeft();
+                            return false;
+                        }
+                }
+                return true;
+            }
+        };
     }
 
 
