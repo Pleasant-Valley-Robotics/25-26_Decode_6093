@@ -6,17 +6,24 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.ArrayList;
 import java.util.List;
+@TeleOp(name="ODODIO", group="Odometry")
 
 public class ODODIO extends OpMode {
 
     // Initialize systems to null, these are set in init
-    private MecanumDrive drive = null;
+    private MecanumDrive drive;
+    Turntable turntable;
+    Intake intake;
+    Camera camera;
+    Shooter shooter;
+
 
     // Drive modes
     private boolean manualRotate = true;
@@ -33,6 +40,8 @@ public class ODODIO extends OpMode {
     List<Action> driveActions = new ArrayList<>();
     List<Action> systemsActions = new ArrayList<>();
 
+    private double intakeTimestamp = 0;
+
     // Dash used for sending telemetry every loop
     private FtcDashboard dash = FtcDashboard.getInstance();
 
@@ -42,6 +51,10 @@ public class ODODIO extends OpMode {
         // Declare all systems so they can be used in loop
         // This has to be done here because hardwareMap doesn't exist until startup
         drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose); // Pass saved pose from autos
+        turntable = new Turntable(hardwareMap);
+        intake = new Intake(hardwareMap);
+        camera = new Camera(hardwareMap);
+        shooter = new Shooter(hardwareMap);
 
         // Set positions based on whether or not we are red
         // isRed is a integer, not boolean. Either -1 or 1
@@ -56,6 +69,31 @@ public class ODODIO extends OpMode {
         drive.updatePoseEstimate(); // Get pose from odometry
         // Used to print to console and get field overlay, no clue how tho
         TelemetryPacket packet = new TelemetryPacket();
+
+        // Gamepad 2 Controls:
+        // R-Stick Y: power intake
+        // R-Bumper: Clockwise
+        // L-Bumper: Rotate counter-clockwise
+        if (gamepad2.right_stick_y != 0) {
+            if (gamepad2.right_stick_y > 0) {
+                if (getRuntime() - intakeTimestamp > 0.2 && intake.autoIntake(camera, turntable)) {
+                    intakeTimestamp = getRuntime();
+                }
+            }
+            intake.setPower(gamepad2.right_stick_y);
+        } else {
+            intake.stopIntake();
+        }
+
+        if (gamepad2.rightBumperWasPressed()) turntable.turnLeft();
+        if (gamepad2.leftBumperWasPressed()) turntable.turnRight();
+        if (gamepad2.right_trigger > 0) shooter.spinUp(2500);
+        if (gamepad2.left_trigger > 0) shooter.stop();
+        if (gamepad2.aWasPressed()) shooter.raiseServo(turntable);
+        if (gamepad2.aWasReleased()) shooter.lowerServo();
+        if (gamepad2.xWasPressed()) shooter.fireAllR(turntable);
+        if (gamepad2.yWasPressed()) shooter.fireAllL(turntable);
+
 
         double rotate = 0;
 
@@ -102,8 +140,13 @@ public class ODODIO extends OpMode {
         }
         systemsActions = newSystemsActions;
 
-
         PoseStorage.currentPose = drive.localizer.getPose();
+
+        telemetry.addData("Shooter is at speed?", shooter.isAtSpeed());
+        telemetry.addData("Current shooter speed", shooter.getVelocity());
+        telemetry.addData("Turntable status", turntable.toString());
+        telemetry.update();
+
         dash.sendTelemetryPacket(packet); // Send telemetry packet to dash
 
     }

@@ -100,7 +100,7 @@ public class DIO extends LinearOpMode {
 
     double lastReadTimestamp = 0.00;
 
-    public enum IndexColors {
+    private enum IndexColors {
         NONE,
         PURPLE,
         GREEN
@@ -147,9 +147,15 @@ public class DIO extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        if (!gamepad2.a) {
+            throw new RuntimeException("USE THE NEW TELEOP.\nIt's titled ODODIO.\n" +
+                    "If you really want, you can run this teleop by holding a on gamepad2 at start");
+        }
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
