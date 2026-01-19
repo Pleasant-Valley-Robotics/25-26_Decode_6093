@@ -17,8 +17,8 @@ public class Shooter {
 
     private DcMotorEx shooter;
     private Servo flickerServo;
-    final private double upPos = 0.365;
-    final private double downPos = 0.45;
+    final public double upPos = 0.365;
+    final public double downPos = 0.45;
 
     private boolean servoIsUp = false;
     private boolean inProcess = false;
@@ -36,59 +36,44 @@ public class Shooter {
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
     }
 
+    public void setServoPos(double position) {
+        flickerServo.setPosition(position);
+    }
+
     public Action fireOnce(Turntable turntable) {
         return new Action() {
             ElapsedTime timer = new ElapsedTime();
+            boolean initialized = false;
+            int count = 0;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (turntable.getNumBalls() == 0) {
-                    return false;
+                if (!initialized) {
+                    if (turntable.getNumBalls() == 0) {
+                        return false;
+                    }
+
+                    while (turntable.getBallAt(4) == null) {
+                        turntable.turnLeft();
+                        count++;
+
+                        if (count > 40) {
+                            throw new RuntimeException("Kill yourself");
+                        }
+                    }
+
+                    initialized = true;
+                    timer.reset();
                 }
 
-                while (turntable.getBallAt(turntable.getPositionId()) == null) {
-                    turntable.turnLeft();
-                }
-
-                if (timer.seconds() < 0.2) {
+                if (timer.seconds() < 3 && timer.seconds() > 1) {
                     flickerServo.setPosition(upPos);
-                    turntable.removeBall(turntable.getNumBalls());
-                } else {
-                    turntable.turnLeft();
+                } else if (timer.seconds() > 3) {
+                    turntable.removeBall(4);
                     flickerServo.setPosition(downPos);
                     return false;
                 }
 
-                return true;
-            }
-        };
-    }
-
-    public Action shootInPattern(Turntable turntable) {
-        return new Action() {
-            private ElapsedTime feederTimer = new ElapsedTime();
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!isMoving()) return false;
-                switch (turntable.getNumBalls()) {
-                    case 3:
-                        turntable.turnToPosition(turntable.getPositionId() + turntable.findIndexOf(Turntable.IndexColors.GREEN) - 4);
-                        for (int i = 0; i < PoseStorage.shotsToCycle; i++) {
-                            turntable.turnLeft();
-                            turntable.turnLeft();
-                        }
-                        flickerServo.setPosition(upPos);
-                        break;
-                    case 2:
-                    case 1:
-                        turntable.turnLeft();
-                        turntable.turnLeft();
-                        break;
-                    default:
-                        turntable.turnLeft();
-                        flickerServo.setPosition(downPos);
-                        return false;
-                }
                 return true;
             }
         };

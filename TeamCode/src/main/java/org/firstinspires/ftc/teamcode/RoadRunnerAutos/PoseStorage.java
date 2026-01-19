@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 
+@Config
 public class PoseStorage {
     // It took way too long to figure out how to do this
     public static int shotsToCycle = 0; // Assuming GPP as default

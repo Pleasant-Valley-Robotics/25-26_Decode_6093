@@ -40,10 +40,9 @@ public class Intake {
                         posToTurnTo = 5;
                         break;
                     default:
-                        turntable.turnLeft();
                         return false;
                 }
-
+                
                 turntable.turnToPosition(posToTurnTo);
 
                 if (camera.ballDetected()) {

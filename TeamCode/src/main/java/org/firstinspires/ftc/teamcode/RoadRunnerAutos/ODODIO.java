@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.ArrayList;
 import java.util.List;
 @TeleOp(name="ODODIO", group="Odometry")
-
+@Config
 public class ODODIO extends OpMode {
 
     // Initialize systems to null, these are set in init
@@ -33,9 +34,9 @@ public class ODODIO extends OpMode {
 
     // Initialize all positions to null, these are set in init based on blue or red
     private Vector2d parkingVec;
-    private Vector2d closePose;
-    private Vector2d farPose;
-    private Vector2d humanPlayaPose;
+    private Vector2d closeVec;
+    private Vector2d farVec;
+    private Vector2d humanPlayaVec;
 
     private Pose2d parkingPose;
 
@@ -53,6 +54,10 @@ public class ODODIO extends OpMode {
     // Dash used for sending telemetry every loop
     private FtcDashboard dash = FtcDashboard.getInstance();
 
+    public static int flyWheelSpeed = 1500;
+    private double distanceFromGoal;
+    Vector2d autoLockingTarget = new Vector2d(-72, 72 * PoseStorage.isRed);
+
 
     @Override
     public void init() {
@@ -68,9 +73,9 @@ public class ODODIO extends OpMode {
         // isRed is a integer, not boolean. Either -1 or 1
         parkingPose = new Pose2d(42.3044, -38.5985 * PoseStorage.isRed, 0);
         parkingVec = new Vector2d(42.3044, -38.5985 * PoseStorage.isRed);
-        farPose = new Vector2d(55.9338, -1.024 * PoseStorage.isRed); // 147.4461
-        closePose = new Vector2d(-10.0389, 11.5831 * PoseStorage.isRed); // 133.104
-        humanPlayaPose = new Vector2d(71.2383, -63.4445 * PoseStorage.isRed);
+        farVec = new Vector2d(55.9338, -1.024 * PoseStorage.isRed); // 147.4461
+        closeVec = new Vector2d(-10.0389, 11.5831 * PoseStorage.isRed); // 133.104
+        humanPlayaVec = new Vector2d(71.2383, -63.4445 * PoseStorage.isRed);
 
         prevGamepad1.copy(gamepad1);
         prevGamepad2.copy(gamepad2);
@@ -79,6 +84,7 @@ public class ODODIO extends OpMode {
     @Override
     public void loop() {
         drive.updatePoseEstimate(); // Get pose from odometry
+        updateDistanceFromGoal();
         // Used to print to console and get field overlay, no clue how tho
         TelemetryPacket packet = new TelemetryPacket();
 
@@ -95,17 +101,14 @@ public class ODODIO extends OpMode {
             intake.stopIntake();
         }
 
-        if (gamepad2.rightBumperWasPressed()) {
-            turntable.turnLeft();
-        }
-        if (gamepad2.leftBumperWasPressed()) {
-            turntable.turnRight();
-            if (shooter.isMoving() && turntable.getPositionId() % 2 != 0) turntable.removeBall(turntable.getPositionId());
-        }
-        if (gamepad2.right_trigger > 0) shooter.spinUp(1800);
+        if (gamepad2.rightBumperWasPressed()) turntable.turnLeft();
+        if (gamepad2.leftBumperWasPressed()) turntable.turnRight();
+        if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
         if (gamepad2.aWasPressed()) systemsActions.add(shooter.fireOnce(turntable));
         if (gamepad2.xWasPressed()) systemsActions.add(shooter.shootAll(turntable));
+        if (gamepad2.dpadUpWasPressed()) shooter.setServoPos(shooter.upPos);
+        if (gamepad2.dpadDownWasPressed()) shooter.setServoPos(shooter.downPos);
         //if (gamepad2.bWasPressed()) systemsActions.add(shooter.shootInPattern(turntable));
 
 
@@ -179,6 +182,7 @@ public class ODODIO extends OpMode {
         telemetry.addData("Current shooter speed", shooter.getVelocity());
         telemetry.addData("Num systems actions", systemsActions.size());
         telemetry.addData("Turntable status", turntable.toString());
+        telemetry.addData("DistanceFromGoal",distanceFromGoal);
         telemetry.update();
 
         dash.sendTelemetryPacket(packet); // Send telemetry packet to dash
@@ -197,10 +201,12 @@ public class ODODIO extends OpMode {
         driveActions.clear();
     }
 
+
+
     public double autoLockAngle() {
         // Use tangent to calculate the angle needed to face the goal position on the field
-        double xDif = -72 - drive.localizer.getPose().position.x;
-        double yDif = 72 * PoseStorage.isRed - drive.localizer.getPose().position.y;
+        double xDif = autoLockingTarget.x - drive.localizer.getPose().position.x;
+        double yDif = autoLockingTarget.y - drive.localizer.getPose().position.y;
         double tolerance = 0.03; // Tolerance in radians
 
         // Use tan-1 to get raw target heading before normalizing
@@ -277,6 +283,12 @@ public class ODODIO extends OpMode {
         drive.rightFront.setPower(maxSpeed * (frontRightPower / maxPower));
         drive.leftBack.setPower(maxSpeed * (backLeftPower / maxPower));
         drive.rightBack.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+
+    public void updateDistanceFromGoal() {
+        double xDif = (-72) - drive.localizer.getPose().position.x;
+        double yDif =  (72 * PoseStorage.isRed) - drive.localizer.getPose().position.y;
+        distanceFromGoal = Math.sqrt(Math.pow(xDif, 2) + Math.pow(yDif, 2));
     }
 
 
