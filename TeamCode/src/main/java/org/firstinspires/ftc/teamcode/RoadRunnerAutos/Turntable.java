@@ -6,8 +6,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Turntable {
 
     private Servo indexServo = null;
-    private final double [] positions = {0.08, 0.25, 0.42, 0.59, 0.75, 0.92};
+    private final double [] positions = {0.09, 0.26, 0.43, 0.6, 0.76, 0.93};
 
+    private int positionId = 0;
     private int currentNumBalls = 0;
     private IndexColors[] turntableBallStatus = new IndexColors[6];
 
@@ -17,7 +18,7 @@ public class Turntable {
         GREEN
     }
 
-    private int positionId = 0;
+
 
     public Turntable(HardwareMap hardwareMap) {
         indexServo = hardwareMap.get(Servo.class, "index");

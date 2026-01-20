@@ -10,8 +10,8 @@ public class Test extends LinearOpMode {
     Servo indexServo = null;
     Servo flickerServo = null;
 
-    double indexServoPos = 0.5;
-    double flickerServoPos = 0.5;
+    double indexServoPos = .43;
+    double flickerServoPos = 0.45;
 
     @Override
     public void runOpMode() {
@@ -25,11 +25,20 @@ public class Test extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+        if (gamepad1.a) {
             if (gamepad1.rightBumperWasPressed()) {
                 indexServoPos += 0.05;
             } else if (gamepad1.leftBumperWasPressed()) {
                 indexServoPos -= 0.05;
             }
+        } else {
+            if (gamepad1.rightBumperWasPressed()) {
+                indexServoPos += 0.01;
+            } else if (gamepad1.leftBumperWasPressed()) {
+                indexServoPos -= 0.01;
+            }
+        }
+
 
             if (gamepad2.a) {
                 if (gamepad2.rightBumperWasPressed()) {

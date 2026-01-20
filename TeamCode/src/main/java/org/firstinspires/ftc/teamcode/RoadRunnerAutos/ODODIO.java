@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 @TeleOp(name="ODODIO", group="Odometry")
@@ -79,6 +80,10 @@ public class ODODIO extends OpMode {
 
         prevGamepad1.copy(gamepad1);
         prevGamepad2.copy(gamepad2);
+
+        for (int i = 0; i < 30; i++) {
+            systemsActions.add(null);
+        }
     }
 
     @Override
@@ -94,23 +99,48 @@ public class ODODIO extends OpMode {
         // L-Bumper: Rotate counter-clockwise
         if (gamepad2.right_stick_y != 0) {
             if (gamepad2.right_stick_y > 0 && prevGamepad2.right_stick_y == 0) {
-                systemsActions.add(intake.autoIntake(camera, turntable));
+                shooter.setServoPos(shooter.downPos);
+                systemsActions.set(0, intake.autoIntake(camera, turntable));
             }
             intake.setPower(gamepad2.right_stick_y);
         } else {
+            systemsActions.set(0, null);
             intake.stopIntake();
         }
 
-        if (gamepad2.rightBumperWasPressed()) turntable.turnLeft();
-        if (gamepad2.leftBumperWasPressed()) turntable.turnRight();
-        if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
+        if (gamepad2.aWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            systemsActions.set(1, shooter.fireOnce(turntable));
+        }
+        if (gamepad2.xWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            systemsActions.set(2, shooter.shootAll(turntable));
+        }
+
+        if (gamepad2.rightBumperWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            turntable.turnLeft();
+        }
+        if (gamepad2.leftBumperWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            turntable.turnRight();
+        }
+        if (gamepad2.right_trigger > 0) shooter.spinUp((int) distanceFromGoal * 11 + 450);
         if (gamepad2.left_trigger > 0) shooter.stop();
-        if (gamepad2.aWasPressed()) systemsActions.add(shooter.fireOnce(turntable));
-        if (gamepad2.xWasPressed()) systemsActions.add(shooter.shootAll(turntable));
         if (gamepad2.dpadUpWasPressed()) shooter.setServoPos(shooter.upPos);
         if (gamepad2.dpadDownWasPressed()) shooter.setServoPos(shooter.downPos);
-        //if (gamepad2.bWasPressed()) systemsActions.add(shooter.shootInPattern(turntable));
+        if (gamepad2.bWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            systemsActions.set(3, shooter.shootInPattern(turntable));
+        }
 
+        if (shooter.getLastSpeed() != 0) {
+            shooter.spinUp((int) distanceFromGoal * 11 + 500);
+        }
+
+        if (shooter.isAtSpeed() && shooter.isMoving()) {
+            gamepad2.rumble(1);
+        }
 
         double rotate = 0;
 
@@ -162,22 +192,22 @@ public class ODODIO extends OpMode {
 
         if (driveActions.isEmpty()) {
             // Drive field relative, but only if we aren't already going to a position
-            driveFieldRelative(gamepad1.left_stick_y, -gamepad1.left_stick_x, rotate);
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         }
 
         List<Action> newSystemsActions = new ArrayList<>();
-        for (Action action :systemsActions) {
-            if (action.run(packet)) {
-                newSystemsActions.add(action);
+        for (int i = 0; i < systemsActions.size(); i++) {
+            if (systemsActions.get(i) == null || !systemsActions.get(i).run(packet)) {
+                systemsActions.set(i, null);
             }
         }
-        systemsActions = newSystemsActions;
 
         prevGamepad1.copy(gamepad1);
         prevGamepad2.copy(gamepad2);
 
         PoseStorage.currentPose = drive.localizer.getPose();
 
+        telemetry.addData("Position ID", turntable.getPositionId());
         telemetry.addData("Shooter is at speed?", shooter.isAtSpeed());
         telemetry.addData("Current shooter speed", shooter.getVelocity());
         telemetry.addData("Num systems actions", systemsActions.size());

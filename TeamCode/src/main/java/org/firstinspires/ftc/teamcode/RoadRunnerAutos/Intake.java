@@ -25,36 +25,33 @@ public class Intake {
     public Action autoIntake(Camera camera, Turntable turntable) {
         return new Action() {
             ElapsedTime timer = new ElapsedTime();
-            boolean isFirstTime = true;
+            boolean isFirstTime = false;
+            int count = 0;
+
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                int posToTurnTo;
-                switch (turntable.getNumBalls()) {
-                    case 0:
-                        posToTurnTo = 1;
-                        break;
-                    case 1:
-                        posToTurnTo = 3;
-                        break;
-                    case 2:
-                        posToTurnTo = 5;
-                        break;
-                    default:
-                        return false;
-                }
-                
-                turntable.turnToPosition(posToTurnTo);
 
+                if (turntable.getNumBalls() >= 3) {
+                    return false;
+                }
                 if (camera.ballDetected()) {
                     if (!isFirstTime) {
+                        while (turntable.getPositionId() % 2 == 0 || turntable.getBallAt(turntable.getPositionId()) != null) {
+                            turntable.turnLeft();
+                            count++;
+
+                            if (count > 400) {
+                                throw new RuntimeException("im gonna lose my mind");
+                            }
+                        }
+
+
                         timer.reset();
                         isFirstTime = true;
                     }
 
-                    if (timer.seconds() > 0.5) {
-                        turntable.addBall(posToTurnTo, camera.getBallColor());
-                        turntable.turnLeft();
-                        turntable.turnLeft();
+                    if (timer.seconds() > 0.4) {
+                        turntable.addBall(turntable.getPositionId(), camera.getBallColor());
                         isFirstTime = false;
                     }
                 }

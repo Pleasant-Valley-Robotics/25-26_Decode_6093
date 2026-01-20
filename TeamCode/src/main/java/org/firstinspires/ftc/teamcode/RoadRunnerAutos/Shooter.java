@@ -23,8 +23,8 @@ public class Shooter {
     private boolean servoIsUp = false;
     private boolean inProcess = false;
 
-
     private int lastSpeed = 0;
+
     public Shooter(HardwareMap hardwareMap) {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         flickerServo = hardwareMap.get(Servo.class, "flicker");
@@ -48,17 +48,17 @@ public class Shooter {
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    if (turntable.getNumBalls() == 0) {
-                        return false;
-                    }
+            if (turntable.getNumBalls() == 0) {
+                return false;
+            }
 
+            if (!initialized) {
                     while (turntable.getBallAt(4) == null) {
                         turntable.turnLeft();
                         count++;
 
                         if (count > 40) {
-                            throw new RuntimeException("Kill yourself");
+                            throw new RuntimeException("1");
                         }
                     }
 
@@ -66,9 +66,9 @@ public class Shooter {
                     timer.reset();
                 }
 
-                if (timer.seconds() < 3 && timer.seconds() > 1) {
+                if (timer.seconds() < 0.65 && timer.seconds() > 0.2) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > 3) {
+                } else if (timer.seconds() > 0.65) {
                     turntable.removeBall(4);
                     flickerServo.setPosition(downPos);
                     return false;
@@ -87,6 +87,7 @@ public class Shooter {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!isMoving()) return false;
+                if (turntable.getNumBalls() == 0) return false;
                 if (!initialized) {
                     if (turntable.getPositionId() % 2 != 0) {
                         turntable.turnLeft();
@@ -98,9 +99,9 @@ public class Shooter {
                     case 3:
                     case 2:
                     case 1:
-                        if (timer.seconds() < 0.5 && timer.seconds() > 0.2) {
+                        if (timer.seconds() < 0.65 && timer.seconds() > 0.2) {
                             flickerServo.setPosition(upPos);
-                        } else if (timer.seconds() > 0.5 ){
+                        } else if (timer.seconds() > 0.65 ){
                             flickerServo.setPosition(downPos);
                             turntable.removeBall(turntable.getPositionId());
                             turntable.turnLeft();
@@ -109,11 +110,56 @@ public class Shooter {
                         }
 
                         break;
-                    default:
-                        if (timer.seconds() > 0.2) {
-                            turntable.turnLeft();
-                            return false;
+                }
+                return true;
+            }
+        };
+    }
+
+    public Action shootInPattern(Turntable turntable) {
+
+        Turntable.IndexColors[] pattern = {Turntable.IndexColors.GREEN, Turntable.IndexColors.PURPLE, Turntable.IndexColors.PURPLE};
+
+        if (turntable.countGreen() != 1 || turntable.getNumBalls() != 3) {
+            return shootAll(turntable);
+        }
+
+        return new Action() {
+
+            ElapsedTime timer = new ElapsedTime();
+            int index = PoseStorage.shotsToCycle;
+            int count = 0;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!isMoving()) return false;
+                if (turntable.getNumBalls() == 0) return false;
+
+                while (turntable.getBallAt(4) != pattern[index]) {
+                    turntable.turnLeft();
+
+                    count++;
+
+                    if (count > 400) {
+                        throw new RuntimeException("bro");
+                    }
+                }
+
+                switch (turntable.getNumBalls()) {
+                    case 3:
+                    case 2:
+                    case 1:
+                        if (timer.seconds() < 2 && timer.seconds() > 1) {
+                            flickerServo.setPosition(upPos);
+                        } else if (timer.seconds() > 2 ){
+                            flickerServo.setPosition(downPos);
+                            turntable.removeBall(turntable.getPositionId());
+                            index++;
+                            index %= 3;
+                            timer.reset();
                         }
+
+                        break;
                 }
                 return true;
             }
@@ -121,19 +167,19 @@ public class Shooter {
     }
 
 
+
     public void spinUp(int speed) {
         lastSpeed = speed;
         shooter.setVelocity(speed);
     }
 
+
+
     public void stop() {
         spinUp(0);
     }
-
-    public boolean isMoving() {
-        return shooter.getVelocity() > 100;
-    }
-
+    public int getLastSpeed() {return lastSpeed;}
+    public boolean isMoving() {return shooter.getVelocity() > 100;}
     public boolean isAtSpeed() {
         return Math.abs(shooter.getVelocity() - lastSpeed) < 40;
     }
