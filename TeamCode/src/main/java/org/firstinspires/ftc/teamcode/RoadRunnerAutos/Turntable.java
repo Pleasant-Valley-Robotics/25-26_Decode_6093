@@ -24,7 +24,7 @@ public class Turntable {
         indexServo = hardwareMap.get(Servo.class, "index");
     }
 
-    public void turnLeft() {
+    public void turnRight() {
         positionId--;
         updatePosition();
 
@@ -37,7 +37,7 @@ public class Turntable {
         turntableBallStatus[0] = temp;
     }
 
-    public void turnRight() {
+    public void turnLeft() {
         positionId++;
         updatePosition();
 
@@ -129,7 +129,7 @@ public class Turntable {
     public String toString() {
         String output = "";
         for (int i = 0; i < turntableBallStatus.length; i++) {
-            output += " Position " + i + ": " + turntableBallStatus[i];
+            output += "\nPosition " + i + ": " + turntableBallStatus[i];
         }
 
         return output;

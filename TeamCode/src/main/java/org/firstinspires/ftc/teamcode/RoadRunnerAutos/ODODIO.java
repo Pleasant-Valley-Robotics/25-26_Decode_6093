@@ -135,7 +135,7 @@ public class ODODIO extends OpMode {
         }
 
         if (shooter.getLastSpeed() != 0) {
-            shooter.spinUp((int) distanceFromGoal * 11 + 500);
+            shooter.spinUp((int) distanceFromGoal * 11 + 450);
         }
 
         if (shooter.isAtSpeed() && shooter.isMoving()) {
@@ -207,6 +207,7 @@ public class ODODIO extends OpMode {
 
         PoseStorage.currentPose = drive.localizer.getPose();
 
+        telemetry.addData("Camera has balls", camera.ballDetected());
         telemetry.addData("Position ID", turntable.getPositionId());
         telemetry.addData("Shooter is at speed?", shooter.isAtSpeed());
         telemetry.addData("Current shooter speed", shooter.getVelocity());

@@ -24,9 +24,9 @@ public class Intake {
 
     public Action autoIntake(Camera camera, Turntable turntable) {
         return new Action() {
-            ElapsedTime timer = new ElapsedTime();
+            ElapsedTime timer = new ElapsedTime(5);
             boolean isFirstTime = false;
-            int count = 0;
+            boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -34,28 +34,27 @@ public class Intake {
                 if (turntable.getNumBalls() >= 3) {
                     return false;
                 }
+
+                if (!initialized) {
+                    turntable.turnToPosition(1);
+                    initialized = true;
+                }
+
                 if (camera.ballDetected()) {
-                    if (!isFirstTime) {
-                        while (turntable.getPositionId() % 2 == 0 || turntable.getBallAt(turntable.getPositionId()) != null) {
-                            turntable.turnLeft();
-                            count++;
-
-                            if (count > 400) {
-                                throw new RuntimeException("im gonna lose my mind");
-                            }
-                        }
-
-
+                    if (!isFirstTime && timer.seconds() > 0.2) {
                         timer.reset();
                         isFirstTime = true;
+
                     }
 
                     if (timer.seconds() > 0.4) {
-                        turntable.addBall(turntable.getPositionId(), camera.getBallColor());
+                        turntable.addBall(0, camera.getBallColor());
+                        turntable.turnLeft();
+                        turntable.turnLeft();
+                        timer.reset();
                         isFirstTime = false;
                     }
                 }
-
                 return true;
             }
         };

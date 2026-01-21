@@ -17,8 +17,8 @@ public class Shooter {
 
     private DcMotorEx shooter;
     private Servo flickerServo;
-    final public double upPos = 0.365;
-    final public double downPos = 0.45;
+    final public double upPos = 0.3;
+    final public double downPos = .4;
 
     private boolean servoIsUp = false;
     private boolean inProcess = false;
@@ -66,10 +66,10 @@ public class Shooter {
                     timer.reset();
                 }
 
-                if (timer.seconds() < 0.65 && timer.seconds() > 0.2) {
+                if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > 0.65) {
-                    turntable.removeBall(4);
+                } else if (timer.seconds() > 1.5) {
+                    turntable.removeBall(3);
                     flickerServo.setPosition(downPos);
                     return false;
                 }
@@ -90,26 +90,19 @@ public class Shooter {
                 if (turntable.getNumBalls() == 0) return false;
                 if (!initialized) {
                     if (turntable.getPositionId() % 2 != 0) {
-                        turntable.turnLeft();
+                        turntable.turnRight();
                     }
                     initialized = true;
                 }
 
-                switch (turntable.getNumBalls()) {
-                    case 3:
-                    case 2:
-                    case 1:
-                        if (timer.seconds() < 0.65 && timer.seconds() > 0.2) {
-                            flickerServo.setPosition(upPos);
-                        } else if (timer.seconds() > 0.65 ){
-                            flickerServo.setPosition(downPos);
-                            turntable.removeBall(turntable.getPositionId());
-                            turntable.turnLeft();
-                            turntable.turnLeft();
-                            timer.reset();
-                        }
-
-                        break;
+                if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
+                    flickerServo.setPosition(upPos);
+                } else if (timer.seconds() > 1.5 ){
+                    flickerServo.setPosition(downPos);
+                    turntable.removeBall(3);
+                    turntable.turnLeft();
+                    turntable.turnLeft();
+                    timer.reset();
                 }
                 return true;
             }
@@ -129,37 +122,29 @@ public class Shooter {
             ElapsedTime timer = new ElapsedTime();
             int index = PoseStorage.shotsToCycle;
             int count = 0;
+            boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!isMoving()) return false;
                 if (turntable.getNumBalls() == 0) return false;
 
-                while (turntable.getBallAt(4) != pattern[index]) {
-                    turntable.turnLeft();
-
-                    count++;
-
-                    if (count > 400) {
-                        throw new RuntimeException("bro");
-                    }
+                if (!initialized) {
+                    timer.reset();
+                    initialized = true;
                 }
 
-                switch (turntable.getNumBalls()) {
-                    case 3:
-                    case 2:
-                    case 1:
-                        if (timer.seconds() < 2 && timer.seconds() > 1) {
-                            flickerServo.setPosition(upPos);
-                        } else if (timer.seconds() > 2 ){
-                            flickerServo.setPosition(downPos);
-                            turntable.removeBall(turntable.getPositionId());
-                            index++;
-                            index %= 3;
-                            timer.reset();
-                        }
-
-                        break;
+                while (turntable.getBallAt(3) != pattern[index]) {
+                    turntable.turnLeft();
+                }
+                if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
+                    flickerServo.setPosition(upPos);
+                } else if (timer.seconds() > 1.5 ){
+                    flickerServo.setPosition(downPos);
+                    turntable.removeBall(3);
+                    index++;
+                    index %= 3;
+                    timer.reset();
                 }
                 return true;
             }
