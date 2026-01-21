@@ -17,6 +17,9 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class CloseDIOAutoBlue extends LinearOpMode {
 
     public double timeBeforeStart = 0.0;
+    Turntable turntable;
+    Camera camera;
+
 
     @Override
     public void runOpMode() {
@@ -32,21 +35,19 @@ public class CloseDIOAutoBlue extends LinearOpMode {
         }
 
 
-        Pose2d initialPose = new Pose2d(-59.91, -56.13, Math.toRadians(-131.0884));
+        Pose2d initialPose = new Pose2d(-59.91, -56.13, Math.toRadians(-128.87));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        turntable = new Turntable(hardwareMap);
+        camera = new Camera(hardwareMap);
 
-        Vector2d pos1 = new Vector2d(-30.9436, -24.6258);
-        Vector2d pos2 = new Vector2d(-59.6704, -25.7748);
+        Vector2d pos1 = new Vector2d(-25.84, -17.39);
 
-        TrajectoryActionBuilder gotoAprilRead = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(pos1, Math.toRadians(152.0563));
+        TrajectoryActionBuilder moveBack = drive.actionBuilder(initialPose)
+                .strafeToSplineHeading(pos1, Math.toRadians(-135));
 
         TrajectoryActionBuilder turnToShoot = drive.actionBuilder(new Pose2d(pos1, Math.toRadians(152.0563)))
                 .turnTo(Math.toRadians(-131.0084));
 
-        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(pos1, Math.toRadians(-145
-                )))
-                .strafeToLinearHeading(pos2, Math.toRadians(180));
 
         Shooter shooter = new Shooter(hardwareMap);
         waitForStart();
@@ -59,41 +60,30 @@ public class CloseDIOAutoBlue extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        gotoAprilRead.build(),
-                        new SleepAction(1.5)
+                        moveBack.build()
                 ));
 
-        int shotsToCycle = Camera.findShotsToCycle();
-        for (int i = 0; i < shotsToCycle; i++) {
-            Actions.runBlocking(
-                    new SequentialAction(
-                            shooter.spinUp(480),
-                            new SleepAction(0.5),
-                            shooter.fireBall()
-                    )
-            );
-        }
+
+        int shotsToCycle = camera.findShotsToCycle();
+
+        shooter.spinUp(1200);
 
         Actions.runBlocking(
                 new SequentialAction(
-                        new SleepAction(1),
-                        turnToShoot.build(),
-                        shooter.spinUp(1500),
-                        new SleepAction(.5),
-                        shooter.fireBall(),
-                        shooter.spinUp(1500),
-                        new SleepAction(.5),
-                        shooter.fireBall(),
-                        shooter.spinUp(1500),
-                        new SleepAction(.5),
-                        shooter.fireBall(),
-                        new SleepAction(.25),
-                        leave.build(),
-                        shooter.stopSpin()
-                )
-        );
+                        new SleepAction(1.5),
+                        shooter.shootAll(turntable)
+                ));
+
+        shooter.stop();
+        Actions.runBlocking(
+                new SequentialAction(
+                        new SleepAction(1)
+                ));
+
 
         drive.updatePoseEstimate();
         PoseStorage.currentPose = drive.localizer.getPose();
+        PoseStorage.shotsToCycle = shotsToCycle;
+        PoseStorage.isRed = -1;
     }
 }
