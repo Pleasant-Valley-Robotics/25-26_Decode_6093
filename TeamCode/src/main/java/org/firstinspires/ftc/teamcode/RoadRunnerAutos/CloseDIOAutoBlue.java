@@ -70,9 +70,9 @@ public class CloseDIOAutoBlue extends LinearOpMode {
                 .strafeToLinearHeading(farSpike, Math.toRadians(-90));
 
 
-        turntable.addBall(0, Turntable.IndexColors.PURPLE);
-        turntable.addBall(2, Turntable.IndexColors.PURPLE);
-        turntable.addBall(4, Turntable.IndexColors.PURPLE);
+        turntable.addBall(1, Turntable.IndexColors.PURPLE);
+        turntable.addBall(3, Turntable.IndexColors.PURPLE);
+        turntable.addBall(5, Turntable.IndexColors.PURPLE);
 
 
         waitForStart();
