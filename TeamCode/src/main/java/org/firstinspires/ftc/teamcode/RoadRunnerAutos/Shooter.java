@@ -53,7 +53,7 @@ public class Shooter {
             }
 
             if (!initialized) {
-                    while (turntable.getBallAt(4) == null) {
+                    while (turntable.getBallAt(3) == null) {
                         turntable.turnLeft();
                         count++;
 

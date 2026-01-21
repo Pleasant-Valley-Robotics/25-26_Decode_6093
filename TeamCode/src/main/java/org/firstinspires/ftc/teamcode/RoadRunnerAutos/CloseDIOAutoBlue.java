@@ -17,8 +17,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class CloseDIOAutoBlue extends LinearOpMode {
 
     public double timeBeforeStart = 0.0;
-    Turntable turntable;
-    Camera camera;
 
 
     @Override
@@ -37,8 +35,8 @@ public class CloseDIOAutoBlue extends LinearOpMode {
 
         Pose2d initialPose = new Pose2d(-59.91, -56.13, Math.toRadians(-128.87));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        turntable = new Turntable(hardwareMap);
-        camera = new Camera(hardwareMap);
+        Turntable turntable = new Turntable(hardwareMap);
+        Camera camera = new Camera(hardwareMap);
 
         Vector2d pos1 = new Vector2d(-25.84, -17.39);
 
@@ -64,13 +62,13 @@ public class CloseDIOAutoBlue extends LinearOpMode {
                 ));
 
 
-        int shotsToCycle = camera.findShotsToCycle();
+        //int shotsToCycle = camera.findShotsToCycle();
 
         shooter.spinUp(1200);
 
         Actions.runBlocking(
                 new SequentialAction(
-                        new SleepAction(1.5),
+                        new SleepAction(5),
                         shooter.shootAll(turntable)
                 ));
 
@@ -83,7 +81,7 @@ public class CloseDIOAutoBlue extends LinearOpMode {
 
         drive.updatePoseEstimate();
         PoseStorage.currentPose = drive.localizer.getPose();
-        PoseStorage.shotsToCycle = shotsToCycle;
+        //PoseStorage.shotsToCycle = shotsToCycle;
         PoseStorage.isRed = -1;
     }
 }
