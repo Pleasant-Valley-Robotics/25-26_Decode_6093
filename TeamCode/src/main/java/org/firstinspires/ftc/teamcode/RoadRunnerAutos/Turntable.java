@@ -118,7 +118,7 @@ public class Turntable {
 
 
 
-    private void updatePosition() {
+    public void updatePosition() {
         while (positionId < 0) positionId += 6;
         while (positionId > 5) positionId -= 6;
 

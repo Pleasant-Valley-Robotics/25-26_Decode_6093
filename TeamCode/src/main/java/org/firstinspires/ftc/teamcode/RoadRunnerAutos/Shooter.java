@@ -109,6 +109,37 @@ public class Shooter {
         };
     }
 
+
+    public Action shootAllFAST(Turntable turntable) {
+        return new Action() {
+            ElapsedTime timer = new ElapsedTime();
+            boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!isMoving()) return false;
+                if (turntable.getNumBalls() == 0) return false;
+                if (!initialized) {
+                    if (turntable.getPositionId() % 2 != 0) {
+                        turntable.turnRight();
+                    }
+                    initialized = true;
+                }
+
+                if (timer.seconds() < .75 && timer.seconds() > .4) {
+                    flickerServo.setPosition(upPos);
+                } else if (timer.seconds() > .4 ){
+                    flickerServo.setPosition(downPos);
+                    turntable.removeBall(3);
+                    turntable.turnLeft();
+                    turntable.turnLeft();
+                    timer.reset();
+                }
+                return true;
+            }
+        };
+    }
+
     public Action shootInPattern(Turntable turntable) {
 
         Turntable.IndexColors[] pattern = {Turntable.IndexColors.GREEN, Turntable.IndexColors.PURPLE, Turntable.IndexColors.PURPLE};

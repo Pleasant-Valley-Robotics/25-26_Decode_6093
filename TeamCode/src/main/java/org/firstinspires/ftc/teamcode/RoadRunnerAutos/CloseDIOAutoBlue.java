@@ -1,7 +1,13 @@
 package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -17,6 +23,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class CloseDIOAutoBlue extends LinearOpMode {
 
     public double timeBeforeStart = 0.0;
+    private MecanumDrive drive = null;
 
 
     @Override
@@ -34,45 +41,101 @@ public class CloseDIOAutoBlue extends LinearOpMode {
 
 
         Pose2d initialPose = new Pose2d(-59.91, -56.13, Math.toRadians(-128.87));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+
+
+        Vector2d shootPosition = new Vector2d(-23.9816, -14.2421);
+        Vector2d middleSpike = new Vector2d(14.4952, -36.3343);
+        Vector2d closeSpike = new Vector2d(-13.2232, -36.3343);
+        Vector2d farSpike = new Vector2d(-41.6725, -36.3343);
+        Vector2d gate = new Vector2d(3.5728, -57.0165);
+
+
+        drive = new MecanumDrive(hardwareMap, initialPose);
         Turntable turntable = new Turntable(hardwareMap);
+        Shooter shooter = new Shooter(hardwareMap);
+        Intake intake = new Intake(hardwareMap);
         Camera camera = new Camera(hardwareMap);
 
-        Vector2d pos1 = new Vector2d(-25.84, -17.39);
 
         TrajectoryActionBuilder moveBack = drive.actionBuilder(initialPose)
-                .strafeToSplineHeading(pos1, Math.toRadians(-135));
+                .strafeToLinearHeading(shootPosition, Math.toRadians(-131));
 
-        TrajectoryActionBuilder turnToShoot = drive.actionBuilder(new Pose2d(pos1, Math.toRadians(152.0563)))
-                .turnTo(Math.toRadians(-131.0084));
+        TrajectoryActionBuilder gotoClose = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(-131)))
+                .strafeToLinearHeading(closeSpike, Math.toRadians(-90));
+
+        TrajectoryActionBuilder gotoMiddle = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(-131)))
+                .strafeToLinearHeading(middleSpike, Math.toRadians(-90));
+
+        TrajectoryActionBuilder gotoFar = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(-131)))
+                .strafeToLinearHeading(farSpike, Math.toRadians(-90));
 
 
-        Shooter shooter = new Shooter(hardwareMap);
+        turntable.addBall(0, Turntable.IndexColors.PURPLE);
+        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+        turntable.addBall(4, Turntable.IndexColors.PURPLE);
+
+
         waitForStart();
 
         if (isStopRequested()) return;
 
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
+        turntable.updatePosition();
 
+        shooter.spinUp(1300);
 
-        Actions.runBlocking(
-                new SequentialAction(
-                        moveBack.build()
-                ));
+        Actions.runBlocking(moveBack.build());
 
 
         //int shotsToCycle = camera.findShotsToCycle();
 
-        shooter.spinUp(1200);
 
+        while (!shooter.isAtSpeed()) {
+            Actions.runBlocking(new SleepAction(0.2));
+        }
         Actions.runBlocking(
                 new SequentialAction(
-                        new SleepAction(5),
-                        shooter.shootAll(turntable)
+                        shooter.shootAllFAST(turntable)
                 ));
 
         shooter.stop();
+        intake.setPower(1);
+
+        Actions.runBlocking(
+            new ParallelAction(
+                intake.autoIntakeFAST(camera, turntable),
+                new SequentialAction(
+                    drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(middleSpike, Math.toRadians(-90)).build(),
+                    new SleepAction(0.2),
+                    drive.actionBuilder(new Pose2d(middleSpike, Math.toRadians(-90)))
+                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 5), Math.toRadians(-90)).build(),
+                    new SleepAction(0.2),
+                    drive.actionBuilder(new Pose2d(middleSpike.x, middleSpike.y - 5, Math.toRadians(-90)))
+                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 10), Math.toRadians(-90)).build(),
+                    new SleepAction(0.2)
+                )
+        ));
+
+        intake.stopIntake();
+
+        shooter.spinUp(1300);
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y - 3), Math.toRadians(-90)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y + 30), Math.toRadians(165) , null, new ProfileAccelConstraint(-40, 60)).build());
+
+        for (int i = 0; i < 10; i++) {
+            if (camera.findShotsToCycle() != -1) {
+                PoseStorage.shotsToCycle = camera.findShotsToCycle();
+            }
+        }
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(-131)).build());
+        turntable.turnToPosition(0);
+        Actions.runBlocking(shooter.shootInPattern(turntable));
+
+        shooter.stop();
+        intake.stopIntake();
+
         Actions.runBlocking(
                 new SequentialAction(
                         new SleepAction(1)

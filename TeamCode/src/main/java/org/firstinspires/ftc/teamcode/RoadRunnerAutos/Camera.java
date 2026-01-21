@@ -43,7 +43,18 @@ public class Camera {
 
     public int findShotsToCycle() {
         // Amount of times to turn the turntable LEFT
-        return aprilTag.getDetections().get(0).id - 21;
+        if (!aprilTag.getDetections().isEmpty()) {
+            switch (aprilTag.getDetections().get(0).id) {
+                case 21:
+                    return 0;
+                case 22:
+                    return 2;
+                case 23:
+                    return 1;
+            }
+        }
+        return -1;
+
     }
 
     public Turntable.IndexColors getBallColor() {

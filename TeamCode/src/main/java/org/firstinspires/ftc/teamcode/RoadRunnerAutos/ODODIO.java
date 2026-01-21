@@ -89,9 +89,10 @@ public class ODODIO extends OpMode {
     @Override
     public void loop() {
         drive.updatePoseEstimate(); // Get pose from odometry
-        updateDistanceFromGoal();
+        distanceFromGoal = updateDistanceFromGoal(drive);
         // Used to print to console and get field overlay, no clue how tho
         TelemetryPacket packet = new TelemetryPacket();
+        flyWheelSpeed = (int) (-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2474.4525);
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake
@@ -125,7 +126,7 @@ public class ODODIO extends OpMode {
             shooter.setServoPos(shooter.downPos);
             turntable.turnRight();
         }
-        if (gamepad2.right_trigger > 0) shooter.spinUp((int) distanceFromGoal * 11 + 450);
+        if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
         if (gamepad2.dpadUpWasPressed()) shooter.setServoPos(shooter.upPos);
         if (gamepad2.dpadDownWasPressed()) shooter.setServoPos(shooter.downPos);
@@ -135,7 +136,7 @@ public class ODODIO extends OpMode {
         }
 
         if (shooter.getLastSpeed() != 0) {
-            shooter.spinUp((int) distanceFromGoal * 11 + 450);
+            shooter.spinUp(flyWheelSpeed);
         }
 
         if (shooter.isAtSpeed() && shooter.isMoving()) {
@@ -214,6 +215,9 @@ public class ODODIO extends OpMode {
         telemetry.addData("Num systems actions", systemsActions.size());
         telemetry.addData("Turntable status", turntable.toString());
         telemetry.addData("DistanceFromGoal",distanceFromGoal);
+        telemetry.addData("x", drive.localizer.getPose().position.x);
+        telemetry.addData("y", drive.localizer.getPose().position.y);
+        telemetry.addData("heading", Math.toDegrees(drive.localizer.getPose().heading.toDouble()));
         telemetry.update();
 
         dash.sendTelemetryPacket(packet); // Send telemetry packet to dash
@@ -316,10 +320,10 @@ public class ODODIO extends OpMode {
         drive.rightBack.setPower(maxSpeed * (backRightPower / maxPower));
     }
 
-    public void updateDistanceFromGoal() {
+    static public double updateDistanceFromGoal(MecanumDrive drive) {
         double xDif = (-72) - drive.localizer.getPose().position.x;
         double yDif =  (72 * PoseStorage.isRed) - drive.localizer.getPose().position.y;
-        distanceFromGoal = Math.sqrt(Math.pow(xDif, 2) + Math.pow(yDif, 2));
+        return Math.sqrt(Math.pow(xDif, 2) + Math.pow(yDif, 2));
     }
 
 
