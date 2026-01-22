@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -19,8 +16,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@Autonomous(name = "Close Dio Auto Blue", group = "Autonomous")
-public class CloseDIOAutoBlue extends LinearOpMode {
+@Autonomous(name = "Close Dio Auto Blue 12 Ball", group = "Autonomous")
+public class CloseDIOAutoBlue12Ball extends LinearOpMode {
 
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive = null;
@@ -44,9 +41,9 @@ public class CloseDIOAutoBlue extends LinearOpMode {
 
 
         Vector2d shootPosition = new Vector2d(-23.9816, -14.2421);
-        Vector2d middleSpike = new Vector2d(14.4952, -36.3343);
-        Vector2d closeSpike = new Vector2d(-13.2232, -36.3343);
-        Vector2d farSpike = new Vector2d(-41.6725, -36.3343);
+        Vector2d middleSpike = new Vector2d(14.4952, -36.4343);
+        Vector2d closeSpike = new Vector2d(-13.2232, -36.4343);
+        Vector2d farSpike = new Vector2d(-41.6725, -36.4343);
         Vector2d gate = new Vector2d(3.5728, -57.0165);
 
 
@@ -101,6 +98,7 @@ public class CloseDIOAutoBlue extends LinearOpMode {
 
         shooter.stop();
         intake.setPower(1);
+        turntable.updatePosition();
 
         Actions.runBlocking(
             new ParallelAction(
@@ -114,14 +112,22 @@ public class CloseDIOAutoBlue extends LinearOpMode {
                     drive.actionBuilder(new Pose2d(middleSpike.x, middleSpike.y - 5, Math.toRadians(-90)))
                         .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 10), Math.toRadians(-90)).build(),
                     new SleepAction(0.2)
+//                    drive.actionBuilder(drive.localizer.getPose())
+//                            .strafeToLinearHeading(middleSpike, Math.toRadians(-90))
+//                            .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 15), Math.toRadians(-90), new TranslationalVelConstraint(8.0)).build()
+
+
                 )
         ));
+
+
 
         intake.stopIntake();
 
         shooter.spinUp(1300);
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y - 3), Math.toRadians(-90)).build());
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y + 30), Math.toRadians(165) , null, new ProfileAccelConstraint(-40, 60)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToLinearHeading(new Vector2d(gate.x, gate.y - 3), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(gate.x, gate.y + 30), Math.toRadians(165) , null, new ProfileAccelConstraint(-40, 60)).build());
 
         for (int i = 0; i < 10; i++) {
             if (camera.findShotsToCycle() != -1) {
