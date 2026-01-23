@@ -202,7 +202,7 @@ public class Shooter {
     public int getLastSpeed() {return lastSpeed;}
     public boolean isMoving() {return shooter.getVelocity() > 100;}
     public boolean isAtSpeed() {
-        return Math.abs(shooter.getVelocity() - lastSpeed) < 40;
+        return Math.abs(shooter.getVelocity() - lastSpeed) < 20;
     }
 
     public double getVelocity() {

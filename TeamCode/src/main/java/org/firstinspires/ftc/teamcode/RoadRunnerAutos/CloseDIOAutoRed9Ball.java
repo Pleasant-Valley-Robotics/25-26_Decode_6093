@@ -152,8 +152,8 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
                         intake.autoIntake(camera, turntable),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToLinearHeading(middleSpike, Math.toRadians(90),new TranslationalVelConstraint(60))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y + 13.5), Math.toRadians(90), new TranslationalVelConstraint(4), new ProfileAccelConstraint(-50,50)).build()
+                                        .strafeToLinearHeading(middleSpike, Math.toRadians(90),null,new ProfileAccelConstraint(-30,70))
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y + 13.5), Math.toRadians(90), new TranslationalVelConstraint(4), new ProfileAccelConstraint(-30,70)).build()
                         )
                 ));
 
