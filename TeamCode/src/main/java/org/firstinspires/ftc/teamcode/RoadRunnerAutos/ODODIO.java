@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -72,8 +73,8 @@ public class ODODIO extends OpMode {
 
         // Set positions based on whether or not we are red
         // isRed is a integer, not boolean. Either -1 or 1
-        parkingPose = new Pose2d(42.3044, -38.5985 * PoseStorage.isRed, 0);
-        parkingVec = new Vector2d(42.3044, -38.5985 * PoseStorage.isRed);
+        parkingPose = new Pose2d(42.7961, -39.4571 * PoseStorage.isRed, 0);
+        parkingVec = new Vector2d(42.7961, -39.4571 * PoseStorage.isRed);
         farVec = new Vector2d(55.9338, -1.024 * PoseStorage.isRed); // 147.4461
         closeVec = new Vector2d(-10.0389, 11.5831 * PoseStorage.isRed); // 133.104
         humanPlayaVec = new Vector2d(71.2383, -63.4445 * PoseStorage.isRed);
@@ -158,15 +159,9 @@ public class ODODIO extends OpMode {
         if (gamepad2.yWasPressed()) systemsActions.set(4, shooter.shootAllFAST(turntable));
         slowMode = gamepad1.left_trigger > 0;
 
-        if (gamepad1.dpadDownWasPressed()) {
-            TrajectoryActionBuilder goFar = drive.actionBuilder(drive.localizer.getPose()).splineToConstantHeading(parkingVec, 0);
-            goFar.lineToXLinearHeading(0, Math.toRadians(147.4461 * PoseStorage.isRed));
-            driveActions.clear();
-            driveActions.add(goFar.build());
-        }
 
         if (gamepad1.dpadRightWasPressed()) {
-            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).splineTo(parkingVec, Math.toRadians(0));
+            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToSplineHeading(parkingVec, Math.toRadians(0),null,new ProfileAccelConstraint(-20,50));
             driveActions.clear();
             driveActions.add(goPark.build());
         }

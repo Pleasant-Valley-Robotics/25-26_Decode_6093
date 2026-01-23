@@ -93,9 +93,6 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
 
         // Read motif
-        while (camera.findShotsToCycle() == -1) {
-            new SleepAction(0.1);
-        }
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
 
 
@@ -121,7 +118,7 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
                 new SequentialAction(
                         drive.actionBuilder(drive.localizer.getPose())
                                 .strafeToLinearHeading(closeSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y - 13), Math.toRadians(-90), new TranslationalVelConstraint(4),new ProfileAccelConstraint(-30,70)).build())
+                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y - 13), Math.toRadians(-90), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build())
                 )
         );
 
@@ -152,8 +149,13 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
                         intake.autoIntake(camera, turntable),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
+<<<<<<< Updated upstream
                                         .strafeToLinearHeading(middleSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
                                         .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 13.5), Math.toRadians(-90), new TranslationalVelConstraint(4), new ProfileAccelConstraint(-30,70)).build()
+=======
+                                        .strafeToLinearHeading(middleSpike, Math.toRadians(-90),new TranslationalVelConstraint(60))
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 13.5), Math.toRadians(-90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-50,50)).build()
+>>>>>>> Stashed changes
                         )
                 ));
 
@@ -175,15 +177,14 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
         shooter.stop();
 
-        Actions.runBlocking(
-                new SequentialAction(
-                        new SleepAction(1)
-                ));
-
-
         drive.updatePoseEstimate();
         PoseStorage.currentPose = drive.localizer.getPose();
         //PoseStorage.shotsToCycle = shotsToCycle;
         PoseStorage.isRed = -1;
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        new SleepAction(1)
+                ));
     }
 }
