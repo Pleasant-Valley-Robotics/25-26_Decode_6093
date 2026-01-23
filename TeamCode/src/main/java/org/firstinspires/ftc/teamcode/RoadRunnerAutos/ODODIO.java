@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.opencv.core.Mat;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 @TeleOp(name="ODODIO", group="Odometry")
@@ -76,7 +76,7 @@ public class ODODIO extends OpMode {
         parkingPose = new Pose2d(42.7961, -39.4571 * PoseStorage.isRed, 0);
         parkingVec = new Vector2d(42.7961, -39.4571 * PoseStorage.isRed);
         farVec = new Vector2d(55.9338, -1.024 * PoseStorage.isRed); // 147.4461
-        closeVec = new Vector2d(-10.0389, 11.5831 * PoseStorage.isRed); // 133.104
+        closeVec = new Vector2d(-23.9816, 14.2421 * PoseStorage.isRed); // 133.104
         humanPlayaVec = new Vector2d(71.2383, -63.4445 * PoseStorage.isRed);
 
         prevGamepad1.copy(gamepad1);
@@ -136,6 +136,19 @@ public class ODODIO extends OpMode {
             systemsActions.set(3, shooter.shootInPattern(turntable));
         }
 
+        if (gamepad2.dpadRightWasPressed()) {
+            for (int i = 0; i < 3; i++) {
+                double xCor = (Math.random() * 120) - 60;
+                double yCor = (Math.random() * 80) - 40;
+                double heading = (Math.random() * 360) - 180;
+
+                Action driveRandom = drive.actionBuilder(drive.localizer.getPose()).splineTo(new Vector2d(xCor, yCor), heading).build();
+
+                driveActions.set(0, driveRandom);
+            }
+
+        }
+
         if (shooter.getLastSpeed() != 0) {
             shooter.spinUp(flyWheelSpeed);
         }
@@ -159,7 +172,11 @@ public class ODODIO extends OpMode {
         if (gamepad2.yWasPressed()) systemsActions.set(4, shooter.shootAllFAST(turntable));
         slowMode = gamepad1.left_trigger > 0;
 
-
+        if (gamepad1.dpadUpWasPressed()) {
+            TrajectoryActionBuilder goClose = drive.actionBuilder(drive.localizer.getPose()).strafeToSplineHeading(closeVec, Math.toRadians(130.5 * PoseStorage.isRed),null,new ProfileAccelConstraint(-20,50));
+            driveActions.clear();
+            driveActions.add(goClose.build());
+        }
         if (gamepad1.dpadRightWasPressed()) {
             TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToSplineHeading(parkingVec, Math.toRadians(0),null,new ProfileAccelConstraint(-20,50));
             driveActions.clear();
