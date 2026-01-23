@@ -57,8 +57,8 @@ public class Shooter {
                         turntable.turnLeft();
                         count++;
 
-                        if (count > 40) {
-                            throw new RuntimeException("1");
+                        if (count > 300) {
+                            throw new RuntimeException("infinite loop, yell at the programers");
                         }
                     }
 
@@ -167,6 +167,11 @@ public class Shooter {
 
                 while (turntable.getBallAt(3) != pattern[index]) {
                     turntable.turnLeft();
+                    count++;
+
+                    if (count > 300) {
+                        throw new RuntimeException("infinite loop, yell at the programers");
+                    }
                 }
                 if (timer.seconds() < 1.0 && timer.seconds() > 0.5) {
                     flickerServo.setPosition(upPos);

@@ -151,10 +151,11 @@ public class ODODIO extends OpMode {
         // A: reset robot heading so forward is where we are facing
 
         if (gamepad1.xWasPressed()) manualRotate = !manualRotate;
-        if (gamepad1.bWasPressed()) drive.localizer.setPose(new Pose2d(0, 0, Math.toRadians(90 * PoseStorage.isRed)));
-        if (gamepad1.aWasPressed()) drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(90)));
+        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(new Pose2d(0, 0, Math.toRadians(90 * PoseStorage.isRed)));
+        //if (gamepad1.aWasPressed()) drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(90)));
         if (gamepad1.right_trigger > 0) driveActions.clear();
 
+        if (gamepad2.yWasPressed()) systemsActions.set(4, shooter.shootAllFAST(turntable));
         slowMode = gamepad1.left_trigger > 0;
 
         if (gamepad1.dpadDownWasPressed()) {
@@ -193,7 +194,7 @@ public class ODODIO extends OpMode {
 
         if (driveActions.isEmpty()) {
             // Drive field relative, but only if we aren't already going to a position
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
+            driveFieldRelative(gamepad1.left_stick_y, -gamepad1.left_stick_x, rotate);
         }
 
         List<Action> newSystemsActions = new ArrayList<>();

@@ -41,13 +41,13 @@ public class Intake {
                 }
 
                 if (camera.ballDetected()) {
-                    if (!isFirstTime && timer.seconds() > 0.2) {
+                    if (!isFirstTime && timer.seconds() > 0.22) {
                         timer.reset();
                         isFirstTime = true;
 
                     }
 
-                    if (timer.seconds() > 0.4) {
+                    if (timer.seconds() > 0.42) {
                         turntable.addBall(0, camera.getBallColor());
                         turntable.turnLeft();
                         turntable.turnLeft();

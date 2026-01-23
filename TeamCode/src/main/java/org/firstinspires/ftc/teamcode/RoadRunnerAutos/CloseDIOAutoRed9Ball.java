@@ -16,8 +16,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@Autonomous(name = "Close Dio Auto Blue 9 Ball", group = "Autonomous")
-public class CloseDIOAutoBlue9Ball extends LinearOpMode {
+@Autonomous(name = "Close Dio Auto Red 9 Ball", group = "Autonomous")
+public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive = null;
@@ -37,17 +37,17 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
         }
 
 
-        Pose2d initialPose = new Pose2d(-59.91, -56.13, Math.toRadians(-128.87));
+        Pose2d initialPose = new Pose2d(-59.91, 56.13, Math.toRadians(128.87));
 
 
-        Vector2d shootPosition = new Vector2d(-23.9816, -14.2421); // -130.5
-        Vector2d leaveShoot = new Vector2d(-30.3306,-9.5704); // -126.98
-        Vector2d middleSpike = new Vector2d(14.4952, -35);
-        Vector2d closeSpike = new Vector2d(-13.2232, -35.8);
-        Vector2d farSpike = new Vector2d(-41.6725, -35.8);
-        Vector2d gate = new Vector2d(3.5728, -57.0165);
-        double shootAngle = -130.5;
-        double leaveShootAngle = -126.98;
+        Vector2d shootPosition = new Vector2d(-23.9816, 14.2421); // 130.5
+        Vector2d leaveShoot = new Vector2d(-30.3306,9.5704); // 126.98
+        Vector2d middleSpike = new Vector2d(14.4952, 35);
+        Vector2d closeSpike = new Vector2d(-13.2232, 35.8);
+        Vector2d farSpike = new Vector2d(-41.6725, 35.8);
+        Vector2d gate = new Vector2d(3.5728, 57.0165);
+        double shootAngle = 130.5;
+        double leaveShootAngle = 126.98;
 
 
         drive = new MecanumDrive(hardwareMap, initialPose);
@@ -61,13 +61,13 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
                 .strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle));
 
         TrajectoryActionBuilder gotoClose = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(shootAngle)))
-                .strafeToLinearHeading(closeSpike, Math.toRadians(-90));
+                .strafeToLinearHeading(closeSpike, Math.toRadians(90));
 
         TrajectoryActionBuilder gotoMiddle = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(shootAngle)))
-                .strafeToLinearHeading(middleSpike, Math.toRadians(-90));
+                .strafeToLinearHeading(middleSpike, Math.toRadians(90));
 
         TrajectoryActionBuilder gotoFar = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(shootAngle)))
-                .strafeToLinearHeading(farSpike, Math.toRadians(-90));
+                .strafeToLinearHeading(farSpike, Math.toRadians(90));
 
 
         turntable.addBall(1, Turntable.IndexColors.PURPLE);
@@ -120,8 +120,8 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
                 intake.autoIntake(camera, turntable),
                 new SequentialAction(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(closeSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y - 13), Math.toRadians(-90), new TranslationalVelConstraint(4),new ProfileAccelConstraint(-30,70)).build())
+                                .strafeToLinearHeading(closeSpike, Math.toRadians(90),null,new ProfileAccelConstraint(-30,70))
+                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y + 13), Math.toRadians(90), new TranslationalVelConstraint(4),new ProfileAccelConstraint(-30,70)).build())
                 )
         );
 
@@ -152,8 +152,8 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
                         intake.autoIntake(camera, turntable),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToLinearHeading(middleSpike, Math.toRadians(-90),new TranslationalVelConstraint(60))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 13.5), Math.toRadians(-90), new TranslationalVelConstraint(4), new ProfileAccelConstraint(-50,50)).build()
+                                        .strafeToLinearHeading(middleSpike, Math.toRadians(90),new TranslationalVelConstraint(60))
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y + 13.5), Math.toRadians(90), new TranslationalVelConstraint(4), new ProfileAccelConstraint(-50,50)).build()
                         )
                 ));
 
@@ -184,6 +184,6 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
         drive.updatePoseEstimate();
         PoseStorage.currentPose = drive.localizer.getPose();
         //PoseStorage.shotsToCycle = shotsToCycle;
-        PoseStorage.isRed = -1;
+        PoseStorage.isRed = 1;
     }
 }
