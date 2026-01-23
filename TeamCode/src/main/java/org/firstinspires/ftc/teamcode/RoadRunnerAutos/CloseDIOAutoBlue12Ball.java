@@ -102,19 +102,19 @@ public class CloseDIOAutoBlue12Ball extends LinearOpMode {
 
         Actions.runBlocking(
             new ParallelAction(
-                intake.autoIntakeFAST(camera, turntable),
+                intake.autoIntake(camera, turntable),
                 new SequentialAction(
-                    drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(middleSpike, Math.toRadians(-90)).build(),
-                    new SleepAction(0.2),
-                    drive.actionBuilder(new Pose2d(middleSpike, Math.toRadians(-90)))
-                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 5), Math.toRadians(-90)).build(),
-                    new SleepAction(0.2),
-                    drive.actionBuilder(new Pose2d(middleSpike.x, middleSpike.y - 5, Math.toRadians(-90)))
-                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 10), Math.toRadians(-90)).build(),
-                    new SleepAction(0.2)
-//                    drive.actionBuilder(drive.localizer.getPose())
-//                            .strafeToLinearHeading(middleSpike, Math.toRadians(-90))
-//                            .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 15), Math.toRadians(-90), new TranslationalVelConstraint(8.0)).build()
+//                    drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(middleSpike, Math.toRadians(-90)).build(),
+//                    new SleepAction(0.2),
+//                    drive.actionBuilder(new Pose2d(middleSpike, Math.toRadians(-90)))
+//                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 5), Math.toRadians(-90)).build(),
+//                    new SleepAction(0.2),
+//                    drive.actionBuilder(new Pose2d(middleSpike.x, middleSpike.y - 5, Math.toRadians(-90)))
+//                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 10), Math.toRadians(-90)).build(),
+//                    new SleepAction(0.2)
+                    drive.actionBuilder(drive.localizer.getPose())
+                            .strafeToLinearHeading(middleSpike, Math.toRadians(-90))
+                            .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 15), Math.toRadians(-90), new TranslationalVelConstraint(8.0)).build()
 
 
                 )

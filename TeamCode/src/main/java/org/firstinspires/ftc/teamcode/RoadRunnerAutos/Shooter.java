@@ -168,9 +168,9 @@ public class Shooter {
                 while (turntable.getBallAt(3) != pattern[index]) {
                     turntable.turnLeft();
                 }
-                if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
+                if (timer.seconds() < 1.0 && timer.seconds() > 0.5) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > 1.5 ){
+                } else if (timer.seconds() > 0.5 ){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(3);
                     index++;

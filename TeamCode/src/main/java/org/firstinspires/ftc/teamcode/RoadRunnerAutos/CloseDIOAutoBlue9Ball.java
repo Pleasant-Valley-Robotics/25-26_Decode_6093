@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -39,10 +40,11 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
         Pose2d initialPose = new Pose2d(-59.91, -56.13, Math.toRadians(-128.87));
 
 
-        Vector2d shootPosition = new Vector2d(-23.9816, -14.2421);
-        Vector2d middleSpike = new Vector2d(14.4952, -36.3343);
-        Vector2d closeSpike = new Vector2d(-13.2232, -36.3343);
-        Vector2d farSpike = new Vector2d(-41.6725, -36.3343);
+        Vector2d shootPosition = new Vector2d(-23.9816, -14.2421); // -130
+        Vector2d leaveShoot = new Vector2d(-30.3306,-9.5704); // -126.98
+        Vector2d middleSpike = new Vector2d(14.4952, -35);
+        Vector2d closeSpike = new Vector2d(-13.2232, -35.8);
+        Vector2d farSpike = new Vector2d(-41.6725, -35.8);
         Vector2d gate = new Vector2d(3.5728, -57.0165);
 
 
@@ -68,7 +70,9 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
         turntable.addBall(1, Turntable.IndexColors.PURPLE);
         turntable.addBall(3, Turntable.IndexColors.PURPLE);
-        turntable.addBall(5, Turntable.IndexColors.PURPLE);
+        turntable.addBall(5, Turntable.IndexColors.GREEN);
+
+
 
 
         waitForStart();
@@ -81,56 +85,93 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
         shooter.spinUp(1300);
 
-        Actions.runBlocking(moveBack.build());
+        //Drive to shoot
+        Actions.runBlocking(drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build());
 
 
-        //int shotsToCycle = camera.findShotsToCycle();
-
-
-        while (!shooter.isAtSpeed()) {
-            Actions.runBlocking(new SleepAction(0.2));
+        // Read motif
+        while (camera.findShotsToCycle() == -1) {
+            new SleepAction(0.1);
         }
-        Actions.runBlocking(
-                new SequentialAction(
-                        shooter.shootAllFAST(turntable)
-                ));
+        PoseStorage.shotsToCycle = camera.findShotsToCycle();
+
+
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToLinearHeading(shootPosition, Math.toRadians(-130)).build());
+
+
+        // Shoot
+        while (!shooter.isAtSpeed()) {
+            Actions.runBlocking(new SleepAction(0.1));
+        }
+        Actions.runBlocking(shooter.shootInPattern(turntable));
 
         shooter.stop();
+
+        // Intake
         intake.setPower(1);
 
         Actions.runBlocking(
             new ParallelAction(
-                intake.autoIntakeFAST(camera, turntable),
+                intake.autoIntake(camera, turntable),
                 new SequentialAction(
-                    drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(middleSpike, Math.toRadians(-90)).build(),
-                    new SleepAction(0.2),
-                    drive.actionBuilder(new Pose2d(middleSpike, Math.toRadians(-90)))
-                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 5), Math.toRadians(-90)).build(),
-                    new SleepAction(0.2),
-                    drive.actionBuilder(new Pose2d(middleSpike.x, middleSpike.y - 5, Math.toRadians(-90)))
-                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 10), Math.toRadians(-90)).build(),
-                    new SleepAction(0.2)
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .strafeToLinearHeading(closeSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
+                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y - 13), Math.toRadians(-90), new TranslationalVelConstraint(4),new ProfileAccelConstraint(-30,70)).build())
                 )
-        ));
+        );
+
+        intake.stopIntake();
+
+
+        shooter.spinUp(1300);
+
+        // Drive to shoot
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(-130)).build());
+        turntable.turnToPosition(0);
+
+        // Shoot
+        while (!shooter.isAtSpeed()) {
+            Actions.runBlocking(new SleepAction(0.1));
+        }
+        Actions.runBlocking(shooter.shootInPattern(turntable));
+
+        Actions.runBlocking(new SleepAction(0.1));
+
+        shooter.stop();
+
+        // Intake
+        intake.setPower(1);
+
+        Actions.runBlocking(
+                new ParallelAction(
+                        intake.autoIntake(camera, turntable),
+                        new SequentialAction(
+                                drive.actionBuilder(drive.localizer.getPose())
+                                        .strafeToLinearHeading(middleSpike, Math.toRadians(-90),new TranslationalVelConstraint(60))
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 13.5), Math.toRadians(-90), new TranslationalVelConstraint(4), new ProfileAccelConstraint(-50,50)).build()
+                        )
+                ));
 
         intake.stopIntake();
 
         shooter.spinUp(1300);
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y - 3), Math.toRadians(-90)).build());
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y + 30), Math.toRadians(165) , null, new ProfileAccelConstraint(-40, 60)).build());
 
-        for (int i = 0; i < 10; i++) {
-            if (camera.findShotsToCycle() != -1) {
-                PoseStorage.shotsToCycle = camera.findShotsToCycle();
-            }
-        }
-
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(-131)).build());
+        // Drive to shoot
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(-127)).build());
         turntable.turnToPosition(0);
+
+        // Shoot
+        while (!shooter.isAtSpeed()) {
+            Actions.runBlocking(new SleepAction(0.1));
+        }
         Actions.runBlocking(shooter.shootInPattern(turntable));
 
+        Actions.runBlocking(new SleepAction(0.1));
+
         shooter.stop();
-        intake.stopIntake();
 
         Actions.runBlocking(
                 new SequentialAction(

@@ -23,6 +23,8 @@ public class Intake {
     public Action autoIntake(Camera camera, Turntable turntable) {
         return new Action() {
             ElapsedTime timer = new ElapsedTime(5);
+            ElapsedTime limit = new ElapsedTime();
+
             boolean isFirstTime = false;
             boolean initialized = false;
 
@@ -61,7 +63,7 @@ public class Intake {
 
     public Action autoIntakeFAST(Camera camera, Turntable turntable) {
         return new Action() {
-            ElapsedTime timer2 = new ElapsedTime();
+            ElapsedTime limit = new ElapsedTime();
             ElapsedTime timer = new ElapsedTime(5);
             boolean isFirstTime = false;
             boolean initialized = false;
@@ -69,7 +71,7 @@ public class Intake {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-                if (turntable.getNumBalls() >= 3 || timer2.seconds() > 3) {
+                if (turntable.getNumBalls() >= 3 || limit.seconds() > 2) {
                     return false;
                 }
 
@@ -79,13 +81,13 @@ public class Intake {
                 }
 
                 if (camera.ballDetected()) {
-                    if (!isFirstTime && timer.seconds() > 0.1) {
+                    if (!isFirstTime && timer.seconds() > 0.25) {
                         timer.reset();
                         isFirstTime = true;
 
                     }
 
-                    if (timer.seconds() > 0.3) {
+                    if (timer.seconds() > 0.4) {
                         turntable.addBall(0, camera.getBallColor());
                         if (turntable.getNumBalls() >= 3) {
                             return false;
