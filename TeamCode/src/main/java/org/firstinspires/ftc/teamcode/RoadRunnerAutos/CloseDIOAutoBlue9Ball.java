@@ -150,7 +150,7 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
                                         .strafeToLinearHeading(middleSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 13.5), Math.toRadians(-90), new TranslationalVelConstraint(4), new ProfileAccelConstraint(-30,70)).build()
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 13.5), Math.toRadians(-90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build()
                         )
                 ));
 
