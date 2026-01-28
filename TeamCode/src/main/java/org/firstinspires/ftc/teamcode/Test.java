@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.RoadRunnerAutos.PoseStorage;
+
 @TeleOp(name="TEST", group="Linear OpMode")
 public class Test extends LinearOpMode {
 
@@ -81,6 +83,8 @@ public class Test extends LinearOpMode {
             telemetry.addData("Index Servo Position", indexServoPos);
             telemetry.addData("Flicker` Servo Position", flickerServoPos);
             telemetry.addData("Color Sensors", getColorReadings());
+
+            telemetry.addData("\nPose storage", "\nx: " + PoseStorage.currentPose.position.x + "\ny: " + PoseStorage.currentPose.position.y);
 
             telemetry.update();
         }

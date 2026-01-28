@@ -119,7 +119,7 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         Actions.runBlocking(
             new ParallelAction(
-                intake.autoIntake(camera, turntable),
+                intake.normalIntake(camera, turntable),
                 new SequentialAction(
                         drive.actionBuilder(drive.localizer.getPose())
                                 .strafeToLinearHeading(closeSpike, Math.toRadians(90),null,new ProfileAccelConstraint(-30,70))
@@ -152,7 +152,7 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        intake.autoIntake(camera, turntable),
+                        intake.normalIntake(camera, turntable),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
                                         .strafeToLinearHeading(middleSpike, Math.toRadians(90),null,new ProfileAccelConstraint(-30,70))

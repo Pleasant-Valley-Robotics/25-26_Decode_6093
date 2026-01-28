@@ -102,7 +102,7 @@ public class CloseDIOAutoBlue12Ball extends LinearOpMode {
 
         Actions.runBlocking(
             new ParallelAction(
-                intake.autoIntake(camera, turntable),
+                intake.normalIntake(camera, turntable),
                 new SequentialAction(
 //                    drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(middleSpike, Math.toRadians(-90)).build(),
 //                    new SleepAction(0.2),

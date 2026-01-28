@@ -20,7 +20,7 @@ public class Intake {
 
     public void setPower(double power) {intake.setPower(power);}
 
-    public Action autoIntake(Camera camera, Turntable turntable) {
+    public Action normalIntake(Camera camera, Turntable turntable) {
         return new Action() {
             ElapsedTime timer = new ElapsedTime(5);
 
@@ -35,7 +35,7 @@ public class Intake {
                 }
 
                 if (!initialized) {
-                    turntable.turnToPosition(1);
+                    turntable.turnToPosition(0);
                     initialized = true;
                 }
 
@@ -59,6 +59,46 @@ public class Intake {
         };
     }
 
+
+    public Action autoIntake(Camera camera, Turntable turntable) {
+        return new Action() {
+            ElapsedTime timer = new ElapsedTime(5);
+            ElapsedTime limit = new ElapsedTime(0);
+
+            boolean isFirstTime = false;
+            boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    limit.reset();
+                    turntable.turnToPosition(0);
+                    initialized = true;
+                }
+
+                if (turntable.getNumBalls() >= 3 || limit.seconds() > 5.0) {
+                    return false;
+                }
+
+                if (camera.ballDetected()) {
+                    if (!isFirstTime && timer.seconds() > 0.24) {
+                        timer.reset();
+                        isFirstTime = true;
+
+                    }
+
+                    if (timer.seconds() > 0.42) {
+                        turntable.addBall(0, camera.getBallColor());
+                        turntable.turnLeft();
+                        turntable.turnLeft();
+                        timer.reset();
+                        isFirstTime = false;
+                    }
+                }
+                return true;
+            }
+        };
+    }
 
 
     public void stopIntake() {

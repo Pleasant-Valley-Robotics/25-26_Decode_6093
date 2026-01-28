@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +103,7 @@ public class ODODIO extends OpMode {
         if (gamepad2.right_stick_y != 0) {
             if (gamepad2.right_stick_y > 0 && prevGamepad2.right_stick_y == 0) {
                 shooter.setServoPos(shooter.downPos);
-                systemsActions.set(0, intake.autoIntake(camera, turntable));
+                systemsActions.set(0, intake.normalIntake(camera, turntable));
             }
             intake.setPower(gamepad2.right_stick_y);
         } else {
@@ -136,19 +135,6 @@ public class ODODIO extends OpMode {
         if (gamepad2.bWasPressed()) {
             shooter.setServoPos(shooter.downPos);
             systemsActions.set(3, shooter.shootInPattern(turntable));
-        }
-
-        if (gamepad2.dpadRightWasPressed()) {
-            for (int i = 0; i < 3; i++) {
-                double xCor = (Math.random() * 120) - 60;
-                double yCor = (Math.random() * 80) - 40;
-                double heading = (Math.random() * 360) - 180;
-
-                Action driveRandom = drive.actionBuilder(drive.localizer.getPose()).splineTo(new Vector2d(xCor, yCor), heading).build();
-
-                driveActions.set(0, driveRandom);
-            }
-
         }
 
         if (shooter.getLastSpeed() != 0) {
