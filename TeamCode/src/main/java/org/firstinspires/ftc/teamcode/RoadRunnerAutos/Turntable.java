@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Turntable {
 
     private Servo indexServo = null;
-    private final double [] positions = {0.09, 0.26, 0.43, 0.6, 0.76, 0.93};
+
+    private final double [] positions = {.431, .495, .506, .563, .576, .633};
 
     private int positionId = 0;
     private int currentNumBalls = 0;

@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
@@ -18,13 +22,14 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Config
 @Autonomous(name = "Close Dio Auto Blue 9 Ball", group = "Autonomous")
 public class CloseDIOAutoBlue9Ball extends LinearOpMode {
-
+    public boolean endNow = false;
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive = null;
 
 
     @Override
     public void runOpMode() {
+        PoseStorage.isRed = -1;
 
         while (!isStopRequested() && !opModeIsActive()) {
             if (gamepad1.dpadUpWasPressed()) {
@@ -79,6 +84,12 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
         waitForStart();
 
+
+        telemetry.addLine("TEST");
+        telemetry.update();
+
+        telemetry.addLine("test2");
+
         if (isStopRequested()) return;
 
         Actions.runBlocking(new SleepAction(timeBeforeStart));
@@ -88,8 +99,9 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
         shooter.spinUp(1300);
 
         //Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build());
+        Actions.runBlocking(
+            drive.actionBuilder(initialPose).strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build()
+        );
 
 
         // Read motif
@@ -150,9 +162,11 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
                                         .strafeToLinearHeading(middleSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 13.5), Math.toRadians(-90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build()
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 14), Math.toRadians(-90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build()
                         )
                 ));
+
+
 
         intake.stopIntake();
 
@@ -175,11 +189,39 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
         drive.updatePoseEstimate();
         PoseStorage.currentPose = drive.localizer.getPose();
         //PoseStorage.shotsToCycle = shotsToCycle;
-        PoseStorage.isRed = -1;
+
 
         Actions.runBlocking(
                 new SequentialAction(
                         new SleepAction(1)
                 ));
     }
+
+    private Action updatePose(Pose2d position) {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                drive.updatePoseEstimate();
+                PoseStorage.currentPose = position;
+                return false;
+            }
+        };
+    }
+
+
+    private Action checkForStop(Pose2d pos) {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (isStopRequested()) {
+                    PoseStorage.currentPose = pos;
+                    return false;
+                }
+
+                return !endNow;
+            }
+        };
+    }
+
+
 }

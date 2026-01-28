@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
@@ -27,6 +31,7 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
     public void runOpMode() {
 
         while (!isStopRequested() && !opModeIsActive()) {
+            PoseStorage.isRed = 1;
             if (gamepad1.dpadUpWasPressed()) {
                 timeBeforeStart += 1.0;
             }
@@ -118,7 +123,8 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
                 new SequentialAction(
                         drive.actionBuilder(drive.localizer.getPose())
                                 .strafeToLinearHeading(closeSpike, Math.toRadians(90),null,new ProfileAccelConstraint(-30,70))
-                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y + 13), Math.toRadians(90), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build())
+                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y + 13), Math.toRadians(90), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build()),
+                    updatePose(new Pose2d(closeSpike.x, closeSpike.y + 14, Math.toRadians(90)))
                 )
         );
 
@@ -150,7 +156,8 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
                                         .strafeToLinearHeading(middleSpike, Math.toRadians(90),null,new ProfileAccelConstraint(-30,70))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y + 13.5), Math.toRadians(90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build()
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y + 14), Math.toRadians(90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build(),
+                                updatePose(new Pose2d(middleSpike.x, middleSpike.y + 14, Math.toRadians(90)))
                         )
                 ));
 
@@ -175,14 +182,23 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
         drive.updatePoseEstimate();
         PoseStorage.currentPose = drive.localizer.getPose();
         //PoseStorage.shotsToCycle = shotsToCycle;
-        PoseStorage.isRed = 1;
+
 
         Actions.runBlocking(
                 new SequentialAction(
                         new SleepAction(1)
                 ));
-
-
-
     }
+
+    private Action updatePose(Pose2d position) {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                drive.updatePoseEstimate();
+                PoseStorage.currentPose = position;
+                return false;
+            }
+        };
+    }
+
 }
