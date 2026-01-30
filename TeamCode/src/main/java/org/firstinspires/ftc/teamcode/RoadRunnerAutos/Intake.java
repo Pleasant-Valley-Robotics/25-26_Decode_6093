@@ -22,7 +22,7 @@ public class Intake {
 
     public Action normalIntake(Camera camera, Turntable turntable) {
         return new Action() {
-            ElapsedTime timer = new ElapsedTime(5);
+            ElapsedTime timer = new ElapsedTime(0);
 
             boolean isFirstTime = false;
             boolean initialized = false;
@@ -39,14 +39,14 @@ public class Intake {
                     initialized = true;
                 }
 
-                if (camera.ballDetected()) {
-                    if (!isFirstTime && timer.seconds() > 0.24) {
+                if (camera.ballDetected() && timer.seconds() > 0.2) {
+                    if (!isFirstTime && timer.seconds() > 0.35) {
                         timer.reset();
                         isFirstTime = true;
 
                     }
 
-                    if (timer.seconds() > 0.42) {
+                    if (timer.seconds() > 0.55) {
                         turntable.addBall(0, camera.getBallColor());
                         turntable.turnLeft();
                         turntable.turnLeft();
@@ -76,18 +76,18 @@ public class Intake {
                     initialized = true;
                 }
 
-                if (turntable.getNumBalls() >= 3 || limit.seconds() > 5.0) {
+                if (turntable.getNumBalls() >= 3) {
                     return false;
                 }
 
                 if (camera.ballDetected()) {
-                    if (!isFirstTime && timer.seconds() > 0.24) {
+                    if (!isFirstTime && timer.seconds() > 0.35) {
                         timer.reset();
                         isFirstTime = true;
 
                     }
 
-                    if (timer.seconds() > 0.42) {
+                    if (timer.seconds() > 0.55) {
                         turntable.addBall(0, camera.getBallColor());
                         turntable.turnLeft();
                         turntable.turnLeft();

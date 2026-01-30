@@ -24,7 +24,7 @@ public class Test extends LinearOpMode {
 
     DcMotor intake;
 
-    double indexServoPos = .43;
+    double indexServoPos = .02;
     double flickerServoPos = 0.45;
 
     @Override

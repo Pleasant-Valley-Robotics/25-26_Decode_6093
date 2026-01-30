@@ -19,9 +19,12 @@ public class Camera {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
-    private ColorSensor colorSensor;
-    private final int GREEN_HUE = 160;
-    private final int PURPLE_HUE = 210;
+    public ColorSensor loc4;
+    public ColorSensor loc3;
+    public ColorSensor loc2;
+    public ColorSensor loc1;
+    private final int GREEN_HUE = 140;
+    private final int PURPLE_HUE = 150;
 
     public Camera(HardwareMap hardwareMap) {
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
@@ -35,7 +38,11 @@ public class Camera {
                     BuiltinCameraDirection.BACK, aprilTag);
         }
 
-        colorSensor = hardwareMap.get(ColorSensor.class, "location4");
+        loc4 = hardwareMap.get(ColorSensor.class, "location4");
+        loc3 = hardwareMap.get(ColorSensor.class, "location3");
+        loc2 = hardwareMap.get(ColorSensor.class, "location2");
+        loc1 = hardwareMap.get(ColorSensor.class, "location1");
+
 
 
     }
@@ -53,27 +60,46 @@ public class Camera {
                     return 1;
             }
         }
-        return -1;
+        return 0;
 
     }
 
     public Turntable.IndexColors getBallColor() {
         float[] hsvValues = {0,0,0};
 
-        Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
+        Color.RGBToHSV(loc4.red() * 8, loc4.green() * 8, loc4.blue() * 8, hsvValues);
 
-        if (Math.abs(hsvValues[0] - PURPLE_HUE) < 25) {
+        if (Math.abs(hsvValues[0] - PURPLE_HUE) < 5) {
             return Turntable.IndexColors.PURPLE;
-        } else if (Math.abs(hsvValues[0] - GREEN_HUE) < 25) {
+        } else if (Math.abs(hsvValues[0] - GREEN_HUE) < 5) {
             return Turntable.IndexColors.GREEN;
         }
 
-        return null;
+        return Turntable.IndexColors.PURPLE;
     }
 
     public boolean ballDetected() {
-        return colorSensor.alpha() > 32;
+        return loc4.alpha() > 40;
     }
+
+//    public Turntable.IndexColors[] scan() {
+//        float[] hsv1 = {0,0,0};
+//        float[] hsv2 = {0,0,0};
+//        float[] hsv3 = {0,0,0};
+//
+//        Color.RGBToHSV(loc1.red() * 8, loc1.green() * 8, loc1.blue() * 8, hsv1);
+//        Color.RGBToHSV(loc2.red() * 8, loc2.green() * 8, loc2.blue() * 8, hsv2);
+//        Color.RGBToHSV(loc3.red() * 8, loc3.green() * 8, loc3.blue() * 8, hsv3);
+//
+//        if (hsv1[0] > hsv2[0] && hsv1[0] > hsv3[0]) {
+//            Turntable.IndexColors.PURPLE
+//        } else if (hsv2[0] > hsv3[0]) {
+//
+//        } else {
+//
+//        }
+//
+//    }
 
 
 

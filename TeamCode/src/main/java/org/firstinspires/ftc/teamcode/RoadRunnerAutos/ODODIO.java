@@ -81,9 +81,16 @@ public class ODODIO extends OpMode {
         prevGamepad1.copy(gamepad1);
         prevGamepad2.copy(gamepad2);
 
+
+
         for (int i = 0; i < 30; i++) {
             systemsActions.add(null);
         }
+    }
+
+    @Override
+    public void start() {
+        turntable.setZero();
     }
 
     @Override

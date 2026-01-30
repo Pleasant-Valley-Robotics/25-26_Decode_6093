@@ -7,7 +7,7 @@ public class Turntable {
 
     private Servo indexServo = null;
 
-    private final double [] positions = {.027, .031, .093, .104, .163, .18};
+    private final double [] positions = {.02, .031, .088, .102, .158, .172}; //old {.027, .031, .093, .104, .163, .18}
 
     private int positionId = 0;
     private int currentNumBalls = 0;
@@ -25,8 +25,8 @@ public class Turntable {
         indexServo = hardwareMap.get(Servo.class, "index");
     }
 
-    public void turnRight() {
-        positionId--;
+    public void turnLeft() {
+        positionId++;
         updatePosition();
 
         IndexColors temp = turntableBallStatus[turntableBallStatus.length - 1];
@@ -38,8 +38,8 @@ public class Turntable {
         turntableBallStatus[0] = temp;
     }
 
-    public void turnLeft() {
-        positionId++;
+    public void turnRight() {
+        positionId--;
         updatePosition();
 
         IndexColors temp = turntableBallStatus[0];
@@ -68,6 +68,9 @@ public class Turntable {
 
 
     public void addBall(int index, IndexColors type) {
+        if (turntableBallStatus[index] == type) {
+            return;
+        }
         turntableBallStatus[index] = type;
         currentNumBalls++;
     }
@@ -114,6 +117,9 @@ public class Turntable {
     public IndexColors getBallAt(int index) {return turntableBallStatus[index];}
 
 
+    public void setZero() {
+        indexServo.setPosition(positions[0]);
+    }
 
 
 

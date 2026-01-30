@@ -47,9 +47,9 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         Vector2d shootPosition = new Vector2d(-23.9816, 14.2421); // 130.5
         Vector2d leaveShoot = new Vector2d(-34.358,15.02); // 126.0861
-        Vector2d middleSpike = new Vector2d(14.4952, 35);
-        Vector2d closeSpike = new Vector2d(-13.2232, 35.8);
-        Vector2d farSpike = new Vector2d(-41.6725, 35.8);
+        Vector2d middleSpike = new Vector2d(16.4952, 35);
+        Vector2d closeSpike = new Vector2d(-11.2232, 35.8);
+        Vector2d farSpike = new Vector2d(41.6725, 35.8);
         Vector2d gate = new Vector2d(3.5728, 57.0165);
         double shootAngle = 130.5;
         double leaveShootAngle = 126.0861;
@@ -75,9 +75,9 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
                 .strafeToLinearHeading(farSpike, Math.toRadians(90));
 
 
-        turntable.addBall(1, Turntable.IndexColors.PURPLE);
-        turntable.addBall(3, Turntable.IndexColors.PURPLE);
-        turntable.addBall(5, Turntable.IndexColors.GREEN);
+        turntable.addBall(0, Turntable.IndexColors.GREEN);
+        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+        turntable.addBall(4, Turntable.IndexColors.PURPLE);
 
 
 
@@ -86,9 +86,10 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+        turntable.updatePosition();
+
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
-        turntable.updatePosition();
 
         shooter.spinUp(1300);
 
@@ -99,6 +100,9 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         // Read motif
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
+
+        turntable.setZero();
+
 
 
 
@@ -113,6 +117,8 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
         Actions.runBlocking(shooter.shootInPattern(turntable));
 
         shooter.stop();
+
+
 
         // Intake
         intake.setPower(1);
@@ -135,7 +141,7 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
-        turntable.turnToPosition(0);
+        turntable.turnToPosition(1);
 
         // Shoot
         while (!shooter.isAtSpeed()) {
@@ -167,7 +173,7 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle)).build());
-        turntable.turnToPosition(0);
+        turntable.turnToPosition(1);
 
         // Shoot
         while (!shooter.isAtSpeed()) {
