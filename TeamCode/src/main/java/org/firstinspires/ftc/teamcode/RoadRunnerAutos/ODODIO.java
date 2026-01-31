@@ -101,7 +101,7 @@ public class ODODIO extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         //(49.0 / 70.0)
-        flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2474.4525));
+        flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake
@@ -259,14 +259,14 @@ public class ODODIO extends OpMode {
 
         // Use tan-1 to get raw target heading before normalizing
         double rawTargetHeading = Math.atan2(yDif, xDif);
-        // Normalize radians within -360, 360
+        // Normalize radians within -2(pi), 2(pi)
         // This shouldn't really be necessary as we normalize again later, but it doesn't hurt anything
         rawTargetHeading = AngleUnit.normalizeRadians(rawTargetHeading);
         double realTargetHeading = AngleUnit.normalizeRadians(rawTargetHeading);
 
         // Deviation is the error between our current heading and the calculated target heading
         double deviation = drive.localizer.getPose().heading.toDouble() - realTargetHeading;
-        // Normalize within -360, 360 so it doesn't try to spin multiple times
+        // Normalize within -2(pi), 2(pi) so it doesn't try to spin multiple times
         deviation = AngleUnit.normalizeRadians(deviation);
 
 
