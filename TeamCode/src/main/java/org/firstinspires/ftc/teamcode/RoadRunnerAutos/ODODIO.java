@@ -138,7 +138,12 @@ public class ODODIO extends OpMode {
         if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
         if (gamepad2.dpadUpWasPressed()) shooter.setServoPos(shooter.upPos);
-        if (gamepad2.dpadDownWasPressed()) shooter.setServoPos(shooter.downPos);
+        if (gamepad2.dpadDownWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            if (shooter.isMoving()) {
+                turntable.removeBall(3);
+            }
+        }
         if (gamepad2.bWasPressed()) {
             shooter.setServoPos(shooter.downPos);
             systemsActions.set(3, shooter.shootInPattern(turntable));

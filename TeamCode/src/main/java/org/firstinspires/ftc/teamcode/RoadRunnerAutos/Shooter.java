@@ -89,8 +89,8 @@ public class Shooter {
                 if (!isMoving()) return false;
                 if (turntable.getNumBalls() == 0) return false;
                 if (!initialized) {
-                    if (turntable.getPositionId() % 2 != 0) {
-                        turntable.turnRight();
+                    if (turntable.getPositionId() % 2 == 0) {
+                        turntable.turnLeft();
                     }
                     initialized = true;
                 }
@@ -120,8 +120,8 @@ public class Shooter {
                 if (!isMoving()) return false;
                 if (turntable.getNumBalls() == 0) return false;
                 if (!initialized) {
-                    if (turntable.getPositionId() % 2 != 0) {
-                        turntable.turnRight();
+                    if (turntable.getPositionId() % 2 == 0) {
+                        turntable.turnLeft();
                     }
                     initialized = true;
                 }
