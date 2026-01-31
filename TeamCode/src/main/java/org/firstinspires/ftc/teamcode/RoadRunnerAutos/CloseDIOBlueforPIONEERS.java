@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -19,9 +18,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Config
-@Autonomous(name = "Close Dio Auto Blue 9 Ball", group = "Autonomous")
-public class CloseDIOAutoBlue9Ball extends LinearOpMode {
+@Autonomous(name = "Close DIO for Pioneers - Blue", group = "Autonomous")
+public class CloseDIOBlueforPIONEERS extends LinearOpMode {
     public boolean endNow = false;
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive = null;
@@ -96,7 +94,7 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
         //Drive to shoot
         Actions.runBlocking(
-            drive.actionBuilder(initialPose).strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build()
+                drive.actionBuilder(initialPose).strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build()
         );
 
 
@@ -118,27 +116,30 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
         shooter.stop();
 
-
         // Intake
         intake.setPower(1);
 
         Actions.runBlocking(
-            new ParallelAction(
-                intake.normalIntake(camera, turntable),
-                new SequentialAction(
-                        drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(closeSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y - 13), Math.toRadians(-90), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build())
-                )
-        );
+                new ParallelAction(
+                        //intake.normalIntake(camera, turntable),
+                        new SequentialAction(
+                                drive.actionBuilder(drive.localizer.getPose())
+                                        .strafeToLinearHeading(middleSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 14), Math.toRadians(-90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build()
+                        )
+                ));
+
+
 
         intake.stopIntake();
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y - 3), Math.toRadians(-90)).build());
 
 
         shooter.spinUp(1300);
 
         // Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle),null,new ProfileAccelConstraint(-30,70)).build());
         turntable.turnToPosition(1);
 
         // Shoot
@@ -151,27 +152,29 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
         shooter.stop();
 
+
+
+
         // Intake
         intake.setPower(1);
 
         Actions.runBlocking(
                 new ParallelAction(
-                        intake.normalIntake(camera, turntable),
+                        //intake.normalIntake(camera, turntable),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToLinearHeading(middleSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 14), Math.toRadians(-90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build()
-                        )
-                ));
-
-
+                                        .strafeToLinearHeading(closeSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
+                                        .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y - 13), Math.toRadians(-90), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build())
+                )
+        );
 
         intake.stopIntake();
+
 
         shooter.spinUp(1300);
 
         // Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle),null,new ProfileAccelConstraint(-30,70)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
         turntable.turnToPosition(1);
 
         // Shoot
@@ -223,3 +226,4 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
 
 
 }
+
