@@ -76,8 +76,8 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
 
         turntable.addBall(0, Turntable.IndexColors.GREEN);
+        turntable.addBall(1, Turntable.IndexColors.PURPLE);
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
-        turntable.addBall(4, Turntable.IndexColors.PURPLE);
 
 
 
@@ -141,7 +141,7 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
-        turntable.turnToPosition(1);
+        turntable.turnToPosition(0);
 
         // Shoot
         while (!shooter.isAtSpeed()) {
@@ -173,7 +173,7 @@ public class CloseDIOAutoRed9Ball extends LinearOpMode {
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle)).build());
-        turntable.turnToPosition(1);
+        turntable.turnToPosition(0);
 
         // Shoot
         while (!shooter.isAtSpeed()) {

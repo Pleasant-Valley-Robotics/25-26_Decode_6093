@@ -7,11 +7,11 @@ public class Turntable {
 
     private Servo indexServo = null;
 
-    private final double [] positions = {.02, .031, .088, .102, .158, .172}; //old {.027, .031, .093, .104, .163, .18}
+    private final double [] positions = {.031, .102, .172}; //old {.027, .031, .093, .104, .163, .18}
 
     private int positionId = 0;
     private int currentNumBalls = 0;
-    private IndexColors[] turntableBallStatus = new IndexColors[6];
+    private IndexColors[] turntableBallStatus = new IndexColors[3];
 
 
     public enum IndexColors {
@@ -70,7 +70,7 @@ public class Turntable {
     public void addBall(int index, IndexColors type) {
         if (turntableBallStatus[index] == type) {
             return;
-        }
+        }           
         turntableBallStatus[index] = type;
         currentNumBalls++;
     }
@@ -126,8 +126,8 @@ public class Turntable {
 
 
     public void updatePosition() {
-        while (positionId < 0) positionId += 6;
-        while (positionId > 5) positionId -= 6;
+        while (positionId < 0) positionId += 3;
+        while (positionId > 2) positionId -= 3;
 
         indexServo.setPosition(positions[positionId]);
     }

@@ -110,11 +110,11 @@ public class ODODIO extends OpMode {
         if (gamepad2.right_stick_y != 0) {
             if (gamepad2.right_stick_y > 0 && prevGamepad2.right_stick_y == 0) {
                 shooter.setServoPos(shooter.downPos);
-                systemsActions.set(0, intake.normalIntake(camera, turntable));
+                //systemsActions.set(0, intake.normalIntake(camera, turntable));
             }
             intake.setPower(gamepad2.right_stick_y);
         } else {
-            systemsActions.set(0, null);
+            //systemsActions.set(0, null);
             intake.stopIntake();
         }
 
@@ -141,7 +141,7 @@ public class ODODIO extends OpMode {
         if (gamepad2.dpadDownWasPressed()) {
             shooter.setServoPos(shooter.downPos);
             if (shooter.isMoving()) {
-                turntable.removeBall(3);
+                turntable.removeBall(1);
             }
         }
         if (gamepad2.bWasPressed()) {

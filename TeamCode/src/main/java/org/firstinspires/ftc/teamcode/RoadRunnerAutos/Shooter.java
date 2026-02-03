@@ -53,7 +53,7 @@ public class Shooter {
             }
 
             if (!initialized) {
-                    while (turntable.getBallAt(3) == null) {
+                    while (turntable.getBallAt(1) == null) {
                         turntable.turnLeft();
                         count++;
 
@@ -69,7 +69,7 @@ public class Shooter {
                 if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
                     flickerServo.setPosition(upPos);
                 } else if (timer.seconds() > 1.5) {
-                    turntable.removeBall(3);
+                    turntable.removeBall(1);
                     flickerServo.setPosition(downPos);
                     return false;
                 }
@@ -88,19 +88,12 @@ public class Shooter {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!isMoving()) return false;
                 if (turntable.getNumBalls() == 0) return false;
-                if (!initialized) {
-                    if (turntable.getPositionId() % 2 == 0) {
-                        turntable.turnLeft();
-                    }
-                    initialized = true;
-                }
 
                 if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
                     flickerServo.setPosition(upPos);
                 } else if (timer.seconds() > 1.5 ){
                     flickerServo.setPosition(downPos);
-                    turntable.removeBall(3);
-                    turntable.turnLeft();
+                    turntable.removeBall(1);
                     turntable.turnLeft();
                     timer.reset();
                 }
@@ -113,25 +106,17 @@ public class Shooter {
     public Action shootAllFAST(Turntable turntable) {
         return new Action() {
             ElapsedTime timer = new ElapsedTime();
-            boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!isMoving()) return false;
                 if (turntable.getNumBalls() == 0) return false;
-                if (!initialized) {
-                    if (turntable.getPositionId() % 2 == 0) {
-                        turntable.turnLeft();
-                    }
-                    initialized = true;
-                }
 
                 if (timer.seconds() < .75 && timer.seconds() > .4) {
                     flickerServo.setPosition(upPos);
                 } else if (timer.seconds() > .4 ){
                     flickerServo.setPosition(downPos);
-                    turntable.removeBall(3);
-                    turntable.turnLeft();
+                    turntable.removeBall(1);
                     turntable.turnLeft();
                     timer.reset();
                 }
@@ -165,7 +150,7 @@ public class Shooter {
                     initialized = true;
                 }
 
-                while (turntable.getBallAt(3) != pattern[index]) {
+                while (turntable.getBallAt(1) != pattern[index]) {
                     turntable.turnLeft();
                     count++;
 

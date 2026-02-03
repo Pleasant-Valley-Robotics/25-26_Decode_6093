@@ -47,13 +47,10 @@ public class Intake {
                     }
 
                     if (timer.seconds() > 0.55) {
-                        if (turntable.getPositionId() %2 == 0) {
-                            turntable.addBall(0, camera.getBallColor());
-                            turntable.turnLeft();
-                            turntable.turnLeft();
-                            timer.reset();
-                            isFirstTime = false;
-                        }
+                        turntable.addBall(0, camera.getBallColor());
+                        turntable.turnLeft();
+                        timer.reset();
+                        isFirstTime = false;
                     }
                 }
                 return true;
@@ -90,13 +87,10 @@ public class Intake {
                     }
 
                     if (timer.seconds() > 0.55) {
-                        if (turntable.getPositionId() %2 == 0) {
-                            turntable.addBall(0, camera.getBallColor());
-                            turntable.turnLeft();
-                            turntable.turnLeft();
-                            timer.reset();
-                            isFirstTime = false;
-                        }
+                        turntable.addBall(0, camera.getBallColor());
+                        turntable.turnLeft();
+                        timer.reset();
+                        isFirstTime = false;
                     }
                 }
                 return true;
