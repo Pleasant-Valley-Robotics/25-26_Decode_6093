@@ -162,7 +162,7 @@ public class Shooter {
                     flickerServo.setPosition(upPos);
                 } else if (timer.seconds() > 0.5 ){
                     flickerServo.setPosition(downPos);
-                    turntable.removeBall(3);
+                    turntable.removeBall(1);
                     index++;
                     index %= 3;
                     timer.reset();
