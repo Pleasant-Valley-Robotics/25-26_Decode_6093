@@ -128,13 +128,22 @@ public class ODODIO extends OpMode {
         }
 
         if (gamepad2.rightBumperWasPressed()) {
-            shooter.setServoPos(shooter.downPos);
-            turntable.turnLeft();
+            if (turntable.getPositionId() < 8 ) {
+                shooter.setServoPos(shooter.downPos);
+                turntable.turnLeft();
+            }
         }
         if (gamepad2.leftBumperWasPressed()) {
-            shooter.setServoPos(shooter.downPos);
-            turntable.turnRight();
+            if (turntable.getPositionId() > 0) {
+                shooter.setServoPos(shooter.downPos);
+                turntable.turnRight();
+            }
         }
+        if (gamepad2.dpadRightWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            turntable.turnToPosition(0);
+        }
+
         if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
         if (gamepad2.dpadUpWasPressed()) shooter.setServoPos(shooter.upPos);

@@ -7,7 +7,7 @@ public class Turntable {
 
     private Servo indexServo = null;
 
-    private final double [] positions = {.048, .118, .189}; //old {.027, .031, .093, .104, .163, .18}
+    private final double [] positions = {.048, .118, .189, .267, .344, .424, .498, .578, .649}; //old {.027, .031, .093, .104, .163, .18}
 
     private int positionId = 0;
     private int currentNumBalls = 0;
@@ -55,9 +55,9 @@ public class Turntable {
         int timesToTurn = id - positionId;
         for (int i = 0; i < Math.abs(timesToTurn); i++) {
             if (timesToTurn > 0) {
-                turnRight();
-            } else {
                 turnLeft();
+            } else {
+                turnRight();
             }
         }
     }
@@ -126,8 +126,8 @@ public class Turntable {
 
 
     public void updatePosition() {
-        while (positionId < 0) positionId += 3;
-        while (positionId > 2) positionId -= 3;
+        while (positionId < 0) positionId += positions.length;
+        while (positionId > positions.length - 1) positionId -= positions.length;
 
         indexServo.setPosition(positions[positionId]);
     }

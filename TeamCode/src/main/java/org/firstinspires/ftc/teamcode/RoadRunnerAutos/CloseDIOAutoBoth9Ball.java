@@ -31,14 +31,25 @@ public class CloseDIOAutoBoth9Ball extends LinearOpMode {
     public void runOpMode() {
 
         while (!isStopRequested() && !opModeIsActive()) {
-            PoseStorage.isRed = 1;
+
             if (gamepad1.dpadUpWasPressed()) {
                 timeBeforeStart += 1.0;
             }
             if (gamepad1.dpadDownWasPressed()) {
                 timeBeforeStart -= 1.0;
             }
+
+            if (gamepad1.aWasPressed()) {
+                PoseStorage.isRed = 1;
+            }
+
+            if (gamepad1.bWasPressed()) {
+                PoseStorage.isRed = -1;
+            }
+
+            telemetry.addData("Is red? (1 if true)", PoseStorage.isRed);
             telemetry.addData("Wait Time", timeBeforeStart);
+            telemetry.update();
         }
 
 
@@ -64,8 +75,8 @@ public class CloseDIOAutoBoth9Ball extends LinearOpMode {
 
 
         turntable.addBall(0, Turntable.IndexColors.GREEN);
+        turntable.addBall(1, Turntable.IndexColors.PURPLE);
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
-        turntable.addBall(4, Turntable.IndexColors.PURPLE);
 
 
 
