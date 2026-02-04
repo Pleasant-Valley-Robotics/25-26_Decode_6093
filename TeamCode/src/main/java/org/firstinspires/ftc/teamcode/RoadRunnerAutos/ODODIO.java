@@ -101,7 +101,7 @@ public class ODODIO extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         //(49.0 / 70.0)
-        flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
+        //flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake
@@ -144,6 +144,14 @@ public class ODODIO extends OpMode {
             turntable.turnToPosition(0);
         }
 
+        if (gamepad1.dpadUpWasPressed()) {
+            flyWheelSpeed += 10;
+        }
+
+        if (gamepad1.dpadDownWasPressed()) {
+            flyWheelSpeed -= 10;
+        }
+
         if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
         if (gamepad2.dpadUpWasPressed()) shooter.setServoPos(shooter.upPos);
@@ -180,12 +188,13 @@ public class ODODIO extends OpMode {
 
         if (gamepad2.yWasPressed()) systemsActions.set(4, shooter.shootAllFAST(turntable));
         slowMode = gamepad1.left_trigger > 0;
-
+/*
         if (gamepad1.dpadUpWasPressed()) {
             TrajectoryActionBuilder goClose = drive.actionBuilder(drive.localizer.getPose()).strafeToSplineHeading(closeVec, Math.toRadians(130.5 * PoseStorage.isRed),null,new ProfileAccelConstraint(-20,50));
             driveActions.clear();
             driveActions.add(goClose.build());
         }
+ */
         if (gamepad1.dpadRightWasPressed()) {
             TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToSplineHeading(parkingVec, Math.toRadians(0),null,new ProfileAccelConstraint(-20,50));
             driveActions.clear();
@@ -232,6 +241,7 @@ public class ODODIO extends OpMode {
 
         telemetry.addData("Camera has balls", camera.ballDetected());
         telemetry.addData("Position ID", turntable.getPositionId());
+        telemetry.addData("Target speed", flyWheelSpeed);
         telemetry.addData("Shooter is at speed?", shooter.isAtSpeed());
         telemetry.addData("Current shooter speed", shooter.getVelocity());
         telemetry.addData("Num systems actions", systemsActions.size());

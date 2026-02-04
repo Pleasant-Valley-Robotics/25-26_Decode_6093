@@ -6,10 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.RoadRunnerAutos.PoseStorage;
+import org.firstinspires.ftc.teamcode.RoadRunnerAutos.Shooter;
 
 @TeleOp(name="TEST", group="Linear OpMode")
 public class Test extends LinearOpMode {
@@ -23,6 +26,7 @@ public class Test extends LinearOpMode {
     ColorSensor[] sensors = {loc4, loc3, loc2};
 
     DcMotor intake;
+    DcMotorEx shooter;
 
     double indexServoPos = .02;
     double flickerServoPos = 0.45;
@@ -36,6 +40,7 @@ public class Test extends LinearOpMode {
         loc3 = hardwareMap.get(ColorSensor.class, "location2");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
+        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
@@ -46,6 +51,8 @@ public class Test extends LinearOpMode {
         while (opModeIsActive()) {
 
         intake.setPower(gamepad1.right_stick_y);
+        shooter.setPower(1);
+
 
         if (gamepad1.a) {
             if (gamepad1.rightBumperWasPressed()) {
@@ -80,6 +87,7 @@ public class Test extends LinearOpMode {
             indexServo.setPosition(indexServoPos);
             flickerServo.setPosition(flickerServoPos);
 
+            telemetry.addData("velocity", shooter.getVelocity(AngleUnit.DEGREES));
             telemetry.addData("Index Servo Position", indexServoPos);
             telemetry.addData("Flicker` Servo Position", flickerServoPos);
             telemetry.addData("Color Sensors", getColorReadings());
