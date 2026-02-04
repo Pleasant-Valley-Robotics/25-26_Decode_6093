@@ -7,7 +7,7 @@ public class Turntable {
 
     private Servo indexServo = null;
 
-    private final double [] positions = {.048, .118, .189, .267, .344, .424, .498, .578, .649}; //old {.027, .031, .093, .104, .163, .18}
+    private final double [] positions = {.048, .118, .189, .266, .340, .420, .495, .574, .646}; //old {.027, .031, .093, .104, .163, .18}
 
     private int positionId = 0;
     private int currentNumBalls = 0;

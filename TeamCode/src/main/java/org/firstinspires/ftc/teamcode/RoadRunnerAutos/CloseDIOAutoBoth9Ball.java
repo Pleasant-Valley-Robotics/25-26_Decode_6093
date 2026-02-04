@@ -47,7 +47,11 @@ public class CloseDIOAutoBoth9Ball extends LinearOpMode {
                 PoseStorage.isRed = -1;
             }
 
-            telemetry.addData("Is red? (1 if true)", PoseStorage.isRed);
+            if (PoseStorage.isRed == 1) {
+                telemetry.addLine("Red");
+            } else {
+                telemetry.addLine("Blue");
+            }
             telemetry.addData("Wait Time", timeBeforeStart);
             telemetry.update();
         }
@@ -140,7 +144,7 @@ public class CloseDIOAutoBoth9Ball extends LinearOpMode {
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
-        turntable.turnToPosition(1);
+        turntable.turnToPosition(0);
 
         // Shoot
         while (!shooter.isAtSpeed()) {
@@ -172,7 +176,7 @@ public class CloseDIOAutoBoth9Ball extends LinearOpMode {
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle)).build());
-        turntable.turnToPosition(1);
+        turntable.turnToPosition(0);
 
         // Shoot
         while (!shooter.isAtSpeed()) {
