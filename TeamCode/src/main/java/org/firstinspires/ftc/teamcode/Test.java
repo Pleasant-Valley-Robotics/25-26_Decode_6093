@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -17,11 +19,12 @@ import org.firstinspires.ftc.teamcode.RoadRunnerAutos.Shooter;
 @TeleOp(name="TEST", group="Linear OpMode")
 public class Test extends LinearOpMode {
 
-    Servo indexServo = null;
+    CRServo indexServo = null;
     Servo flickerServo = null;
     ColorSensor loc4 = null;
     ColorSensor loc2 = null;
     ColorSensor loc3 = null;
+    RevTouchSensor limitSwitch = null;
 
     ColorSensor[] sensors = {loc4, loc3, loc2};
 
@@ -33,11 +36,13 @@ public class Test extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        indexServo = hardwareMap.get(Servo.class, "index");
+        indexServo = hardwareMap.get(CRServo.class, "index");
         flickerServo = hardwareMap.get(Servo.class, "flicker");
+        limitSwitch = hardwareMap.get(RevTouchSensor.class, "limiter");
         loc4 = hardwareMap.get(ColorSensor.class, "location4");
         loc2 = hardwareMap.get(ColorSensor.class, "location3");
         loc3 = hardwareMap.get(ColorSensor.class, "location2");
+
 
         intake = hardwareMap.get(DcMotor.class, "intake");
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
@@ -51,20 +56,19 @@ public class Test extends LinearOpMode {
         while (opModeIsActive()) {
 
         intake.setPower(gamepad1.right_stick_y);
-        shooter.setPower(1);
 
 
         if (gamepad1.a) {
             if (gamepad1.rightBumperWasPressed()) {
-                indexServoPos += 0.01;
+                indexServo.setPower(0.5);
             } else if (gamepad1.leftBumperWasPressed()) {
-                indexServoPos -= 0.01;
+                indexServo.setPower(-0.5);
             }
         } else {
             if (gamepad1.rightBumperWasPressed()) {
-                indexServoPos += 0.001;
+                indexServo.setPower(0.1);
             } else if (gamepad1.leftBumperWasPressed()) {
-                indexServoPos -= 0.001;
+                indexServo.setPower(-0.1);
             }
         }
 
@@ -84,10 +88,10 @@ public class Test extends LinearOpMode {
             }
 
 
-            indexServo.setPosition(indexServoPos);
             flickerServo.setPosition(flickerServoPos);
 
-            telemetry.addData("velocity", shooter.getVelocity(AngleUnit.DEGREES));
+            telemetry.addData("velocity", shooter.getVelocity());
+            telemetry.addData();
             telemetry.addData("Index Servo Position", indexServoPos);
             telemetry.addData("Flicker` Servo Position", flickerServoPos);
             telemetry.addData("Color Sensors", getColorReadings());
