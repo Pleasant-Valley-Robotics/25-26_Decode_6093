@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -18,39 +19,58 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "Close DIO for Pioneers - Blue", group = "Autonomous")
-public class CloseDIOBlueforPIONEERS extends LinearOpMode {
+@Config
+@Autonomous(name = "Close Dio Auto 9 Ball", group = "Autonomous")
+public class CloseDIOAuto9Ball extends LinearOpMode {
     public boolean endNow = false;
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive = null;
+    private int r = 1;
 
 
     @Override
     public void runOpMode() {
-        PoseStorage.isRed = -1;
 
         while (!isStopRequested() && !opModeIsActive()) {
+
             if (gamepad1.dpadUpWasPressed()) {
                 timeBeforeStart += 1.0;
             }
             if (gamepad1.dpadDownWasPressed()) {
                 timeBeforeStart -= 1.0;
             }
+
+            if (gamepad1.aWasPressed()) {
+                PoseStorage.isRed = 1;
+            }
+
+            if (gamepad1.bWasPressed()) {
+                PoseStorage.isRed = -1;
+            }
+
+            if (r == 1) {
+                telemetry.addLine("Red");
+            } else {
+                telemetry.addLine("Blue");
+            }
+            r = PoseStorage.isRed;
             telemetry.addData("Wait Time", timeBeforeStart);
+            telemetry.update();
         }
 
 
-        Pose2d initialPose = new Pose2d(-59.91, -56.13, Math.toRadians(-128.87));
+        Pose2d initialPose = new Pose2d(-59.91, 56.13 * r, Math.toRadians(128.87 * r));
 
 
-        Vector2d shootPosition = new Vector2d(-23.9816, -14.2421); // -130.5
-        Vector2d leaveShoot = new Vector2d(-34.358,-15.02); // -126.0861
-        Vector2d middleSpike = new Vector2d(16.4952, -35);
-        Vector2d closeSpike = new Vector2d(-11.2232, -35.8);
-        Vector2d farSpike = new Vector2d(41.6725, -35.8);
-        Vector2d gate = new Vector2d(3.5728, -57.0165);
-        double shootAngle = -130.5;
-        double leaveShootAngle = -126.0861;
+        Vector2d shootPosition = new Vector2d(-23.9816, 14.2421*r); // 130.5
+        Vector2d leaveShoot = new Vector2d(-34.358,15.02*r); // 126.0861
+        Vector2d middleSpike = new Vector2d(14.4952-(2*r), 35*r);
+        Vector2d closeSpike = new Vector2d(-15.2232-(2*r), 35.8*r);
+        Vector2d farSpike = new Vector2d(41.6725-(2*r), 35.8*r);
+        Vector2d gate = new Vector2d(3.5728, 57.0165*r);
+        double shootAngle = 130.5*r;
+        double leaveShootAngle = 126.0861*r;
+        double intakeAngle = 90*r;
 
 
         drive = new MecanumDrive(hardwareMap, initialPose);
@@ -60,22 +80,9 @@ public class CloseDIOBlueforPIONEERS extends LinearOpMode {
         Camera camera = new Camera(hardwareMap);
 
 
-        TrajectoryActionBuilder moveBack = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle));
-
-        TrajectoryActionBuilder gotoClose = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(shootAngle)))
-                .strafeToLinearHeading(closeSpike, Math.toRadians(-90));
-
-        TrajectoryActionBuilder gotoMiddle = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(shootAngle)))
-                .strafeToLinearHeading(middleSpike, Math.toRadians(-90));
-
-        TrajectoryActionBuilder gotoFar = drive.actionBuilder(new Pose2d(shootPosition, Math.toRadians(shootAngle)))
-                .strafeToLinearHeading(farSpike, Math.toRadians(-90));
-
-
-        turntable.addBall(0, Turntable.IndexColors.GREEN);
+        turntable.addBall(0, Turntable.IndexColors.PURPLE);
+        turntable.addBall(1, Turntable.IndexColors.GREEN);
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
-        turntable.addBall(4, Turntable.IndexColors.PURPLE);
 
 
 
@@ -84,25 +91,20 @@ public class CloseDIOBlueforPIONEERS extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        turntable.setZero();
+        turntable.updatePosition();
 
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
-        turntable.updatePosition();
 
-        shooter.spinUp(1300);
+        shooter.spinUp(1320);
 
         //Drive to shoot
-        Actions.runBlocking(
-                drive.actionBuilder(initialPose).strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build()
-        );
+        Actions.runBlocking(drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build());
 
 
         // Read motif
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
-
-
-
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
@@ -116,30 +118,29 @@ public class CloseDIOBlueforPIONEERS extends LinearOpMode {
 
         shooter.stop();
 
+
+
         // Intake
         intake.setPower(1);
 
         Actions.runBlocking(
-                new ParallelAction(
-                        //intake.normalIntake(camera, turntable),
-                        new SequentialAction(
-                                drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToLinearHeading(middleSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y - 14), Math.toRadians(-90), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build()
-                        )
-                ));
-
-
+            new ParallelAction(
+                intake.normalIntake(camera, turntable),
+                new SequentialAction(
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .strafeToLinearHeading(closeSpike, Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
+                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y + (13*r)), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build()),
+                    updatePose(new Pose2d(closeSpike.x, closeSpike.y + (14*r), Math.toRadians(intakeAngle)))
+                )
+        );
 
         intake.stopIntake();
 
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new Vector2d(gate.x, gate.y - 3), Math.toRadians(-90)).build());
 
-
-        shooter.spinUp(1300);
+        shooter.spinUp(1320);
 
         // Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle),null,new ProfileAccelConstraint(-30,70)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
         turntable.turnToPosition(1);
 
         // Shoot
@@ -152,29 +153,26 @@ public class CloseDIOBlueforPIONEERS extends LinearOpMode {
 
         shooter.stop();
 
-
-
-
         // Intake
         intake.setPower(1);
 
         Actions.runBlocking(
                 new ParallelAction(
-                        //intake.normalIntake(camera, turntable),
+                        intake.normalIntake(camera, turntable),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToLinearHeading(closeSpike, Math.toRadians(-90),null,new ProfileAccelConstraint(-30,70))
-                                        .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y - 13), Math.toRadians(-90), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build())
-                )
-        );
+                                        .strafeToLinearHeading(middleSpike, Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
+                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y + (14*r)), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build(),
+                                updatePose(new Pose2d(middleSpike.x, middleSpike.y + (14*r), Math.toRadians(intakeAngle)))
+                        )
+                ));
 
         intake.stopIntake();
 
-
-        shooter.spinUp(1300);
+        shooter.spinUp(1320);
 
         // Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle)).build());
         turntable.turnToPosition(1);
 
         // Shoot
@@ -210,20 +208,5 @@ public class CloseDIOBlueforPIONEERS extends LinearOpMode {
     }
 
 
-    private Action checkForStop(Pose2d pos) {
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (isStopRequested()) {
-                    PoseStorage.currentPose = pos;
-                    return false;
-                }
-
-                return !endNow;
-            }
-        };
-    }
-
 
 }
-

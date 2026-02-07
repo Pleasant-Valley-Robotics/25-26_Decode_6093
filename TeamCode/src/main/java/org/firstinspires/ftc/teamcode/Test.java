@@ -51,14 +51,13 @@ public class Test extends LinearOpMode {
         while (opModeIsActive()) {
 
         intake.setPower(gamepad1.right_stick_y);
-        shooter.setPower(1);
 
 
         if (gamepad1.a) {
             if (gamepad1.rightBumperWasPressed()) {
-                indexServoPos += 0.01;
+                indexServoPos += 0.1;
             } else if (gamepad1.leftBumperWasPressed()) {
-                indexServoPos -= 0.01;
+                indexServoPos -= 0.1;
             }
         } else {
             if (gamepad1.rightBumperWasPressed()) {

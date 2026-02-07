@@ -7,9 +7,9 @@ public class Turntable {
 
     private Servo indexServo = null;
 
-    private final double [] positions = {.048, .118, .189, .266, .340, .420, .495, .574, .646}; //old {.027, .031, .093, .104, .163, .18}
+    private final double [] positions = {.177, 0.513, .848}; //old {.027, .031, .093, .104, .163, .18}
 
-    private int positionId = 0;
+    private int positionId = 1;
     private int currentNumBalls = 0;
     private IndexColors[] turntableBallStatus = new IndexColors[3];
 
@@ -62,9 +62,17 @@ public class Turntable {
         }
     }
 
-    public void freeSpinR() {indexServo.setPosition(2);}
-    public void freeSpinL() {indexServo.setPosition( -2);}
-
+    public void extraRange(boolean stop) {
+        if (!stop) {
+            if (positionId == 2) {
+                indexServo.setPosition(.95);
+            } else if (positionId == 0) {
+                indexServo.setPosition(0.05);
+            }
+        } else {
+            updatePosition();
+        }
+    }
 
 
     public void addBall(int index, IndexColors type) {
@@ -115,15 +123,6 @@ public class Turntable {
     public int getPositionId() {return positionId;}
 
     public IndexColors getBallAt(int index) {return turntableBallStatus[index];}
-
-
-    public void setZero() {
-        indexServo.setPosition(positions[0]);
-    }
-
-
-
-
 
     public void updatePosition() {
         while (positionId < 0) positionId += positions.length;

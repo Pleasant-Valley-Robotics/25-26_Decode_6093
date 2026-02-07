@@ -15,10 +15,11 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-
+@Disabled
 @Config
 @Autonomous(name = "Close Dio Auto Blue 9 Ball", group = "Autonomous")
 public class CloseDIOAutoBlue9Ball extends LinearOpMode {
@@ -103,7 +104,6 @@ public class CloseDIOAutoBlue9Ball extends LinearOpMode {
         // Read motif
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
 
-        turntable.setZero();
 
 
 

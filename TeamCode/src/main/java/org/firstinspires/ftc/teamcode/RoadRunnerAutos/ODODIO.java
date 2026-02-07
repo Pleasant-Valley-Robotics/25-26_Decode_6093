@@ -90,7 +90,7 @@ public class ODODIO extends OpMode {
 
     @Override
     public void start() {
-        turntable.setZero();
+        turntable.updatePosition();
     }
 
     @Override
@@ -101,56 +101,41 @@ public class ODODIO extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         //(49.0 / 70.0)
-        //flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
+        flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake
         // R-Bumper: Clockwise
         // L-Bumper: Rotate counter-clockwise
-        if (gamepad2.right_stick_y != 0) {
-            if (gamepad2.right_stick_y > 0 && prevGamepad2.right_stick_y == 0) {
+        if (gamepad2.left_stick_y != 0) {
+            if (gamepad2.left_stick_y > 0 && prevGamepad2.left_stick_y == 0) {
                 shooter.setServoPos(shooter.downPos);
                 //systemsActions.set(0, intake.normalIntake(camera, turntable));
             }
-            intake.setPower(gamepad2.right_stick_y);
+            intake.setPower(gamepad2.left_stick_y);
         } else {
             //systemsActions.set(0, null);
             intake.stopIntake();
         }
 
-        if (gamepad2.aWasPressed()) {
-            shooter.setServoPos(shooter.downPos);
-            systemsActions.set(1, shooter.fireOnce(turntable));
-        }
         if (gamepad2.xWasPressed()) {
-            shooter.setServoPos(shooter.downPos);
-            systemsActions.set(2, shooter.shootAll(turntable));
-        }
-
-        if (gamepad2.rightBumperWasPressed()) {
-            if (turntable.getPositionId() < 8 ) {
-                shooter.setServoPos(shooter.downPos);
-                turntable.turnLeft();
-            }
-        }
-        if (gamepad2.leftBumperWasPressed()) {
-            if (turntable.getPositionId() > 0) {
-                shooter.setServoPos(shooter.downPos);
-                turntable.turnRight();
-            }
-        }
-        if (gamepad2.dpadRightWasPressed()) {
-            shooter.setServoPos(shooter.downPos);
             turntable.turnToPosition(0);
+            shooter.setServoPos(shooter.downPos);
+        }
+        if (gamepad2.yWasPressed()) {
+            turntable.turnToPosition(1);
+            shooter.setServoPos(shooter.downPos);
+        }
+        if (gamepad2.bWasPressed()) {
+            turntable.turnToPosition(2);
+            shooter.setServoPos(shooter.downPos);
         }
 
-        if (gamepad1.dpadUpWasPressed()) {
-            flyWheelSpeed += 10;
-        }
+        if (gamepad2.right_bumper) turntable.extraRange(false);
+        else if (gamepad2.rightBumperWasReleased()) turntable.extraRange(true);
 
-        if (gamepad1.dpadDownWasPressed()) {
-            flyWheelSpeed -= 10;
-        }
+
+
 
         if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
@@ -160,10 +145,6 @@ public class ODODIO extends OpMode {
             if (shooter.isMoving()) {
                 turntable.removeBall(1);
             }
-        }
-        if (gamepad2.bWasPressed()) {
-            shooter.setServoPos(shooter.downPos);
-            systemsActions.set(3, shooter.shootInPattern(turntable));
         }
 
         if (shooter.getLastSpeed() != 0) {
