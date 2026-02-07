@@ -31,6 +31,7 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
                 if (turntable.getNumBalls() >= 3) {
+                    turntable.turnLeft();
                     return false;
                 }
 
@@ -40,13 +41,13 @@ public class Intake {
                 }
 
                 if (camera.ballDetected() && timer.seconds() > 0.2) {
-                    if (!isFirstTime && timer.seconds() > 0.35) {
+                    if (!isFirstTime && timer.seconds() > 0.40) {
                         timer.reset();
                         isFirstTime = true;
 
                     }
 
-                    if (timer.seconds() > 0.55) {
+                    if (timer.seconds() > 0.65) {
                         turntable.addBall(0, camera.getBallColor());
                         turntable.turnLeft();
                         timer.reset();
@@ -75,7 +76,8 @@ public class Intake {
                     initialized = true;
                 }
 
-                if (turntable.getNumBalls() >= 3) {
+                if (turntable.getNumBalls() >= 3 || limit.seconds() > 5) {
+                    turntable.turnLeft();
                     return false;
                 }
 
@@ -86,7 +88,7 @@ public class Intake {
 
                     }
 
-                    if (timer.seconds() > 0.55) {
+                    if (timer.seconds() > 0.60) {
                         turntable.addBall(0, camera.getBallColor());
                         turntable.turnLeft();
                         timer.reset();

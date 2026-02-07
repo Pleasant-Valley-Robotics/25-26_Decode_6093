@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Config
 @Autonomous(name = "Close Dio Auto 9 Ball", group = "Autonomous")
 public class CloseDIOAuto9Ball extends LinearOpMode {
-    public boolean endNow = false;
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive = null;
     private int r = 1;
@@ -64,10 +63,10 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Vector2d shootPosition = new Vector2d(-23.9816, 14.2421*r); // 130.5
         Vector2d leaveShoot = new Vector2d(-34.358,15.02*r); // 126.0861
-        Vector2d middleSpike = new Vector2d(14.4952-(2*r), 35*r);
-        Vector2d closeSpike = new Vector2d(-15.2232-(2*r), 35.8*r);
+        Vector2d middleSpike = new Vector2d(15.0561-(3.52*r), 32.7851*r);
+        Vector2d closeSpike = new Vector2d(-15.2232-(3.52*r), 34.8*r);
         Vector2d farSpike = new Vector2d(41.6725-(2*r), 35.8*r);
-        Vector2d gate = new Vector2d(3.5728, 57.0165*r);
+        Vector2d gate = new Vector2d(3.5728, 58.0165*r);
         double shootAngle = 130.5*r;
         double leaveShootAngle = 126.0861*r;
         double intakeAngle = 90*r;
@@ -100,7 +99,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         //Drive to shoot
         Actions.runBlocking(drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(shootPosition, Math.toRadians(-180),null,new ProfileAccelConstraint(-30,70)).build());
+                .strafeToLinearHeading(shootPosition, Math.toRadians(-180 * r),null,new ProfileAccelConstraint(-30,70)).build());
 
 
         // Read motif
@@ -134,7 +133,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                 )
         );
 
-        intake.stopIntake();
+        intake.setPower(-1);
 
 
         shooter.spinUp(1320);
@@ -167,7 +166,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                         )
                 ));
 
-        intake.stopIntake();
+        intake.setPower(-1);
 
         shooter.spinUp(1320);
 
@@ -183,6 +182,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(new SleepAction(0.1));
 
+        intake.stopIntake();
         shooter.stop();
 
         drive.updatePoseEstimate();

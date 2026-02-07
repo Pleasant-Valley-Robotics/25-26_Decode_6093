@@ -57,7 +57,7 @@ public class ODODIO extends OpMode {
 
     public static int flyWheelSpeed = 1500;
     private double distanceFromGoal;
-    Vector2d autoLockingTarget = new Vector2d(-72, 72 * PoseStorage.isRed);
+    Vector2d autoLockingTarget = new Vector2d(-72, 76 * PoseStorage.isRed);
 
 
     @Override
@@ -72,8 +72,8 @@ public class ODODIO extends OpMode {
 
         // Set positions based on whether or not we are red
         // isRed is a integer, not boolean. Either -1 or 1
-        parkingPose = new Pose2d(42.7961, -39.4571 * PoseStorage.isRed, 0);
-        parkingVec = new Vector2d(42.7961, -39.4571 * PoseStorage.isRed);
+        parkingPose = new Pose2d(45, -36.5 * PoseStorage.isRed, -90);
+        parkingVec = new Vector2d(45, -36.5  * PoseStorage.isRed);
         farVec = new Vector2d(55.9338, -1.024 * PoseStorage.isRed); // 147.4461
         closeVec = new Vector2d(-23.9816, 14.2421 * PoseStorage.isRed); // 133.104
         humanPlayaVec = new Vector2d(71.2383, -63.4445 * PoseStorage.isRed);
@@ -163,7 +163,7 @@ public class ODODIO extends OpMode {
         // A: reset robot heading so forward is where we are facing
 
         if (gamepad1.xWasPressed()) manualRotate = !manualRotate;
-        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(new Pose2d(0, 0, Math.toRadians(90 * PoseStorage.isRed)));
+        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(new Pose2d(71.6127, -71.6983 * PoseStorage.isRed, Math.toRadians(90 * PoseStorage.isRed)));
         //if (gamepad1.aWasPressed()) drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(90)));
         if (gamepad1.right_trigger > 0) driveActions.clear();
 
@@ -177,7 +177,7 @@ public class ODODIO extends OpMode {
         }
  */
         if (gamepad1.dpadRightWasPressed()) {
-            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToSplineHeading(parkingVec, Math.toRadians(0),null,new ProfileAccelConstraint(-20,50));
+            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(parkingVec, Math.toRadians(-90 * PoseStorage.isRed),null,new ProfileAccelConstraint(-20,50));
             driveActions.clear();
             driveActions.add(goPark.build());
         }

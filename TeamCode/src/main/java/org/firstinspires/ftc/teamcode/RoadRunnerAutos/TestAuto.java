@@ -34,7 +34,7 @@ public class TestAuto extends LinearOpMode {
         turntable.updatePosition();
         intake.setPower(1);
         Actions.runBlocking(
-            intake.autoIntake(camera, turntable)
+            intake.normalIntake(camera, turntable)
         );
         intake.setPower(0);
 

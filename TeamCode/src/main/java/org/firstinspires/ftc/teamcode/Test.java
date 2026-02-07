@@ -36,8 +36,8 @@ public class Test extends LinearOpMode {
         indexServo = hardwareMap.get(Servo.class, "index");
         flickerServo = hardwareMap.get(Servo.class, "flicker");
         loc4 = hardwareMap.get(ColorSensor.class, "location4");
-        loc2 = hardwareMap.get(ColorSensor.class, "location3");
-        loc3 = hardwareMap.get(ColorSensor.class, "location2");
+        loc2 = hardwareMap.get(ColorSensor.class, "location2");
+        loc3 = hardwareMap.get(ColorSensor.class, "location3");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
@@ -105,10 +105,10 @@ public class Test extends LinearOpMode {
         output += "Sensor 4: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc4.alpha() + ".\n";
 
         Color.RGBToHSV(loc3.red() * 8, loc3.green() * 8, loc3.blue() * 8, hsvValues);
-        output += "\nSensor 3: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc4.alpha() + ".\n";
+        output += "\nSensor 3: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc3.alpha() + ".\n";
 
         Color.RGBToHSV(loc2.red() * 8, loc2.green() * 8, loc2.blue() * 8, hsvValues);
-        output += "\nSensor 2: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc4.alpha() + ".\n";
+        output += "\nSensor 2: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc2.alpha() + ".\n";
 
         return output;
     }
