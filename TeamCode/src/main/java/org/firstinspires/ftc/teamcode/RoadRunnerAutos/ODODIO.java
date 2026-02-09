@@ -57,7 +57,7 @@ public class ODODIO extends OpMode {
 
     public static int flyWheelSpeed = 1500;
     private double distanceFromGoal;
-    Vector2d autoLockingTarget = new Vector2d(-72, 76 * PoseStorage.isRed);
+    Vector2d autoLockingTarget = new Vector2d(-72, 72 * PoseStorage.isRed);
 
 
     @Override
@@ -72,8 +72,8 @@ public class ODODIO extends OpMode {
 
         // Set positions based on whether or not we are red
         // isRed is a integer, not boolean. Either -1 or 1
-        parkingPose = new Pose2d(45, -36.5 * PoseStorage.isRed, -90);
-        parkingVec = new Vector2d(45, -36.5  * PoseStorage.isRed);
+        parkingPose = new Pose2d(42.7961, -39.4571 * PoseStorage.isRed, 0);
+        parkingVec = new Vector2d(42.7961, -39.4571 * PoseStorage.isRed);
         farVec = new Vector2d(55.9338, -1.024 * PoseStorage.isRed); // 147.4461
         closeVec = new Vector2d(-23.9816, 14.2421 * PoseStorage.isRed); // 133.104
         humanPlayaVec = new Vector2d(71.2383, -63.4445 * PoseStorage.isRed);
@@ -89,11 +89,6 @@ public class ODODIO extends OpMode {
     }
 
     @Override
-    public void start() {
-        turntable.updatePosition();
-    }
-
-    @Override
     public void loop() {
         drive.updatePoseEstimate(); // Get pose from odometry
         distanceFromGoal = updateDistanceFromGoal(drive);
@@ -101,41 +96,56 @@ public class ODODIO extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         //(49.0 / 70.0)
-        flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
+        //flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake
         // R-Bumper: Clockwise
         // L-Bumper: Rotate counter-clockwise
-        if (gamepad2.left_stick_y != 0) {
-            if (gamepad2.left_stick_y > 0 && prevGamepad2.left_stick_y == 0) {
+        if (gamepad2.right_stick_y != 0) {
+            if (gamepad2.right_stick_y > 0 && prevGamepad2.right_stick_y == 0) {
                 shooter.setServoPos(shooter.downPos);
                 //systemsActions.set(0, intake.normalIntake(camera, turntable));
             }
-            intake.setPower(gamepad2.left_stick_y);
+            intake.setPower(gamepad2.right_stick_y);
         } else {
             //systemsActions.set(0, null);
             intake.stopIntake();
         }
 
+        if (gamepad2.aWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            systemsActions.set(1, shooter.fireOnce(turntable));
+        }
         if (gamepad2.xWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            systemsActions.set(2, shooter.shootAll(turntable));
+        }
+
+        if (gamepad2.rightBumperWasPressed()) {
+            if (turntable.getPositionId() < 8 ) {
+                shooter.setServoPos(shooter.downPos);
+                turntable.turnLeft();
+            }
+        }
+        if (gamepad2.leftBumperWasPressed()) {
+            if (turntable.getPositionId() > 0) {
+                shooter.setServoPos(shooter.downPos);
+                turntable.turnRight();
+            }
+        }
+        if (gamepad2.dpadRightWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
             turntable.turnToPosition(0);
-            shooter.setServoPos(shooter.downPos);
-        }
-        if (gamepad2.yWasPressed()) {
-            turntable.turnToPosition(1);
-            shooter.setServoPos(shooter.downPos);
-        }
-        if (gamepad2.bWasPressed()) {
-            turntable.turnToPosition(2);
-            shooter.setServoPos(shooter.downPos);
         }
 
-        if (gamepad2.right_bumper) turntable.extraRange(false);
-        else if (gamepad2.rightBumperWasReleased()) turntable.extraRange(true);
+        if (gamepad1.dpadUpWasPressed()) {
+            flyWheelSpeed += 10;
+        }
 
-
-
+        if (gamepad1.dpadDownWasPressed()) {
+            flyWheelSpeed -= 10;
+        }
 
         if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
@@ -145,6 +155,10 @@ public class ODODIO extends OpMode {
             if (shooter.isMoving()) {
                 turntable.removeBall(1);
             }
+        }
+        if (gamepad2.bWasPressed()) {
+            shooter.setServoPos(shooter.downPos);
+            systemsActions.set(3, shooter.shootInPattern(turntable));
         }
 
         if (shooter.getLastSpeed() != 0) {
@@ -163,7 +177,7 @@ public class ODODIO extends OpMode {
         // A: reset robot heading so forward is where we are facing
 
         if (gamepad1.xWasPressed()) manualRotate = !manualRotate;
-        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(new Pose2d(71.6127, -71.6983 * PoseStorage.isRed, Math.toRadians(90 * PoseStorage.isRed)));
+        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(new Pose2d(0, 0, Math.toRadians(90 * PoseStorage.isRed)));
         //if (gamepad1.aWasPressed()) drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(90)));
         if (gamepad1.right_trigger > 0) driveActions.clear();
 
@@ -177,7 +191,7 @@ public class ODODIO extends OpMode {
         }
  */
         if (gamepad1.dpadRightWasPressed()) {
-            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(parkingVec, Math.toRadians(-90 * PoseStorage.isRed),null,new ProfileAccelConstraint(-20,50));
+            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToSplineHeading(parkingVec, Math.toRadians(0),null,new ProfileAccelConstraint(-20,50));
             driveActions.clear();
             driveActions.add(goPark.build());
         }
@@ -221,6 +235,7 @@ public class ODODIO extends OpMode {
         PoseStorage.currentPose = drive.localizer.getPose();
 
         telemetry.addData("Camera has balls", camera.ballDetected());
+        telemetry.addData("Color", camera.getBallColor());
         telemetry.addData("Position ID", turntable.getPositionId());
         telemetry.addData("Target speed", flyWheelSpeed);
         telemetry.addData("Shooter is at speed?", shooter.isAtSpeed());
