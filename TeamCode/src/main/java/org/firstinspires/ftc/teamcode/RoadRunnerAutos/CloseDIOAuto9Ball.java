@@ -38,11 +38,11 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                 timeBeforeStart -= 1.0;
             }
 
-            if (gamepad1.aWasPressed()) {
+            if (gamepad1.bWasPressed()) {
                 PoseStorage.isRed = 1;
             }
 
-            if (gamepad1.bWasPressed()) {
+            if (gamepad1.xWasPressed()) {
                 PoseStorage.isRed = -1;
             }
 
@@ -60,7 +60,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         double intakeAngle = 90*PoseStorage.isRed;
 
 
-        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(-131.9529) * PoseStorage.isRed));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(131.9529) * PoseStorage.isRed));
         Turntable turntable = new Turntable(hardwareMap);
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
@@ -83,7 +83,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
 
-        shooter.spinUp(1350);
+        shooter.spinUp(1360);
 
         //Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
@@ -101,8 +101,9 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         while (!shooter.isAtSpeed()) {
             Actions.runBlocking(new SleepAction(0.1));
         }
-        Actions.runBlocking(shooter.shootInPattern(turntable));
 
+        Actions.runBlocking(shooter.shootInPattern(turntable));
+        Actions.runBlocking(new SleepAction(0.1));
         shooter.stop();
 
 
@@ -124,7 +125,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         intake.setPower(-1);
 
 
-        shooter.spinUp(1350);
+        shooter.spinUp(1360);
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getShootPose(), Math.toRadians(shootAngle)).build());
@@ -156,7 +157,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         intake.setPower(-1);
 
-        shooter.spinUp(1350);
+        shooter.spinUp(1360);
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());

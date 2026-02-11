@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,8 @@ public class ODODIO extends OpMode {
     private double distanceFromGoal;
     Vector2d autoLockingTarget = new Vector2d(-72, 76 * PoseStorage.isRed);
 
+    private int targetAprilTag = 20;
+
 
     @Override
     public void init() {
@@ -67,6 +70,12 @@ public class ODODIO extends OpMode {
 
         for (int i = 0; i < 30; i++) {
             systemsActions.add(null);
+        }
+
+        if (PoseStorage.isRed == 1) {
+            targetAprilTag = 24;
+        } else {
+            targetAprilTag = 20;
         }
     }
 
@@ -144,7 +153,10 @@ public class ODODIO extends OpMode {
         // B: reset robot position to 0, 0. This will eventually probably be a combo of buttons so it can't be accidentally pressed
         // A: reset robot heading so forward is where we are facing
 
-        if (gamepad1.xWasPressed()) manualRotate = !manualRotate;
+        if (gamepad1.xWasPressed()) {
+            manualRotate = !manualRotate;
+            useCamera = false;
+        }
         if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(Positions.getResetPose());
         if (gamepad1.right_trigger > 0) driveActions.clear();
 
@@ -200,6 +212,8 @@ public class ODODIO extends OpMode {
 
         PoseStorage.currentPose = drive.localizer.getPose();
 
+        telemetry.addData("Runtime", getRuntime());
+        telemetry.addData("useCamera", useCamera);
         telemetry.addData("Camera has balls", camera.ballDetected());
         telemetry.addData("Position ID", turntable.getPositionId());
         telemetry.addData("Target speed", flyWheelSpeed);
@@ -230,7 +244,7 @@ public class ODODIO extends OpMode {
     }
 
 
-
+    boolean useCamera = false;
     public double autoLockAngle() {
         // Use tangent to calculate the angle needed to face the goal position on the field
         double xDif = autoLockingTarget.x - drive.localizer.getPose().position.x;
@@ -248,18 +262,41 @@ public class ODODIO extends OpMode {
         double deviation = drive.localizer.getPose().heading.toDouble() - realTargetHeading;
         // Normalize within -2(pi), 2(pi) so it doesn't try to spin multiple times
         deviation = AngleUnit.normalizeRadians(deviation);
+        List<AprilTagDetection> currentDetections = camera.getDetections();
+
+        if ((Math.abs(Math.toDegrees(deviation)) < 5 || useCamera) && !currentDetections.isEmpty()) {
+            useCamera = true;
+            // Use camera for final auto-locking
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null && detection.id == targetAprilTag) {
+                    deviation = detection.ftcPose.x;
+                }
+            }
+        }
+
+        if (useCamera && !currentDetections.isEmpty()) {
+            if (Math.abs(deviation) > tolerance) {
+                double kP = 0.02;
+                double turnPower = kP * deviation;
 
 
-        if (Math.abs(deviation) > tolerance) {
-            // Only run while error is outside of tolerance
-            double kP = 1.0; // Modify to change P strength
-            double turnPower = kP * deviation;
-
-
-            return Math.max(-0.6, Math.min(0.6, turnPower)); // Set max turning speed
+                return Math.max(-0.4, Math.min(0.4, turnPower));
+            } else {
+                // We are aligned, so command no turn.
+                return 0.0;
+            }
         } else {
-            // We are aligned, so command no turn.
-            return 0.0;
+            if (Math.abs(deviation) > tolerance) {
+                // Only run while error is outside of tolerance
+                double kP = 1.0; // Modify to change P strength
+                double turnPower = kP * deviation;
+
+
+                return Math.max(-0.6, Math.min(0.6, turnPower)); // Set max turning speed
+            } else {
+                // We are aligned, so command no turn.
+                return 0.0;
+            }
         }
     }
 

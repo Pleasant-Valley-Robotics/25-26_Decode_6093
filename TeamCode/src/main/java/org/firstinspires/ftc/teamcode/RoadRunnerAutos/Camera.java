@@ -58,6 +58,10 @@ public class Camera {
 
     }
 
+    public ArrayList<AprilTagDetection> getDetections() {
+        return aprilTag.getDetections();
+    }
+
     public Turntable.IndexColors getBallColor() {
         float[] hsvValues = {0,0,0};
 
