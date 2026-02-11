@@ -38,6 +38,17 @@ public class TestAuto extends LinearOpMode {
         );
         intake.setPower(0);
 
+        Actions.runBlocking(
+                new ParallelAction(
+                        new SequentialAction(
+                                drive.actionBuilder(new Pose2d(0, 0, 0)).lineToX(33).build(),
+                                stopUpdate()
+                        ),
+                        updatePose()
+                )
+
+        );
+
         drive.localizer.update();
         PoseStorage.currentPose = drive.localizer.getPose();
 

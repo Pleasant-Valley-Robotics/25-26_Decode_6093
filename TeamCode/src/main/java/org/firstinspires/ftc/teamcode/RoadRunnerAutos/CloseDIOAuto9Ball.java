@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class CloseDIOAuto9Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive = null;
-    private int r = 1;
 
 
     @Override
@@ -47,32 +46,21 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                 PoseStorage.isRed = -1;
             }
 
-            if (r == 1) {
+            if (PoseStorage.isRed == 1) {
                 telemetry.addLine("Red");
             } else {
                 telemetry.addLine("Blue");
             }
-            r = PoseStorage.isRed;
             telemetry.addData("Wait Time", timeBeforeStart);
             telemetry.update();
         }
 
-
-        Pose2d initialPose = new Pose2d(-59.91, 56.13 * r, Math.toRadians(128.87 * r));
-
-
-        Vector2d shootPosition = new Vector2d(-23.9816, 14.2421*r); // 130.5
-        Vector2d leaveShoot = new Vector2d(-34.358,15.02*r); // 126.0861
-        Vector2d middleSpike = new Vector2d(15.0561-(3.52*r), 32.7851*r);
-        Vector2d closeSpike = new Vector2d(-15.2232-(3.52*r), 34.8*r);
-        Vector2d farSpike = new Vector2d(41.6725-(2*r), 35.8*r);
-        Vector2d gate = new Vector2d(3.5728, 58.0165*r);
-        double shootAngle = 130.5*r;
-        double leaveShootAngle = 126.0861*r;
-        double intakeAngle = 90*r;
+        double shootAngle = 130.5*PoseStorage.isRed;
+        double leaveShootAngle = 125.4*PoseStorage.isRed;
+        double intakeAngle = 90*PoseStorage.isRed;
 
 
-        drive = new MecanumDrive(hardwareMap, initialPose);
+        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(-131.9529) * PoseStorage.isRed));
         Turntable turntable = new Turntable(hardwareMap);
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
@@ -95,18 +83,18 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
 
-        shooter.spinUp(1320);
+        shooter.spinUp(1350);
 
         //Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(shootPosition, Math.toRadians(-180 * r),null,new ProfileAccelConstraint(-30,70)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToLinearHeading(Positions.getShootPose(), Math.toRadians(-180 * PoseStorage.isRed),null,new ProfileAccelConstraint(-30,70)).build());
 
 
         // Read motif
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
+                .strafeToLinearHeading(Positions.getShootPose(), Math.toRadians(shootAngle)).build());
 
 
         // Shoot
@@ -124,22 +112,22 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(
             new ParallelAction(
-                intake.normalIntake(camera, turntable),
+                intake.autoIntake(camera, turntable),
                 new SequentialAction(
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(closeSpike, Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
-                                .strafeToLinearHeading(new Vector2d(closeSpike.x, closeSpike.y + (13*r)), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build()),
-                    updatePose(new Pose2d(closeSpike.x, closeSpike.y + (14*r), Math.toRadians(intakeAngle)))
+                                .strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
+                                .strafeToLinearHeading(Positions.getIntakeClosePoseE(), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.2),new ProfileAccelConstraint(-30,70)).build()),
+                    updatePose(new Pose2d(Positions.getIntakeClosePoseE(), Math.toRadians(intakeAngle)))
                 )
         );
 
         intake.setPower(-1);
 
 
-        shooter.spinUp(1320);
+        shooter.spinUp(1350);
 
         // Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(shootPosition, Math.toRadians(shootAngle)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getShootPose(), Math.toRadians(shootAngle)).build());
         turntable.turnToPosition(1);
 
         // Shoot
@@ -157,21 +145,21 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        intake.normalIntake(camera, turntable),
+                        intake.autoIntake(camera, turntable),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToLinearHeading(middleSpike, Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
-                                        .strafeToLinearHeading(new Vector2d(middleSpike.x, middleSpike.y + (14*r)), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build(),
-                                updatePose(new Pose2d(middleSpike.x, middleSpike.y + (14*r), Math.toRadians(intakeAngle)))
+                                        .strafeToLinearHeading(Positions.getIntakeMedPoseS(), Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
+                                        .strafeToLinearHeading(Positions.getIntakeMedPoseE(), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.2), new ProfileAccelConstraint(-30,70)).build(),
+                                updatePose(new Pose2d(Positions.getIntakeMedPoseE(), Math.toRadians(intakeAngle)))
                         )
                 ));
 
         intake.setPower(-1);
 
-        shooter.spinUp(1320);
+        shooter.spinUp(1350);
 
         // Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(leaveShoot, Math.toRadians(leaveShootAngle)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());
         turntable.turnToPosition(1);
 
         // Shoot
