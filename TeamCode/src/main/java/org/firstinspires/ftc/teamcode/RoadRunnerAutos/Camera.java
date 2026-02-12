@@ -20,6 +20,7 @@ public class Camera {
     private VisionPortal visionPortal;
 
     public ColorSensor loc4;
+    public ColorSensor loc1;
     private final int GREEN_HUE = 140;
     private final int PURPLE_HUE = 150;
 
@@ -36,6 +37,7 @@ public class Camera {
         }
 
         loc4 = hardwareMap.get(ColorSensor.class, "location4");
+        loc1 = hardwareMap.get(ColorSensor.class, "location1");
 
 
 
@@ -77,7 +79,7 @@ public class Camera {
     }
 
     public boolean ballDetected() {
-        return loc4.alpha() >= 38;
+        return ((double) loc1.blue() / loc1.red()) >= 1.6;
     }
 
 //    public Turntable.IndexColors[] scan() {
