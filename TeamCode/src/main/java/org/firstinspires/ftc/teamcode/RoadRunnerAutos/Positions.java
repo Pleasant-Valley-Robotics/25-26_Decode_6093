@@ -29,7 +29,7 @@ public class Positions {
 
     public static Vector2d getIntakeClosePoseS() {return new Vector2d(intakeClosePoseS.x, intakeClosePoseS.y * PoseStorage.isRed);}
     public static Vector2d getIntakeClosePoseE() {return new Vector2d(intakeClosePoseE.x, intakeClosePoseE.y * PoseStorage.isRed);}
-    public static Vector2d getIntakeMedPoseS() {return new Vector2d(intakeMedPoseE.x, intakeMedPoseE.y * PoseStorage.isRed);}
+    public static Vector2d getIntakeMedPoseS() {return new Vector2d(intakeMedPoseS.x, intakeMedPoseS.y * PoseStorage.isRed);}
     public static Vector2d getIntakeMedPoseE() {return new Vector2d(intakeMedPoseE.x, intakeMedPoseE.y * PoseStorage.isRed);}
     public static Vector2d getIntakeFarPoseS() {return new Vector2d(intakeFarPoseS.x, intakeFarPoseS.y * PoseStorage.isRed);}
     public static Vector2d getIntakeFarPoseE() {return new Vector2d(intakeFarPoseE.x, intakeFarPoseE.y * PoseStorage.isRed);}
