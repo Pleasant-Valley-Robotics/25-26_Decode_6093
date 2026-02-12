@@ -114,7 +114,7 @@ public class Shooter {
 
                 if (timer.seconds() < .75 && timer.seconds() > .4) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .4 ){
+                } else if (timer.seconds() > .75){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(1);
                     turntable.turnLeft();
@@ -158,9 +158,9 @@ public class Shooter {
                         throw new RuntimeException("infinite loop, yell at the programers");
                     }
                 }
-                if (timer.seconds() < .75 && timer.seconds() > 0.25) {
+                if (timer.seconds() < .75 && timer.seconds() > .4) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > 0.75 ){
+                } else if (timer.seconds() > .4 ){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(1);
                     index++;

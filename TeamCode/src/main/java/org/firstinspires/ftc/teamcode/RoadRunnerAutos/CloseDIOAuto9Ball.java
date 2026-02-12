@@ -55,8 +55,8 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
             telemetry.update();
         }
 
-        double shootAngle = 130.5*PoseStorage.isRed;
-        double leaveShootAngle = 125.4*PoseStorage.isRed;
+        double shootAngle = 134.5*PoseStorage.isRed;
+        double leaveShootAngle = 127.4*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
 
 
@@ -103,7 +103,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         }
 
         Actions.runBlocking(shooter.shootInPattern(turntable));
-        Actions.runBlocking(new SleepAction(0.1));
+        Actions.runBlocking(new SleepAction(0.2));
         shooter.stop();
 
 
@@ -137,7 +137,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         }
         Actions.runBlocking(shooter.shootInPattern(turntable));
 
-        Actions.runBlocking(new SleepAction(0.1));
+        Actions.runBlocking(new SleepAction(0.2));
 
         shooter.stop();
 
@@ -169,7 +169,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         }
         Actions.runBlocking(shooter.shootInPattern(turntable));
 
-        Actions.runBlocking(new SleepAction(0.1));
+        Actions.runBlocking(new SleepAction(0.2));
 
         intake.stopIntake();
         shooter.stop();

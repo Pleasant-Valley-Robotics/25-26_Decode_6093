@@ -44,7 +44,6 @@ public class Intake {
                     if (!isFirstTime && timer.seconds() > 0.40) {
                         timer.reset();
                         isFirstTime = true;
-
                     }
 
                     if (timer.seconds() > 0.65) {
@@ -82,7 +81,7 @@ public class Intake {
                 }
 
                 if (camera.ballDetected()) {
-                    if (!isFirstTime && timer.seconds() > 0.35) {
+                    if (!isFirstTime && timer.seconds() > 0.2) {
                         timer.reset();
                         isFirstTime = true;
 
