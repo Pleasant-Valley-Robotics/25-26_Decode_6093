@@ -21,8 +21,8 @@ public class Camera {
 
     public ColorSensor loc4;
     public ColorSensor loc1;
-    private final int GREEN_HUE = 140;
-    private final int PURPLE_HUE = 150;
+
+    private final int PURPLE_HUE = 180;
 
     public Camera(HardwareMap hardwareMap) {
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
@@ -67,15 +67,13 @@ public class Camera {
     public Turntable.IndexColors getBallColor() {
         float[] hsvValues = {0,0,0};
 
-        Color.RGBToHSV(loc4.red() * 8, loc4.green() * 8, loc4.blue() * 8, hsvValues);
+        Color.RGBToHSV(loc1.red() * 8, loc1.green() * 8, loc1.blue() * 8, hsvValues);
 
-        if (Math.abs(hsvValues[0] - PURPLE_HUE) < 5) {
+        if (hsvValues[0] > PURPLE_HUE) {
             return Turntable.IndexColors.PURPLE;
-        } else if (Math.abs(hsvValues[0] - GREEN_HUE) < 5) {
+        } else {
             return Turntable.IndexColors.GREEN;
         }
-
-        return Turntable.IndexColors.PURPLE;
     }
 
     public boolean ballDetected() {

@@ -82,19 +82,20 @@ public class Shooter {
     public Action shootAll(Turntable turntable) {
         return new Action() {
             ElapsedTime timer = new ElapsedTime();
-            boolean initialized = false;
+            int count = 0;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!isMoving()) return false;
-                if (turntable.getNumBalls() == 0) return false;
+                if (count >= 3) return false;
 
-                if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
+                if (timer.seconds() < .75 && timer.seconds() > 0.35) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > 1.5 ){
+                } else if (timer.seconds() > .75 ){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(1);
                     turntable.turnLeft();
+                    count++;
                     timer.reset();
                 }
                 return true;
@@ -112,9 +113,9 @@ public class Shooter {
                 if (!isMoving()) return false;
                 if (turntable.getNumBalls() == 0) return false;
 
-                if (timer.seconds() < .75 && timer.seconds() > .4) {
+                if (timer.seconds() < .90 && timer.seconds() > .5) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .75){
+                } else if (timer.seconds() > 1.2){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(1);
                     turntable.turnLeft();
@@ -158,9 +159,9 @@ public class Shooter {
                         throw new RuntimeException("infinite loop, yell at the programers");
                     }
                 }
-                if (timer.seconds() < .75 && timer.seconds() > .35) {
+                if (timer.seconds() < .90 && timer.seconds() > .5) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .75 ){
+                } else if (timer.seconds() > 1.2){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(1);
                     index++;

@@ -22,8 +22,9 @@ public class Test extends LinearOpMode {
     ColorSensor loc4 = null;
     ColorSensor loc2 = null;
     ColorSensor loc3 = null;
+    ColorSensor loc1;
 
-    ColorSensor[] sensors = {loc4, loc3, loc2};
+    ColorSensor[] sensors = {loc4, loc3, loc1};
 
     DcMotor intake;
     DcMotorEx shooter;
@@ -36,6 +37,7 @@ public class Test extends LinearOpMode {
         indexServo = hardwareMap.get(Servo.class, "index");
         flickerServo = hardwareMap.get(Servo.class, "flicker");
         loc4 = hardwareMap.get(ColorSensor.class, "location4");
+        loc1 = hardwareMap.get(ColorSensor.class, "location1");
         loc2 = hardwareMap.get(ColorSensor.class, "location2");
         loc3 = hardwareMap.get(ColorSensor.class, "location3");
 
@@ -87,7 +89,9 @@ public class Test extends LinearOpMode {
             flickerServo.setPosition(flickerServoPos);
 
             telemetry.addData("velocity", shooter.getVelocity(AngleUnit.DEGREES));
-            telemetry.addData("sensor 4", "\nred: " + loc4.red() + "\ngreen: " + loc4.green() + "\nblue: " + loc4.blue() + "\nr/b: " + (double)loc4.red() / (double)loc4.blue() + "\n");
+            telemetry.addData("sensor 4", "\nred: " + loc4.red() + "\ngreen: " + loc4.green() + "\nblue: " + loc4.blue() + "\nb/r: " + (double)loc4.blue()/ (double)loc4.red() + "\n");
+            telemetry.addData("sensor 2", "\nred: " + loc2.red() + "\ngreen: " + loc2.green() + "\nblue: " + loc2.blue() + "\nb/r: " + (double)loc2.blue() / (double)loc2.red() + "\n");
+            telemetry.addData("sensor 1", "\nred: " + loc1.red() + "\ngreen: " + loc1.green() + "\nblue: " + loc1.blue() + "\nb/r: " + (double)loc1.blue() / (double)loc1.red() + "\n");
             telemetry.addData("Index Servo Position", indexServoPos);
             telemetry.addData("Flicker` Servo Position", flickerServoPos);
             telemetry.addData("Color Sensors", getColorReadings());
@@ -108,8 +112,8 @@ public class Test extends LinearOpMode {
         Color.RGBToHSV(loc3.red() * 8, loc3.green() * 8, loc3.blue() * 8, hsvValues);
         output += "\nSensor 3: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc3.alpha() + ".\n";
 
-        Color.RGBToHSV(loc2.red() * 8, loc2.green() * 8, loc2.blue() * 8, hsvValues);
-        output += "\nSensor 2: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc2.alpha() + ".\n";
+        Color.RGBToHSV(loc1.red() * 8, loc1.green() * 8, loc1.blue() * 8, hsvValues);
+        output += "\nSensor 1: \nh:" + hsvValues[0] + "\ns:" + hsvValues[1] + "\nv:" + hsvValues[2] + "\nAlpha: " + loc1.alpha() + ".\n";
 
         return output;
     }

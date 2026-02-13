@@ -71,24 +71,22 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
                     limit.reset();
-                    turntable.turnToPosition(0);
                     initialized = true;
                 }
 
-                if (turntable.getNumBalls() >= 3 || limit.seconds() > 5) {
-                    turntable.turnLeft();
+                if (turntable.getNumBalls() >= 3 || limit.seconds() > 7.5) {
                     return false;
                 }
 
-                if (camera.ballDetected()) {
-                    if (!isFirstTime && timer.seconds() > 0.2) {
+                if (camera.ballDetected() && timer.seconds() > 0.2) {
+                    if (!isFirstTime) {
                         timer.reset();
                         isFirstTime = true;
 
                     }
 
-                    if (timer.seconds() > 0.60) {
-                        turntable.addBall(0, camera.getBallColor());
+                    if (timer.seconds() > 0.55) {
+                        turntable.addBall(2, camera.getBallColor());
                         turntable.turnLeft();
                         timer.reset();
                         isFirstTime = false;
