@@ -87,6 +87,7 @@ public class Test extends LinearOpMode {
             flickerServo.setPosition(flickerServoPos);
 
             telemetry.addData("velocity", shooter.getVelocity(AngleUnit.DEGREES));
+            telemetry.addData("sensor 4", "\nred: " + loc4.red() + "\ngreen: " + loc4.green() + "\nblue: " + loc4.blue() + "\nr/b: " + (double)loc4.red() / (double)loc4.blue() + "\n");
             telemetry.addData("Index Servo Position", indexServoPos);
             telemetry.addData("Flicker` Servo Position", flickerServoPos);
             telemetry.addData("Color Sensors", getColorReadings());

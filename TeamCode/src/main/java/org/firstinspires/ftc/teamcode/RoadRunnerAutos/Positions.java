@@ -8,13 +8,13 @@ public class Positions {
     private static final Pose2d resetPose = new Pose2d(73.9877, -69.7049, Math.toRadians(90));
     private static final Vector2d closeStartPose = new Vector2d(-57.0026, 59.3618); //131.9529
     private static final Vector2d intakeClosePoseS = new Vector2d(-15.2363, 36.4081); //90
-    private static final Vector2d intakeClosePoseE = new Vector2d(intakeClosePoseS.x, intakeClosePoseS.y + 16); //90
+    private static final Vector2d intakeClosePoseE = new Vector2d(intakeClosePoseS.x, intakeClosePoseS.y + 17); //90
 
     private static final Vector2d intakeMedPoseS = new Vector2d(12.0224, 36.4081); //90
-    private static final Vector2d intakeMedPoseE = new Vector2d(intakeMedPoseS.x, intakeMedPoseS.y + 16); //90
+    private static final Vector2d intakeMedPoseE = new Vector2d(intakeMedPoseS.x, intakeMedPoseS.y + 17); //90
 
     private static final Vector2d intakeFarPoseS = new Vector2d(40.002, 36.4081); //90
-    private static final Vector2d intakeFarPoseE = new Vector2d(intakeFarPoseS.x, intakeFarPoseS.y + 16); //90
+    private static final Vector2d intakeFarPoseE = new Vector2d(intakeFarPoseS.x, intakeFarPoseS.y + 17); //90
 
     private static final Vector2d shootPose = new Vector2d(-20.2168, 19.232);// 130.662 for shoot, 180 for scan
     private static final Vector2d leaveShootPose = new Vector2d(-28.5357, 16.0285);

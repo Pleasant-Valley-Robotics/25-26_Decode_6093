@@ -79,7 +79,7 @@ public class Camera {
     }
 
     public boolean ballDetected() {
-        return loc4.alpha() >= 38;
+        return ((double) loc1.blue() / loc1.red()) >= 1.6;
     }
 
 //    public Turntable.IndexColors[] scan() {

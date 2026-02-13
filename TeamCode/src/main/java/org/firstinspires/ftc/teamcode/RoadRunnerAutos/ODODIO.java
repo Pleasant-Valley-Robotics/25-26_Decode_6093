@@ -110,7 +110,7 @@ public class ODODIO extends OpMode {
         }
 
         if (gamepad2.xWasPressed()) {
-            turntable.turnToPosition(0);
+            turntable.turnToPosition(2);
             shooter.setServoPos(shooter.downPos);
         }
         if (gamepad2.yWasPressed()) {
@@ -118,7 +118,7 @@ public class ODODIO extends OpMode {
             shooter.setServoPos(shooter.downPos);
         }
         if (gamepad2.bWasPressed()) {
-            turntable.turnToPosition(2);
+            turntable.turnToPosition(0);
             shooter.setServoPos(shooter.downPos);
         }
 

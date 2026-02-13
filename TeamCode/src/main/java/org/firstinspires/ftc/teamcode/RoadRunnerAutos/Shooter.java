@@ -158,9 +158,9 @@ public class Shooter {
                         throw new RuntimeException("infinite loop, yell at the programers");
                     }
                 }
-                if (timer.seconds() < .75 && timer.seconds() > .4) {
+                if (timer.seconds() < .75 && timer.seconds() > .35) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .4 ){
+                } else if (timer.seconds() > .75 ){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(1);
                     index++;
