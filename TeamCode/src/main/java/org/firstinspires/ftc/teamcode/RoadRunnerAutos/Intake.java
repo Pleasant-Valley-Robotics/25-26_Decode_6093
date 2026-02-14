@@ -74,7 +74,7 @@ public class Intake {
                     initialized = true;
                 }
 
-                if (turntable.getNumBalls() >= 3 || limit.seconds() > 7.5) {
+                if (turntable.getNumBalls() >= 3 || limit.seconds() > 6.0) {
                     return false;
                 }
 

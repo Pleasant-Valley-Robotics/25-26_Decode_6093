@@ -92,7 +92,7 @@ public class ODODIO extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         //(49.0 / 70.0)
-        flyWheelSpeed = (int) ((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
+        flyWheelSpeed = 20 + (int)((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake

@@ -27,11 +27,11 @@ public class Positions {
     public static Vector2d getShootPose() {return new Vector2d(shootPose.x, shootPose.y * PoseStorage.isRed);}
     public static Vector2d getParkPose() {return new Vector2d(parkPose.x, parkPose.y * PoseStorage.isRed);}
 
-    public static Vector2d getIntakeClosePoseS() {return new Vector2d(intakeClosePoseE.x + (-4 * PoseStorage.isRed), intakeClosePoseS.y * PoseStorage.isRed);}
-    public static Vector2d getIntakeClosePoseE() {return new Vector2d(intakeClosePoseE.x + (-4 * PoseStorage.isRed), intakeClosePoseE.y * PoseStorage.isRed);}
-    public static Vector2d getIntakeMedPoseS() {return new Vector2d(intakeMedPoseE.x + (-4 * PoseStorage.isRed), intakeMedPoseS.y * PoseStorage.isRed);}
-    public static Vector2d getIntakeMedPoseE() {return new Vector2d(intakeMedPoseE.x + (-4 * PoseStorage.isRed), intakeMedPoseE.y * PoseStorage.isRed);}
-    public static Vector2d getIntakeFarPoseS() {return new Vector2d(intakeFarPoseE.x + (-4 * PoseStorage.isRed), intakeFarPoseS.y * PoseStorage.isRed);}
-    public static Vector2d getIntakeFarPoseE() {return new Vector2d(intakeFarPoseE.x + (-4 * PoseStorage.isRed), intakeFarPoseE.y * PoseStorage.isRed);}
+    public static Vector2d getIntakeClosePoseS() {return new Vector2d(intakeClosePoseE.x + (-4.7 * PoseStorage.isRed), intakeClosePoseS.y * PoseStorage.isRed);}
+    public static Vector2d getIntakeClosePoseE() {return new Vector2d(intakeClosePoseE.x + (-4.7 * PoseStorage.isRed), intakeClosePoseE.y * PoseStorage.isRed);}
+    public static Vector2d getIntakeMedPoseS() {return new Vector2d(intakeMedPoseE.x + (-4.7 * PoseStorage.isRed), intakeMedPoseS.y * PoseStorage.isRed);}
+    public static Vector2d getIntakeMedPoseE() {return new Vector2d(intakeMedPoseE.x + (-4.7 * PoseStorage.isRed), intakeMedPoseE.y * PoseStorage.isRed);}
+    public static Vector2d getIntakeFarPoseS() {return new Vector2d(intakeFarPoseE.x + (-4.7 * PoseStorage.isRed), intakeFarPoseS.y * PoseStorage.isRed);}
+    public static Vector2d getIntakeFarPoseE() {return new Vector2d(intakeFarPoseE.x + (-4.7 * PoseStorage.isRed), intakeFarPoseE.y * PoseStorage.isRed);}
 
 }

@@ -89,13 +89,12 @@ public class Shooter {
                 if (!isMoving()) return false;
                 if (count >= 3) return false;
 
-                if (timer.seconds() < .75 && timer.seconds() > 0.35) {
+                if (timer.seconds() < .90 && timer.seconds() > .5) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .75 ){
+                } else if (timer.seconds() > .9){
                     flickerServo.setPosition(downPos);
+                } else if (timer.seconds() > 1.2) {
                     turntable.removeBall(1);
-                    turntable.turnLeft();
-                    count++;
                     timer.reset();
                 }
                 return true;
@@ -161,8 +160,9 @@ public class Shooter {
                 }
                 if (timer.seconds() < .90 && timer.seconds() > .5) {
                     flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > 1.2){
+                } else if (timer.seconds() > .9){
                     flickerServo.setPosition(downPos);
+                } else if (timer.seconds() > 1.2) {
                     turntable.removeBall(1);
                     index++;
                     index %= 3;
