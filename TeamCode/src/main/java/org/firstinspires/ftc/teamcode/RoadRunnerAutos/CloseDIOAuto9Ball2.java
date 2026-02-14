@@ -52,7 +52,7 @@ public class CloseDIOAuto9Ball2 extends LinearOpMode {
             telemetry.update();
         }
 
-        double shootAngle = 132.5*PoseStorage.isRed;
+        double shootAngle = 134.5*PoseStorage.isRed;
         double leaveShootAngle = 127.4*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
 
@@ -79,7 +79,7 @@ public class CloseDIOAuto9Ball2 extends LinearOpMode {
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
         //Throttle to speed for launching
-        shooter.spinUp(1360);
+        shooter.spinUp(1345);
         // Read april tag
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getShootPose(), Math.toRadians(-180 * PoseStorage.isRed)).build());
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
@@ -111,7 +111,7 @@ public class CloseDIOAuto9Ball2 extends LinearOpMode {
                 )
         ));
 
-        shooter.spinUp(1360);
+        shooter.spinUp(1345);
 
         // Reverse intake to spit out extra balls
         intake.setPower(-1);
@@ -144,7 +144,7 @@ public class CloseDIOAuto9Ball2 extends LinearOpMode {
         ));
 
 
-        shooter.spinUp(1360);
+        shooter.spinUp(1345);
 
         // Reverse intake to spit out extra balls
         intake.setPower(-1);
