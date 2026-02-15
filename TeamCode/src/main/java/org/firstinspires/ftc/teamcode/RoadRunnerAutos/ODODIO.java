@@ -249,7 +249,7 @@ public class ODODIO extends OpMode {
         // Use tangent to calculate the angle needed to face the goal position on the field
         double xDif = autoLockingTarget.x - drive.localizer.getPose().position.x;
         double yDif = autoLockingTarget.y - drive.localizer.getPose().position.y;
-        double tolerance = 0.03; // Tolerance in radians
+        double tolerance = 0.1; // Tolerance in radians
 
         // Use tan-1 to get raw target heading before normalizing
         double rawTargetHeading = Math.atan2(yDif, xDif);
@@ -264,7 +264,7 @@ public class ODODIO extends OpMode {
         deviation = AngleUnit.normalizeRadians(deviation);
         List<AprilTagDetection> currentDetections = camera.getDetections();
 
-        if ((Math.abs(Math.toDegrees(deviation)) < 5 || useCamera) && !currentDetections.isEmpty()) {
+        if ((Math.abs(Math.toDegrees(deviation)) < 10 || useCamera) && !currentDetections.isEmpty()) {
             useCamera = true;
             // Use camera for final auto-locking
             for (AprilTagDetection detection : currentDetections) {
