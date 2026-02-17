@@ -23,7 +23,7 @@ public class DistanceTuner extends OpMode {
     Shooter shooter;
 
     Vector2d autoLockingTarget = new Vector2d(-72, 72 * PoseStorage.isRed);
-    private int flyWheelSpeed = 1500;
+    private int flyWheelSpeed = 10;
     private double distanceFromGoal;
 
     @Override

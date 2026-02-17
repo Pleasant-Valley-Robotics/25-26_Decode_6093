@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,6 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Shooter {
 
     private DcMotorEx shooter;
+    private DcMotorEx shooter2;
     private Servo flickerServo;
     final public double upPos = 0.3;
     final public double downPos = .4;
@@ -27,13 +29,16 @@ public class Shooter {
 
     public Shooter(HardwareMap hardwareMap) {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+        shooter2 = hardwareMap.get(DcMotorEx.class, "shooter2");
         flickerServo = hardwareMap.get(Servo.class, "flicker");
 
+        shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setZeroPowerBehavior(BRAKE);
-
+        shooter2.setZeroPowerBehavior(BRAKE);
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
+        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
     }
 
     public void setServoPos(double position) {
@@ -177,6 +182,7 @@ public class Shooter {
     public void spinUp(int speed) {
         lastSpeed = speed;
         shooter.setVelocity(speed);
+        shooter2.setVelocity(speed);
     }
 
 
