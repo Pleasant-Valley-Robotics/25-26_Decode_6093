@@ -123,7 +123,7 @@ public class VelocityBased extends OpMode {
 
     public Vector2d updateTarget(PoseVelocity2d velocity) {
         double newX = autoLockingTarget.x + (velocity.linearVel.x * velocityCoefficient);
-        double newY = autoLockingTarget.x + (velocity.linearVel.y * velocityCoefficient);
+        double newY = autoLockingTarget.y + (velocity.linearVel.y * velocityCoefficient);
 
         return new Vector2d(newX, newY);
     }
