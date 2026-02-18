@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class Camera {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     private AprilTagProcessor aprilTag;
-    private VisionPortal visionPortal;
+   // private VisionPortal visionPortal;
 
     public ColorSensor loc4;
     public ColorSensor loc1;
@@ -29,11 +29,11 @@ public class Camera {
 
         // Create the vision portal the easy way.
         if (USE_WEBCAM) {
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+            //visionPortal = VisionPortal.easyCreateWithDefaults(
+                    //hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
         } else {
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    BuiltinCameraDirection.BACK, aprilTag);
+            //visionPortal = VisionPortal.easyCreateWithDefaults(
+                    //BuiltinCameraDirection.BACK, aprilTag);
         }
 
         loc4 = hardwareMap.get(ColorSensor.class, "location4");
