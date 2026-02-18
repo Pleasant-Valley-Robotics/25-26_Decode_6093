@@ -191,27 +191,4 @@ public class CloseDIOAuto9Ball2 extends LinearOpMode {
 
     }
 
-    private double getAprilTagTurnPower() {
-        List<AprilTagDetection> currentDetections = camera.getDetections();
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null && detection.id == targetAprilTag) {
-                double tolerance = 0.75; // Tolerance in inches
-                double deviation = -detection.ftcPose.z;
-
-
-                if (Math.abs(deviation) > tolerance) {
-                    double kP = 0.02;
-                    double turnPower = kP * deviation;
-
-
-                    return Math.max(-0.4, Math.min(0.4, turnPower));
-                } else {
-                    // We are aligned, so command no turn.
-                    return 0.0;
-                }
-            }
-        }
-        return 0.0;
-    }
-
 }

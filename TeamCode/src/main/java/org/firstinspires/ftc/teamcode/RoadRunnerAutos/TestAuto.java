@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -92,11 +93,11 @@ public class TestAuto extends LinearOpMode {
     }
 
     private double getAprilTagTurnPower() {
-        List<AprilTagDetection> currentDetections = camera.getDetections();
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null && detection.id == targetAprilTag) {
+        List<LLResultTypes.FiducialResult> currentDetections = camera.getDetections();
+        for (LLResultTypes.FiducialResult detection : currentDetections) {
+            if (detection != null && detection.getFiducialId() == targetAprilTag) {
                 double tolerance = 0.03;
-                double deviation = detection.ftcPose.x;
+                double deviation = detection.getTargetXDegrees();
                 if (Math.abs(deviation) > tolerance) {
                     double kP = 0.02;
                     double turnPower = kP * deviation;

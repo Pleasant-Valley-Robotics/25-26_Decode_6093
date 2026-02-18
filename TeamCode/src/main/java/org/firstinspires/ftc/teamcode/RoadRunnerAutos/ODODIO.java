@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -272,14 +273,14 @@ public class ODODIO extends OpMode {
         double deviation = drive.localizer.getPose().heading.toDouble() - realTargetHeading;
         // Normalize within -2(pi), 2(pi) so it doesn't try to spin multiple times
         deviation = AngleUnit.normalizeRadians(deviation);
-        List<AprilTagDetection> currentDetections = camera.getDetections();
+        List<LLResultTypes.FiducialResult> currentDetections = camera.getDetections();
 
         if ((Math.abs(Math.toDegrees(deviation)) < 10 || useCamera) && !currentDetections.isEmpty()) {
             useCamera = true;
             // Use camera for final auto-locking
-            for (AprilTagDetection detection : currentDetections) {
-                if (detection.metadata != null && detection.id == targetAprilTag) {
-                    deviation = detection.ftcPose.x;
+            for (LLResultTypes.FiducialResult detection : currentDetections) {
+                if (detection != null && detection.getFiducialId() == targetAprilTag) {
+                    deviation = detection.getTargetXDegrees();
                 }
             }
         }

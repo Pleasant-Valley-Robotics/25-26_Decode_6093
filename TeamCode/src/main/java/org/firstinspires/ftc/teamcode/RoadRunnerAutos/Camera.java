@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -13,55 +16,53 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Camera {
-    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private AprilTagProcessor aprilTag;
-   // private VisionPortal visionPortal;
-
-    public ColorSensor loc4;
-    public ColorSensor loc1;
+    private Limelight3A limelight;
+    private ColorSensor loc4;
+    private ColorSensor loc1;
 
     private final int PURPLE_HUE = 180;
 
+    private boolean isEnabled = true;
+
     public Camera(HardwareMap hardwareMap) {
-        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
-
-        // Create the vision portal the easy way.
-        if (USE_WEBCAM) {
-            //visionPortal = VisionPortal.easyCreateWithDefaults(
-                    //hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
-        } else {
-            //visionPortal = VisionPortal.easyCreateWithDefaults(
-                    //BuiltinCameraDirection.BACK, aprilTag);
-        }
-
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         loc4 = hardwareMap.get(ColorSensor.class, "location4");
         loc1 = hardwareMap.get(ColorSensor.class, "location1");
 
+        limelight.pipelineSwitch(0);
+        limelight.start();
 
 
     }
 
 
     public int findShotsToCycle() {
-        // Amount of times to turn the turntable LEFT
-        if (!aprilTag.getDetections().isEmpty()) {
-            switch (aprilTag.getDetections().get(0).id) {
-                case 21:
-                    return 0;
-                case 22:
-                    return 2;
-                case 23:
-                    return 1;
+        LLResult result = limelight.getLatestResult();
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            if (!fiducials.isEmpty()) {
+                switch (fiducials.get(0).getFiducialId()) {
+                    case 21:
+                        return 0;
+                    case 22:
+                        return 2;
+                    case 23:
+                        return 1;
+                }
             }
         }
+
+        // Amount of times to turn the turntable LEFT
+
         return 0;
 
     }
 
-    public ArrayList<AprilTagDetection> getDetections() {
-        return aprilTag.getDetections();
+    public List<LLResultTypes.FiducialResult> getDetections() {
+        return limelight.getLatestResult().getFiducialResults();
     }
 
     public Turntable.IndexColors getBallColor() {
@@ -74,6 +75,14 @@ public class Camera {
         } else {
             return Turntable.IndexColors.GREEN;
         }
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     public boolean ballDetected() {
