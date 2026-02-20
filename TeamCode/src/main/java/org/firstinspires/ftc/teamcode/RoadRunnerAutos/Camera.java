@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RoadRunnerAutos;
 
 import android.graphics.Color;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -11,7 +12,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.DIO;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -64,8 +67,10 @@ public class Camera {
 
     }
 
-    public double getDist() {
-        
+    public Pose2d getLLPose() {
+        Pose3D raw = limelight.getLatestResult().getBotpose();
+
+        return new Pose2d(raw.getPosition().y * 39.37, raw.getPosition().x * 39.37, raw.getOrientation().getYaw(AngleUnit.DEGREES));
     }
 
     public List<LLResultTypes.FiducialResult> getDetections() {

@@ -104,6 +104,8 @@ public class VelocityBased extends OpMode {
         telemetry.addData("Using camera?", camera.isEnabled());
         telemetry.addData("Manual rotate?", manualRotate);
         telemetry.addLine();
+        telemetry.addData("Position according to limelight", "\n\tX Pose: %f" +
+                "\n\tY Pose: %f", camera.getLLPose().position.x, camera.getLLPose().position.y);
         if (!aprilTags.isEmpty()) {
             telemetry.addData("Position relative to aprilTag[0]", "\n\tX Pose: %f" +
                     "\n\tY Pose: %f", aprilTags.get(0).getCameraPoseTargetSpace().getPosition().x, aprilTags.get(0).getCameraPoseTargetSpace().getPosition().y);
