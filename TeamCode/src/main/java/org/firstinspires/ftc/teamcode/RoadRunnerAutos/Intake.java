@@ -47,7 +47,7 @@ public class Intake {
                     }
 
                     if (timer.seconds() > 0.65) {
-                        turntable.addBall(0, camera.getBallColor());
+                        turntable.addBall(0, Turntable.IndexColors.PURPLE);
                         turntable.turnLeft();
                         timer.reset();
                         isFirstTime = false;
@@ -86,7 +86,8 @@ public class Intake {
                     }
 
                     if (timer.seconds() > 0.55) {
-                        turntable.addBall(2, camera.getBallColor());
+                        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+
                         turntable.turnLeft();
                         timer.reset();
                         isFirstTime = false;

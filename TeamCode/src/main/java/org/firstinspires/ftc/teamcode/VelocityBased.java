@@ -32,7 +32,8 @@ public class VelocityBased extends OpMode {
     private int targetAprilTag;
     private boolean manualRotate;
 
-    public static double velocityCoefficient = 1;
+    public static double velocityCoefficientX = 1;
+    public static double velocityCoefficientY = 1;
     public static int flyWheelSpeed = 1200;
 
     @Override
@@ -71,8 +72,8 @@ public class VelocityBased extends OpMode {
         else if (gamepad2.rightBumperWasReleased()) {turntable.extraRange(true);}
         if (gamepad2.right_trigger > 0) shooter.spinUp(flyWheelSpeed);
         if (gamepad2.left_trigger > 0) shooter.stop();
-        if (gamepad2.dpadUpWasPressed()) {shooter.setServoPos(shooter.downPos);}
-        if (gamepad2.dpadDownWasPressed()) {shooter.setServoPos(shooter.upPos);}
+        if (gamepad2.dpadDownWasPressed()) {shooter.setServoPos(shooter.downPos);}
+        if (gamepad2.dpadUpWasPressed()) {shooter.setServoPos(shooter.upPos);}
         intake.setPower(gamepad2.left_stick_y);
 
         if (gamepad1.aWasPressed()) {camera.setEnabled(!camera.isEnabled());}
@@ -103,6 +104,13 @@ public class VelocityBased extends OpMode {
         telemetry.addData("Using camera?", camera.isEnabled());
         telemetry.addData("Manual rotate?", manualRotate);
         telemetry.addLine();
+        if (!aprilTags.isEmpty()) {
+            telemetry.addData("Position relative to aprilTag[0]", "\n\tX Pose: %f" +
+                    "\n\tY Pose: %f", aprilTags.get(0).getCameraPoseTargetSpace().getPosition().x, aprilTags.get(0).getCameraPoseTargetSpace().getPosition().y);
+        }
+        telemetry.addData("Target (adjusted for velocity)", "\n\tX Target: %f" +
+                "\n\tY Target: %f", target.x, target.y);
+        telemetry.addLine();
         telemetry.addData("Current velocity", "\n\tX Velocity: %f" +
                 "\n\tY Velocity: %f" +
                 "\n\tHeading Velocity: %f", velocity.linearVel.x, velocity.linearVel.y, velocity.angVel);
@@ -122,8 +130,8 @@ public class VelocityBased extends OpMode {
     }
 
     public Vector2d updateTarget(PoseVelocity2d velocity) {
-        double newX = autoLockingTarget.x + (velocity.linearVel.x * velocityCoefficient);
-        double newY = autoLockingTarget.y + (velocity.linearVel.y * velocityCoefficient);
+        double newX = autoLockingTarget.x + (velocity.linearVel.x * velocityCoefficientX);
+        double newY = autoLockingTarget.y + (velocity.linearVel.y * velocityCoefficientY);
 
         return new Vector2d(newX, newY);
     }
