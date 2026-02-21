@@ -122,11 +122,9 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                         intake.autoIntake(camera, turntable),
                         intake.reverse()
                 ),
-                new SequentialAction(
-                        drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle)).turnTo(Math.toRadians(intakeAngle))
-                                .strafeToLinearHeading(Positions.getIntakeClosePoseE(), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.5)).build())
-                )
+                drive.actionBuilder(drive.localizer.getPose())
+                    .strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle)).turnTo(Math.toRadians(intakeAngle))
+                    .strafeToLinearHeading(Positions.getIntakeClosePoseE(), Math.toRadians(intakeAngle), new TranslationalVelConstraint(4.5)).build())
         );
 
 
