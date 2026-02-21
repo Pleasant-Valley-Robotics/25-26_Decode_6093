@@ -99,6 +99,7 @@ public class Shooter {
                 } else if (timer.seconds() > .9){
                     flickerServo.setPosition(downPos);
                     turntable.removeBall(1);
+                    turntable.turnRight();
                     count++;
                     timer.reset();
                 }

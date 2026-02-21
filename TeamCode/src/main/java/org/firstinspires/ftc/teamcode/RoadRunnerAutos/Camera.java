@@ -86,8 +86,12 @@ public class Camera {
         isEnabled = enabled;
     }
 
-    public boolean ballDetected() {
-        return loc1.getDistance(DistanceUnit.MM) < 175 || loc2.getDistance(DistanceUnit.MM) < 190;
+    public boolean ballDetectedR() {
+        return loc1.getDistance(DistanceUnit.MM) < 175;
+    }
+
+    public boolean ballDetectedL() {
+        return loc2.getDistance(DistanceUnit.MM) < 190;
     }
 
 

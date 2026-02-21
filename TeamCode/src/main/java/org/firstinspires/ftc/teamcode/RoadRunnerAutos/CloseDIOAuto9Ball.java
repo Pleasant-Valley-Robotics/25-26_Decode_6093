@@ -21,7 +21,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@Disabled
 @Autonomous(name = "Close Dio Auto 9 Ball", group = "Autonomous")
 public class CloseDIOAuto9Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
@@ -60,6 +59,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         double shootAngle = 134.5*PoseStorage.isRed;
         double leaveShootAngle = 127.4*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
+        int launchVelocity = 1040;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(131.9529) * PoseStorage.isRed));
@@ -85,7 +85,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
 
-        shooter.spinUp(1360);
+        shooter.spinUp(launchVelocity);
 
         //Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
@@ -102,9 +102,9 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         // Shoot
         intake.setPower(-1);
         Actions.runBlocking(new SleepAction(0.05));
-        while (!shooter.isAtSpeed()) {
-            Actions.runBlocking(new SleepAction(0.1));
-        }
+        //while (!shooter.isAtSpeed()) {
+        //    Actions.runBlocking(new SleepAction(0.1));
+        //}
 
         intake.setPower(1);
         Actions.runBlocking(shooter.shootInPattern(turntable));
@@ -118,7 +118,10 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(
             new ParallelAction(
-                intake.autoIntake(camera, turntable),
+                    new SequentialAction(
+                            intake.autoIntake(camera, turntable),
+                            intake.reverse()
+                    ),
                 new SequentialAction(
                         drive.actionBuilder(drive.localizer.getPose())
                                 .strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
@@ -127,7 +130,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         );
 
 
-        shooter.spinUp(1360);
+        shooter.spinUp(launchVelocity);
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());
@@ -135,9 +138,9 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         // Shoot
         intake.setPower(-1);
         Actions.runBlocking(new SleepAction(0.05));
-        while (!shooter.isAtSpeed()) {
-            Actions.runBlocking(new SleepAction(0.1));
-        }
+        //while (!shooter.isAtSpeed()) {
+        //    Actions.runBlocking(new SleepAction(0.1));
+        //}
 
         intake.setPower(1);
         Actions.runBlocking(shooter.shootInPattern(turntable));
@@ -149,7 +152,10 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        intake.autoIntake(camera, turntable),
+                        new SequentialAction(
+                                intake.autoIntake(camera, turntable),
+                                intake.reverse()
+                        ),
                         new SequentialAction(
                                 drive.actionBuilder(drive.localizer.getPose())
                                         .strafeToLinearHeading(Positions.getIntakeMedPoseS(), Math.toRadians(intakeAngle),null,new ProfileAccelConstraint(-30,70))
@@ -157,16 +163,16 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                         )
                 ));
 
-        shooter.spinUp(1360);
+        shooter.spinUp(launchVelocity);
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());
 
         intake.setPower(-1);
         Actions.runBlocking(new SleepAction(0.05));
-        while (!shooter.isAtSpeed()) {
-            Actions.runBlocking(new SleepAction(0.1));
-        }
+        //while (!shooter.isAtSpeed()) {
+       //     Actions.runBlocking(new SleepAction(0.1));
+        //}
 
         intake.setPower(1);
         Actions.runBlocking(shooter.shootInPattern(turntable));

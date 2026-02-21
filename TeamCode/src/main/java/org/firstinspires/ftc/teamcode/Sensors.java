@@ -23,7 +23,8 @@ public class Sensors extends OpMode {
     public void loop() {
         telemetry.addData("Location 1 (mm)", loc1.getDistance(DistanceUnit.MM));
         telemetry.addData("Location 2 (mm)", loc2.getDistance(DistanceUnit.MM));
-        telemetry.addData("Ball Detected", camera.ballDetected());
+        telemetry.addData("Ball Detected R", camera.ballDetectedR());
+        telemetry.addData("Ball Detected L", camera.ballDetectedL());
 
         telemetry.update();
     }

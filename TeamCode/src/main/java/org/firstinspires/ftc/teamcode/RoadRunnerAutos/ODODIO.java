@@ -95,7 +95,7 @@ public class ODODIO extends OpMode {
 
         //(49.0 / 70.0)
 //        flyWheelSpeed = 20 + (int)((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
-        flyWheelSpeed = (int)(0.0003 * Math.pow(distanceFromGoal, 3) - 0.0765 * Math.pow(distanceFromGoal, 2) + 8.0168 * distanceFromGoal + 746.55);
+        flyWheelSpeed = (int)Math.round(0.0003 * Math.pow(distanceFromGoal, 3) - 0.0765 * Math.pow(distanceFromGoal, 2) + 8.0168 * distanceFromGoal + 746.55);
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake
@@ -226,7 +226,8 @@ public class ODODIO extends OpMode {
 
         telemetry.addData("Runtime", getRuntime());
         telemetry.addData("useCamera", useCamera);
-        telemetry.addData("Camera has balls", camera.ballDetected());
+        telemetry.addData("Camera has balls R", camera.ballDetectedR());
+        telemetry.addData("Camera has balls L", camera.ballDetectedL());
         telemetry.addData("Position ID", turntable.getPositionId());
         telemetry.addData("Target speed", flyWheelSpeed);
         telemetry.addData("Shooter is at speed?", shooter.isAtSpeed());

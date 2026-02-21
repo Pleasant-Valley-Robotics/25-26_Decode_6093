@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -19,81 +21,80 @@ public class Intake {
 
 
     public void setPower(double power) {intake.setPower(power);}
-
-    public Action normalIntake(Camera camera, Turntable turntable) {
+    public Action reverse() {
         return new Action() {
-            ElapsedTime timer = new ElapsedTime(0);
-
-            boolean isFirstTime = false;
-            boolean initialized = false;
-
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-                if (turntable.getNumBalls() >= 3) {
-                    turntable.turnLeft();
-                    return false;
-                }
-
-                if (!initialized) {
-                    turntable.turnToPosition(0);
-                    initialized = true;
-                }
-
-                if (camera.ballDetected() && timer.seconds() > 0.2) {
-                    if (!isFirstTime && timer.seconds() > 0.40) {
-                        timer.reset();
-                        isFirstTime = true;
-                    }
-
-                    if (timer.seconds() > 0.65) {
-                        turntable.addBall(0, Turntable.IndexColors.PURPLE);
-                        turntable.turnLeft();
-                        timer.reset();
-                        isFirstTime = false;
-                    }
-                }
-                return true;
+                setPower(-1);
+                return false;
             }
         };
     }
 
-
-    public Action autoIntake(Camera camera, Turntable turntable) {
+    public Action normalIntake(Camera camera, Turntable turntable) {
         return new Action() {
-            ElapsedTime timer = new ElapsedTime(5);
-            ElapsedTime limit = new ElapsedTime(0);
+            ElapsedTime timerR = new ElapsedTime(0);
+            ElapsedTime timerL = new ElapsedTime(0);
+            ElapsedTime checkBall = new ElapsedTime(0);
+            char side = ' '; // space for unknown, r for right, l for left
 
-            boolean isFirstTime = false;
-            boolean initialized = false;
+            int count = 0;
+
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    limit.reset();
-                    initialized = true;
+
+                if ((side == 'l' || side == ' ') && camera.ballDetectedL()) {
+                    side = 'l';
+                    Actions.runBlocking(new SleepAction(0.2));
+                    turntable.turnLeft();
+                    count++;
+                    Actions.runBlocking(new SleepAction(0.5));
                 }
 
-                if (turntable.getNumBalls() >= 3 || limit.seconds() > 6.0) {
-                    return false;
+                if ((side == 'r' || side == ' ') && camera.ballDetectedR()) {
+                    side = 'r';
+                    Actions.runBlocking(new SleepAction(0.2));
+                    turntable.turnRight();
+                    count++;
+                    Actions.runBlocking(new SleepAction(0.5));
                 }
 
-                if (camera.ballDetected() && timer.seconds() > 0.2) {
-                    if (!isFirstTime) {
-                        timer.reset();
-                        isFirstTime = true;
 
-                    }
+                return count < 3;
+            }
+        };
+    }
 
-                    if (timer.seconds() > 0.55) {
-                        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+    public Action autoIntake(Camera camera, Turntable turntable) {
+        return new Action() {
+            ElapsedTime limiter = new ElapsedTime(0);
+            char side = ' '; // space for unknown, r for right, l for left
 
-                        turntable.turnLeft();
-                        timer.reset();
-                        isFirstTime = false;
-                    }
+            int count = 0;
+
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+                if ((side == 'l' || side == ' ') && camera.ballDetectedL()) {
+                    side = 'l';
+                    Actions.runBlocking(new SleepAction(0.2));
+                    turntable.turnLeft();
+                    count++;
+                    Actions.runBlocking(new SleepAction(0.5));
                 }
-                return true;
+
+                if ((side == 'r' || side == ' ') && camera.ballDetectedR()) {
+                    side = 'r';
+                    Actions.runBlocking(new SleepAction(0.2));
+                    turntable.turnRight();
+                    count++;
+                    Actions.runBlocking(new SleepAction(0.5));
+                }
+
+
+                return count < 3 || limiter.seconds() > 6.7 ;
             }
         };
     }
