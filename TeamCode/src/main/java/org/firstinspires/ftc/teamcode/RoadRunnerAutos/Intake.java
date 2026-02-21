@@ -33,9 +33,6 @@ public class Intake {
 
     public Action normalIntake(Camera camera, Turntable turntable) {
         return new Action() {
-            ElapsedTime timerR = new ElapsedTime(0);
-            ElapsedTime timerL = new ElapsedTime(0);
-            ElapsedTime checkBall = new ElapsedTime(0);
             char side = ' '; // space for unknown, r for right, l for left
 
             int count = 0;
@@ -46,18 +43,18 @@ public class Intake {
 
                 if ((side == 'l' || side == ' ') && camera.ballDetectedL()) {
                     side = 'l';
-                    Actions.runBlocking(new SleepAction(0.2));
+                    Actions.runBlocking(new SleepAction(0.35));
                     turntable.turnLeft();
                     count++;
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.65));
                 }
 
                 if ((side == 'r' || side == ' ') && camera.ballDetectedR()) {
                     side = 'r';
-                    Actions.runBlocking(new SleepAction(0.2));
+                    Actions.runBlocking(new SleepAction(0.35));
                     turntable.turnRight();
                     count++;
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.65));
                 }
 
 
@@ -70,31 +67,38 @@ public class Intake {
         return new Action() {
             ElapsedTime limiter = new ElapsedTime(0);
             char side = ' '; // space for unknown, r for right, l for left
-
+            boolean init = false;
             int count = 0;
 
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!init) {
+                    limiter.reset();
+                    init = true;
+                }
+
 
                 if ((side == 'l' || side == ' ') && camera.ballDetectedL()) {
                     side = 'l';
-                    Actions.runBlocking(new SleepAction(0.2));
+                    Actions.runBlocking(new SleepAction(0.35));
                     turntable.turnLeft();
                     count++;
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.65));
                 }
 
                 if ((side == 'r' || side == ' ') && camera.ballDetectedR()) {
                     side = 'r';
-                    Actions.runBlocking(new SleepAction(0.2));
+                    Actions.runBlocking(new SleepAction(0.35));
                     turntable.turnRight();
                     count++;
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.65));
                 }
 
-
-                return count < 3 || limiter.seconds() > 6.7 ;
+                if (limiter.seconds() > 6.7) {
+                    return false;
+                }
+                return count < 3;
             }
         };
     }

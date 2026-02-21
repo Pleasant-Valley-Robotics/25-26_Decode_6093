@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -23,6 +24,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import java.util.List;
 
 @Config
+@Disabled
 @Autonomous(name = "Close Dio Auto 9 Ball2", group = "Autonomous")
 public class CloseDIOAuto9Ball2 extends LinearOpMode {
     public double timeBeforeStart = 0.0;
@@ -121,6 +123,7 @@ public class CloseDIOAuto9Ball2 extends LinearOpMode {
         // Intake close
         Actions.runBlocking(new ParallelAction(
                 intake.autoIntake(camera, turntable),
+
                 new SequentialAction(
                     drive.actionBuilder(drive.localizer.getPose())
                             .strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle))

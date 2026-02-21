@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -37,96 +39,43 @@ public class Shooter {
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setZeroPowerBehavior(BRAKE);
         shooter2.setZeroPowerBehavior(BRAKE);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
-        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
+        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1000, 0, 5, 10));
+        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1000, 0, 5, 10));
     }
 
     public void setServoPos(double position) {
         flickerServo.setPosition(position);
     }
 
-    public Action fireOnce(Turntable turntable) {
+    public Action shootOnce(Turntable turntable) {
         return new Action() {
-            ElapsedTime timer = new ElapsedTime();
-            boolean initialized = false;
-            int count = 0;
-
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (turntable.getNumBalls() == 0) {
+                flickerServo.setPosition(upPos);
+                Actions.runBlocking(new SleepAction(0.2));
+                flickerServo.setPosition(downPos);
+                Actions.runBlocking(new SleepAction(0.2));
+                turntable.turnLeft();
                 return false;
-            }
-
-            if (!initialized) {
-                    while (turntable.getBallAt(1) == null) {
-                        turntable.turnLeft();
-                        count++;
-
-                        if (count > 300) {
-                            throw new RuntimeException("infinite loop, yell at the programers");
-                        }
-                    }
-
-                    initialized = true;
-                    timer.reset();
-                }
-
-                if (timer.seconds() < 1.5 && timer.seconds() > 0.75) {
-                    flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > 1.5) {
-                    turntable.removeBall(1);
-                    flickerServo.setPosition(downPos);
-                    return false;
-                }
-
-                return true;
             }
         };
     }
+
 
     public Action shootAll(Turntable turntable) {
         return new Action() {
-            ElapsedTime timer = new ElapsedTime();
-            int count = 0;
-
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!isMoving()) return false;
-                if (count >= 3) return false;
-
-                if (timer.seconds() < .90 && timer.seconds() > .5) {
-                    flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .9){
-                    flickerServo.setPosition(downPos);
-                    turntable.removeBall(1);
-                    turntable.turnRight();
-                    count++;
-                    timer.reset();
-                }
-                return true;
-            }
-        };
-    }
-
-
-    public Action shootAllFAST(Turntable turntable) {
-        return new Action() {
-            ElapsedTime timer = new ElapsedTime();
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!isMoving()) return false;
-                if (turntable.getNumBalls() == 0) return false;
-
-                if (timer.seconds() < .90 && timer.seconds() > .5) {
-                    flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .9){
-                    flickerServo.setPosition(downPos);
-                    turntable.removeBall(1);
-                    turntable.turnLeft();
-                    timer.reset();
-                }
-                return true;
+                turntable.turnToPosition(0);
+                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(shootOnce(turntable));
+                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(shootOnce(turntable));
+                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(shootOnce(turntable));
+                Actions.runBlocking(new SleepAction(0.5));
+                return false;
             }
         };
     }
@@ -140,42 +89,36 @@ public class Shooter {
         }
 
         return new Action() {
-
-            ElapsedTime timer = new ElapsedTime();
-            int index = PoseStorage.shotsToCycle;
-            int count = 0;
-            boolean initialized = false;
-
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!isMoving()) return false;
-                if (turntable.getNumBalls() == 0) return false;
-
-                if (!initialized) {
-                    timer.reset();
-                    initialized = true;
-                }
+                int index = PoseStorage.shotsToCycle;
 
                 while (turntable.getBallAt(1) != pattern[index]) {
                     turntable.turnLeft();
-                    count++;
+                }
+                index++;
+                index %= 3;
+                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(shootOnce(turntable));
 
-                    if (count > 300) {
-                        throw new RuntimeException("infinite loop, yell at the programers");
-                    }
+                while (turntable.getBallAt(1) != pattern[index]) {
+                    turntable.turnLeft();
                 }
-                if (timer.seconds() < .90 && timer.seconds() > .5) {
-                    flickerServo.setPosition(upPos);
-                } else if (timer.seconds() > .9){
-                    flickerServo.setPosition(downPos);
-                    turntable.removeBall(1);
-                    index++;
-                    index %= 3;
-                    timer.reset();
+                index++;
+                index %= 3;
+                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(shootOnce(turntable));
+
+                while (turntable.getBallAt(1) != pattern[index]) {
+                    turntable.turnLeft();
                 }
-                return true;
+                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(shootOnce(turntable));
+
+                return false;
             }
         };
+
     }
 
 
