@@ -55,6 +55,7 @@ public class Shooter {
                 Actions.runBlocking(new SleepAction(0.2));
                 flickerServo.setPosition(downPos);
                 Actions.runBlocking(new SleepAction(0.2));
+                turntable.removeBall(1);
                 turntable.turnLeft();
                 return false;
             }

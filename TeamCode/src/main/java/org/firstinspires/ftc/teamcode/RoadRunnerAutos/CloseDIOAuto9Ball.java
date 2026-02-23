@@ -132,9 +132,9 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());
 
-        turntable.addBall(0, Turntable.IndexColors.PURPLE);
+        turntable.addBall(0, Turntable.IndexColors.GREEN);
         turntable.addBall(1, Turntable.IndexColors.PURPLE);
-        turntable.addBall(2, Turntable.IndexColors.GREEN);
+        turntable.addBall(2, Turntable.IndexColors.PURPLE);
 
         shootBalls();
 
