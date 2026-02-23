@@ -29,45 +29,78 @@ import java.util.List;
 
 @Autonomous(name = "Test Auto", group = "Autonomous")
 public class TestAuto extends LinearOpMode {
+    MecanumDrive drive;
+    Camera camera;
+
+    int targetAprilTag = 24;
     public void runOpMode() {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        Turntable turntable = new Turntable(hardwareMap);
-        Shooter shooter = new Shooter(hardwareMap);
-        Intake intake = new Intake(hardwareMap);
-        Camera camera = new Camera(hardwareMap);
-
-        turntable.updatePosition();
-
-        waitForStart();
-        TrajectoryActionBuilder driveForward =  drive.actionBuilder(drive.localizer.getPose()).lineToX(20, new TranslationalVelConstraint(4.5));
-
-
-        intake.setPower(1);
-        Actions.runBlocking(
-                new RaceAction(
-                    new SequentialAction(
-                            driveForward.build()
-                    ),
-                    new SequentialAction(
-                            intake.autoIntake(camera, turntable),
-                            intake.reverse(),
-                            drive.actionBuilder(drive.localizer.getPose()).strafeTo(new Vector2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y)).build()
-                        )
-                )
-            
-        );
-
-
-        stopDriving(drive);
-
-        intake.stopIntake();
-        Actions.runBlocking(new SleepAction(2));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(131.9529 * PoseStorage.isRed)));
+        camera = new Camera(hardwareMap);
+        Actions.runBlocking(driveAutoLocking());
     }
 
-    public void stopDriving(MecanumDrive drive) {
-        drive.rightBack.setPower(0);
-        drive.rightFront.setPower(0);
-        drive.leftBack.setPower(0);
-        drive.leftFront.setPower(0);
+
+    private Action driveAutoLocking() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                drive(0, 0, autoLockPower());
+                return true;
+            }
+        };
     }
+
+    private double autoLockPower() {
+        double tolerance = 0.05; // Tolerance in radians;
+        double deviation = 0;
+
+        List<LLResultTypes.FiducialResult> currentDetections = camera.getDetections();
+        // Use camera for final auto-locking
+        for (LLResultTypes.FiducialResult detection : currentDetections) {
+            if (detection != null && detection.getFiducialId() == targetAprilTag) {
+                deviation = detection.getTargetXDegrees();
+            }
+        }
+
+        if (Math.abs(deviation) > tolerance) {
+            double kP = 0.02;
+            double turnPower = kP * deviation;
+
+
+            return Math.max(-0.4, Math.min(0.4, turnPower));
+        } else {
+            // We are aligned, so command no turn.
+            return 0.0;
+        }
+    }
+
+    public void drive(double forward, double right, double rotate) {
+        // This calculates the power needed for each wheel based on the amount of forward,
+        // strafe right, and rotate
+        double frontLeftPower = forward + right + rotate;
+        double frontRightPower = forward - right - rotate;
+        double backRightPower = forward + right - rotate;
+        double backLeftPower = forward - right + rotate;
+
+
+        double maxPower = 1.0;
+        double maxSpeed = 1.0;  // make this slower for outreaches
+
+        // This is needed to make sure we don't pass > 1.0 to any wheel
+        // It allows us to keep all of the motors in proportion to what they should
+        // be and not get clipped
+        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+
+        // We multiply by maxSpeed so that it can be set lower for outreaches
+        // When a young child is driving the robot, we may not want to allow full
+        // speed.
+        drive.leftFront.setPower(maxSpeed * (frontLeftPower / maxPower));
+        drive.rightFront.setPower(maxSpeed * (frontRightPower / maxPower));
+        drive.leftBack.setPower(maxSpeed * (backLeftPower / maxPower));
+        drive.rightBack.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+
 }
