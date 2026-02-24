@@ -4,6 +4,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -15,7 +16,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+@Config
 public class Shooter {
 
     private DcMotorEx shooter;
@@ -23,6 +24,9 @@ public class Shooter {
     private Servo flickerServo;
     final public double upPos = 0.3;
     final public double downPos = .4;
+    public static double p = 500;
+    public static double d = 0;
+    public static double f = 12.5;
 
     private boolean servoIsUp = false;
     private boolean inProcess = false;
@@ -39,8 +43,8 @@ public class Shooter {
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setZeroPowerBehavior(BRAKE);
         shooter2.setZeroPowerBehavior(BRAKE);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1000, 0, 5, 10));
-        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(1000, 0, 5, 10));
+        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, 0, d, f));
+        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, 0, d, f));
     }
 
     public void setServoPos(double position) {
@@ -143,6 +147,11 @@ public class Shooter {
 
     public double getVelocity() {
         return shooter.getVelocity();
+    }
+
+    public void updatePID() {
+        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, 0, d, f));
+        shooter2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(p, 0, d, f));
     }
 
 }

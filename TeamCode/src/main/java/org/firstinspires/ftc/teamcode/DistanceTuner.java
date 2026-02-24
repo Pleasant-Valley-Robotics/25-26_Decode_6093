@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -23,7 +25,7 @@ public class DistanceTuner extends OpMode {
     Shooter shooter;
 
     Vector2d autoLockingTarget = new Vector2d(-72, 72 * PoseStorage.isRed);
-    private int flyWheelSpeed = 10;
+    private int flyWheelSpeed = 1500;
     private double distanceFromGoal;
 
     @Override
@@ -34,10 +36,13 @@ public class DistanceTuner extends OpMode {
         turntable = new Turntable(hardwareMap);
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
     @Override
     public void loop() {
+        shooter.updatePID();
         drive.updatePoseEstimate(); // Get pose from odometry
         distanceFromGoal = updateDistanceFromGoal(drive);
 
@@ -47,9 +52,9 @@ public class DistanceTuner extends OpMode {
         if (gamepad1.dpadLeftWasPressed())
             drive.localizer.setPose(new Pose2d(0, 0, Math.toRadians(90 * PoseStorage.isRed)));
 
-        if (gamepad2.xWasPressed()) turntable.turnToPosition(0);
+        if (gamepad2.bWasPressed()) turntable.turnToPosition(0);
         if (gamepad2.yWasPressed()) turntable.turnToPosition(1);
-        if (gamepad2.bWasPressed()) turntable.turnToPosition(2);
+        if (gamepad2.xWasPressed()) turntable.turnToPosition(2);
 
         if (gamepad2.dpadRightWasPressed()) {
             flyWheelSpeed += 10;
