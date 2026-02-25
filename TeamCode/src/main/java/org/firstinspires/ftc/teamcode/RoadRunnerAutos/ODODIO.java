@@ -95,7 +95,12 @@ public class ODODIO extends OpMode {
 
         //(49.0 / 70.0)
 //        flyWheelSpeed = 20 + (int)((-0.000849d * Math.pow(distanceFromGoal, 3) + 0.3294 * Math.pow(distanceFromGoal, 2) - 35.4967 * distanceFromGoal + 2520));
-        flyWheelSpeed = (int)Math.round(0.0003 * Math.pow(distanceFromGoal, 3) - 0.0765 * Math.pow(distanceFromGoal, 2) + 8.0168 * distanceFromGoal + 746.55);
+        int flyWheelSpeed = (int)(
+                -2.4804513026335e-5d * Math.pow(distanceFromGoal, 4)
+                        + 0.010590941043216d * Math.pow(distanceFromGoal, 3)
+                        - 1.6100991405497d * Math.pow(distanceFromGoal, 2)
+                        + 105.30647877339d * distanceFromGoal
+                        - 1189.7462646363);
 
         // Gamepad 2 Controls:
         // R-Stick Y: power intake
