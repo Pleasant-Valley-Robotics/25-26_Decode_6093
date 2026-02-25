@@ -71,7 +71,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         double shootAngle = 134.5*PoseStorage.isRed;
         double leaveShootAngle = 127.4*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
-        int launchVelocity = 1000;
+        int launchVelocity = 1200;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(131.9529 * PoseStorage.isRed)));
@@ -108,11 +108,11 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                 .strafeToLinearHeading(Positions.getShootPose(), Math.toRadians(shootAngle)).build());
 
         turntable.addBall(0, Turntable.IndexColors.PURPLE);
-        turntable.addBall(1, Turntable.IndexColors.GREEN);
-        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+        turntable.addBall(1, Turntable.IndexColors.PURPLE);
+        turntable.addBall(2, Turntable.IndexColors.GREEN);
 
 
-        shootBalls();
+        shootBalls(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle)).build());
 
@@ -122,7 +122,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());
-        shootBalls();
+        shootBalls(launchVelocity + 30);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getIntakeMedPoseS(), Math.toRadians(intakeAngle)).build());
         intakeBalls();
@@ -136,7 +136,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         turntable.addBall(1, Turntable.IndexColors.PURPLE);
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
 
-        shootBalls();
+        shootBalls(launchVelocity + 30);
 
         shooter.stop();
         intake.stopIntake();
@@ -176,8 +176,12 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         drive.updatePoseEstimate();
     }
 
-    private void shootBalls() {
+    private void shootBalls(int speed) {
 
+        Actions.runBlocking(new RaceAction(
+                getToSpeed(speed),
+                new SleepAction(1)
+        ));
 
         intake.setPower(1);
         Actions.runBlocking(new RaceAction(
@@ -188,6 +192,18 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         intake.stopIntake();
         shooter.stop();
     }
+
+
+    private Action getToSpeed(int speed) {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                shooter.spinUp(speed);
+                return !shooter.isAtSpeed();
+            }
+        };
+    }
+
 
     private Action driveAutoLocking() {
         return new Action() {

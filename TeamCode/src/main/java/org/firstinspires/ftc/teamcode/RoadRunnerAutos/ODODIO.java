@@ -139,15 +139,6 @@ public class ODODIO extends OpMode {
             if (shooter.isMoving()) {
                 turntable.removeBall(1);
             }
-            ElapsedTime timer = new ElapsedTime();
-            int temp = turntable.getPositionId()+1;
-            if (temp == 4) {
-                temp = 0;
-            }
-            while (timer.seconds() < 0.3) {
-
-            }
-            turntable.turnToPosition(temp);
         }
 
         if (shooter.getLastSpeed() != 0) {
