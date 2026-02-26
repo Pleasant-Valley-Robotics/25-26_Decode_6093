@@ -71,7 +71,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         double shootAngle = 134.5*PoseStorage.isRed;
         double leaveShootAngle = 127.4*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
-        int launchVelocity = 1200;
+        int launchVelocity = 1234;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(131.9529 * PoseStorage.isRed)));
@@ -107,22 +107,22 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(Positions.getShootPose(), Math.toRadians(shootAngle)).build());
 
-        turntable.addBall(0, Turntable.IndexColors.PURPLE);
-        turntable.addBall(1, Turntable.IndexColors.PURPLE);
-        turntable.addBall(2, Turntable.IndexColors.GREEN);
-
-
         shootBalls(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle)).build());
 
         intakeBalls();
 
-        shooter.spinUp(launchVelocity + 30);
+        shooter.spinUp(launchVelocity + 35);
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());
-        shootBalls(launchVelocity + 30);
+
+        turntable.addBall(0, Turntable.IndexColors.PURPLE);
+        turntable.addBall(1, Turntable.IndexColors.GREEN);
+        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+
+        shootBalls(launchVelocity + 35);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getIntakeMedPoseS(), Math.toRadians(intakeAngle)).build());
         intakeBalls();
@@ -132,10 +132,15 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getLeaveShootPose(), Math.toRadians(leaveShootAngle)).build());
 
-        turntable.addBall(0, Turntable.IndexColors.GREEN);
-        turntable.addBall(1, Turntable.IndexColors.PURPLE);
-        turntable.addBall(2, Turntable.IndexColors.PURPLE);
-
+        if (PoseStorage.isRed == 1) {
+            turntable.addBall(0, Turntable.IndexColors.GREEN);
+            turntable.addBall(1, Turntable.IndexColors.PURPLE);
+            turntable.addBall(2, Turntable.IndexColors.PURPLE);
+        } else {
+            turntable.addBall(0, Turntable.IndexColors.PURPLE);
+            turntable.addBall(1, Turntable.IndexColors.PURPLE);
+            turntable.addBall(2, Turntable.IndexColors.GREEN);
+        }
         shootBalls(launchVelocity + 30);
 
         shooter.stop();
@@ -156,10 +161,10 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
     private void intakeBalls() {
         intake.setPower(1);
-        drive.rightBack.setPower(0.12);
-        drive.rightFront.setPower(0.12);
-        drive.leftBack.setPower(0.12);
-        drive.leftFront.setPower(0.12);
+        drive.rightBack.setPower(0.14);
+        drive.rightFront.setPower(0.14);
+        drive.leftBack.setPower(0.14);
+        drive.leftFront.setPower(0.14);
 
         Actions.runBlocking(
                 new SequentialAction(
@@ -189,6 +194,9 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                 driveAutoLocking()
                 )
         );
+
+        turntable.clear();
+
         intake.stopIntake();
         shooter.stop();
     }

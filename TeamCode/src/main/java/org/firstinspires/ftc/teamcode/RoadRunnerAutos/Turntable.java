@@ -131,6 +131,14 @@ public class Turntable {
         indexServo.setPosition(positions[positionId]);
     }
 
+    public void clear() {
+        turntableBallStatus[0] = null;
+        turntableBallStatus[1] = null;g
+        turntableBallStatus[2] = null;
+        currentNumBalls = 0;
+
+    }
+
     @Override
     public String toString() {
         String output = "";

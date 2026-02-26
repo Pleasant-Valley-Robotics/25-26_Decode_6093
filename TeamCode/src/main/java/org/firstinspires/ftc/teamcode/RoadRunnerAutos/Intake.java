@@ -81,18 +81,18 @@ public class Intake {
 
                 if ((side == 'l' || side == ' ') && camera.ballDetectedL()) {
                     side = 'l';
-                    Actions.runBlocking(new SleepAction(0.35));
+                    Actions.runBlocking(new SleepAction(0.28));
                     turntable.turnLeft();
                     count++;
-                    Actions.runBlocking(new SleepAction(0.65));
+                    Actions.runBlocking(new SleepAction(0.57));
                 }
 
                 if ((side == 'r' || side == ' ') && camera.ballDetectedR()) {
                     side = 'r';
-                    Actions.runBlocking(new SleepAction(0.35));
+                    Actions.runBlocking(new SleepAction(0.28));
                     turntable.turnRight();
                     count++;
-                    Actions.runBlocking(new SleepAction(0.65));
+                    Actions.runBlocking(new SleepAction(0.57));
                 }
 
                 if (limiter.seconds() > 6.7) {
