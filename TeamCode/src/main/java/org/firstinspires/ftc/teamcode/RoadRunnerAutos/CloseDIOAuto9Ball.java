@@ -161,10 +161,10 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
     private void intakeBalls() {
         intake.setPower(1);
-        drive.rightBack.setPower(0.14);
-        drive.rightFront.setPower(0.14);
-        drive.leftBack.setPower(0.14);
-        drive.leftFront.setPower(0.14);
+        drive.rightBack.setPower(0.13);
+        drive.rightFront.setPower(0.13);
+        drive.leftBack.setPower(0.13);
+        drive.leftFront.setPower(0.13);
 
         Actions.runBlocking(
                 new SequentialAction(

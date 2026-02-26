@@ -95,7 +95,7 @@ public class Intake {
                     Actions.runBlocking(new SleepAction(0.57));
                 }
 
-                if (limiter.seconds() > 6.7) {
+                if (limiter.seconds() > 3) {
                     return false;
                 }
                 return count < 3;

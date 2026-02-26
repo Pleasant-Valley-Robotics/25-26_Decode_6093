@@ -118,7 +118,7 @@ public class ODODIO extends OpMode {
         }
 
         if (gamepad2.bWasPressed()) {
-            turntable.turnToPosition(2);
+            turntable.turnToPosition(0);
             shooter.setServoPos(shooter.downPos);
         }
         if (gamepad2.yWasPressed()) {
@@ -126,7 +126,7 @@ public class ODODIO extends OpMode {
             shooter.setServoPos(shooter.downPos);
         }
         if (gamepad2.xWasPressed()) {
-            turntable.turnToPosition(0);
+            turntable.turnToPosition(2);
             shooter.setServoPos(shooter.downPos);
         }
 
@@ -258,7 +258,7 @@ public class ODODIO extends OpMode {
         // Use tangent to calculate the angle needed to face the goal position on the field
         double xDif = autoLockingTarget.x - drive.localizer.getPose().position.x;
         double yDif = autoLockingTarget.y - drive.localizer.getPose().position.y;
-        double tolerance = 0.1; // Tolerance in radians
+        double tolerance = 0.0; // Tolerance in radians
 
         // Use tan-1 to get raw target heading before normalizing
         double rawTargetHeading = Math.atan2(yDif, xDif);

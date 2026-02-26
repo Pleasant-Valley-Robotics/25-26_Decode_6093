@@ -133,7 +133,7 @@ public class Turntable {
 
     public void clear() {
         turntableBallStatus[0] = null;
-        turntableBallStatus[1] = null;g
+        turntableBallStatus[1] = null;
         turntableBallStatus[2] = null;
         currentNumBalls = 0;
 
