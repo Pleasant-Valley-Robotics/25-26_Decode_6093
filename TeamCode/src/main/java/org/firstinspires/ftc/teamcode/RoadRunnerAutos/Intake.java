@@ -58,7 +58,7 @@ public class Intake {
                 }
 
 
-                return count < 3;
+                return count < 3.5;
             }
         };
     }
