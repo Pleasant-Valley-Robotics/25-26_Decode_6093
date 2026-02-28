@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.RoadRunnerAutos.Turntable;
 
 import java.util.ArrayList;
 import java.util.List;
+@Disabled
 @TeleOp(name="Distance Tuner", group="Odometry")
 public class DistanceTuner extends OpMode {
     private MecanumDrive drive;

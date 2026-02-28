@@ -25,7 +25,7 @@ public class Intake {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                setPower(-1);
+                setPower(-.8);
                 return false;
             }
         };
@@ -58,12 +58,12 @@ public class Intake {
                 }
 
 
-                return count < 4;
+                return count < 3;
             }
         };
     }
 
-    public Action autoIntake(Camera camera, Turntable turntable) {
+    public Action autoIntake(Camera camera, Turntable turntable, double limitTime) {
         return new Action() {
             ElapsedTime limiter = new ElapsedTime(0);
             char side = ' '; // space for unknown, r for right, l for left
@@ -95,7 +95,7 @@ public class Intake {
                     Actions.runBlocking(new SleepAction(0.57));
                 }
 
-                if (limiter.seconds() > 3) {
+                if (limiter.seconds() > limitTime) {
                     return false;
                 }
                 return count < 3;

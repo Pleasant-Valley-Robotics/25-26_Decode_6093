@@ -20,7 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
 import java.util.List;
-@TeleOp(name="ODODIO", group="Odometry")
+@TeleOp(name="ODODIO", group="aaaOdometry")
 @Config
 public class ODODIO extends OpMode {
 

@@ -29,6 +29,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,6 +51,7 @@ import org.firstinspires.ftc.teamcode.RoadRunnerAutos.PoseStorage;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
+@Disabled
 @TeleOp(name = "Field Centric", group = "Robot")
 public class FieldCentric extends OpMode {
     MecanumDrive drive = null;

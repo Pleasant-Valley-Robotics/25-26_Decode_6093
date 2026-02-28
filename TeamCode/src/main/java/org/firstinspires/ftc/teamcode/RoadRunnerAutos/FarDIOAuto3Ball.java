@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.RaceAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -20,7 +19,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.List;
 
 @Config
-@Autonomous(name = "Far Dio Auto 3 Ball", group = "Autonomous")
+@Autonomous(name = "Far Dio Auto 3 Ball (<-- NOT THIS ONE)", group = "Autonomous")
 public class FarDIOAuto3Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive;
@@ -63,11 +62,12 @@ public class FarDIOAuto3Ball extends LinearOpMode {
             telemetry.update();
         }
 
-        double shootAngle = 153.63*PoseStorage.isRed;
-        int launchVelocity = 1467;
+        double shootAngle = 155.83*PoseStorage.isRed;
+        int launchVelocity = 1495;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getFarStartPose(), Math.toRadians(180)));
+        intake = new Intake(hardwareMap);
         turntable = new Turntable(hardwareMap);
         shooter = new Shooter(hardwareMap);
         camera = new Camera(hardwareMap);
@@ -96,6 +96,9 @@ public class FarDIOAuto3Ball extends LinearOpMode {
 
         shootBalls(launchVelocity);
 
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToConstantHeading(Positions.getFarLeavePose()).build());
+
         shooter.stop();
 
         Actions.runBlocking(new SleepAction(2));
@@ -120,7 +123,7 @@ public class FarDIOAuto3Ball extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                    intake.autoIntake(camera, turntable),
+                    intake.autoIntake(camera, turntable, 5),
                     intake.reverse()
                 )
         );

@@ -12,7 +12,9 @@ public class Positions {
     private static final Vector2d intakeMedPoseS = new Vector2d(11.9563, 28.9885); //90
     private static final Vector2d intakeFarPoseS = new Vector2d(35.6717, 28.9885); //90
     private static final Vector2d shootPose = new Vector2d(-22.8829, 15.6723);// 130.662 for shoot, 180 for scan//132.9229
-    private static final Vector2d farShootPose = new Vector2d(44.173,15.93); // 153.64
+    private static final Vector2d farLeavePose = new Vector2d(44.173,15.93); // 153.64
+    private static final Vector2d farShootPose = new Vector2d(50.9675,15.0052); // 153.5
+
     private static final Vector2d leaveShootPose = new Vector2d(-26.9057, 12.6696); //-127.4056
     private static final Vector2d parkPose = new Vector2d(32.8103, -32.8103);
 
@@ -30,8 +32,8 @@ public class Positions {
     public static Vector2d getShootPose() {return new Vector2d(shootPose.x, shootPose.y * PoseStorage.isRed);}
     public static Vector2d getParkPose() {return new Vector2d(parkPose.x, parkPose.y * PoseStorage.isRed);}
     public static Vector2d getFarStartPose() {return new Vector2d(farStartPose.x,farStartPose.y * PoseStorage.isRed);}
-    public static Vector2d getFarShootPose() {return new Vector2d(farShootPose.x,farShootPose.y * PoseStorage.isRed);}
-
+    public static Vector2d getFarLeavePose() {return new Vector2d(farLeavePose.x, farLeavePose.y * PoseStorage.isRed);}
+    public static Vector2d getFarShootPose() {return new Vector2d(farShootPose.x, farShootPose.y * PoseStorage.isRed);}
     public static Vector2d getIntakeClosePoseS() {return new Vector2d(intakeClosePoseS.x + getDistDif(), intakeClosePoseS.y * PoseStorage.isRed);}
     public static Vector2d getIntakeMedPoseS() {return new Vector2d(intakeMedPoseS.x + getDistDif(), intakeMedPoseS.y * PoseStorage.isRed);}
     public static Vector2d getIntakeFarPoseS() {return new Vector2d(intakeFarPoseS.x + getDistDif(), intakeFarPoseS.y * PoseStorage.isRed);}

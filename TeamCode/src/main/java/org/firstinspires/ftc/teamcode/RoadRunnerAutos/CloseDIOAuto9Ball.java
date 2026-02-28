@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.List;
 
 @Config
-@Autonomous(name = "Close Dio Auto 9 Ball", group = "Autonomous")
+@Autonomous(name = "--------> CLOSE DIO AUTO 9 BALL - JESSE IT'S THIS ONE\n", group = "Autonomous")
 public class CloseDIOAuto9Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive;
@@ -71,7 +71,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         double shootAngle = 134.5*PoseStorage.isRed;
         double leaveShootAngle = 127.4*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
-        int launchVelocity = 1234;
+        int launchVelocity = 1239;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(131.9529 * PoseStorage.isRed)));
@@ -111,7 +111,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getIntakeClosePoseS(), Math.toRadians(intakeAngle)).build());
 
-        intakeBalls();
+        intakeBalls(4.25);
 
         shooter.spinUp(launchVelocity + 35);
 
@@ -125,7 +125,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
         shootBalls(launchVelocity + 35);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getIntakeMedPoseS(), Math.toRadians(intakeAngle)).build());
-        intakeBalls();
+        intakeBalls(4.25);
 
         shooter.spinUp(launchVelocity + 30);
 
@@ -159,7 +159,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
                 ));
     }
 
-    private void intakeBalls() {
+    private void intakeBalls(double limitTime) {
         intake.setPower(1);
         drive.rightBack.setPower(0.13);
         drive.rightFront.setPower(0.13);
@@ -168,7 +168,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                    intake.autoIntake(camera, turntable),
+                    intake.autoIntake(camera, turntable, limitTime),
                     intake.reverse()
                 )
         );
