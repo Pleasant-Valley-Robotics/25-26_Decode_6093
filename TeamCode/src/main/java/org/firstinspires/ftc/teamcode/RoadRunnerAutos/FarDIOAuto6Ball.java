@@ -62,12 +62,13 @@ public class FarDIOAuto6Ball extends LinearOpMode {
             telemetry.update();
         }
 
-        double shootAngle = 153.63*PoseStorage.isRed;
+        double shootAngle = 153.83*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
-        int launchVelocity = 1467;
+        int launchVelocity = 1495;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getFarStartPose(), Math.toRadians(180)));
+        intake = new Intake(hardwareMap);
         turntable = new Turntable(hardwareMap);
         shooter = new Shooter(hardwareMap);
         camera = new Camera(hardwareMap);
@@ -105,6 +106,16 @@ public class FarDIOAuto6Ball extends LinearOpMode {
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(Positions.getFarShootPose(), Math.toRadians(shootAngle)).build());
+
+        if (PoseStorage.isRed == 1) {
+            turntable.addBall(0, Turntable.IndexColors.PURPLE);
+            turntable.addBall(1, Turntable.IndexColors.PURPLE);
+            turntable.addBall(2, Turntable.IndexColors.GREEN);
+        } else {
+            turntable.addBall(0, Turntable.IndexColors.GREEN);
+            turntable.addBall(1, Turntable.IndexColors.PURPLE);
+            turntable.addBall(2, Turntable.IndexColors.PURPLE);
+        }
 
         shootBalls(launchVelocity);
 
