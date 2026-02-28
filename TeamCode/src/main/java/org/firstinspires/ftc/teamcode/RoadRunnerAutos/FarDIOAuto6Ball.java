@@ -99,7 +99,7 @@ public class FarDIOAuto6Ball extends LinearOpMode {
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(Positions.getIntakeFarPoseS(), Math.toRadians(intakeAngle)).build());
 
-        intakeBalls();
+        intakeBalls(4.25);
 
         shooter.spinUp(launchVelocity);
 
@@ -107,6 +107,9 @@ public class FarDIOAuto6Ball extends LinearOpMode {
                 .strafeToLinearHeading(Positions.getFarShootPose(), Math.toRadians(shootAngle)).build());
 
         shootBalls(launchVelocity);
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToConstantHeading(Positions.getFarLeavePose()).build());
 
         shooter.stop();
 
@@ -123,7 +126,7 @@ public class FarDIOAuto6Ball extends LinearOpMode {
                 ));
     }
 
-    private void intakeBalls() {
+    private void intakeBalls(double limitTime) {
         intake.setPower(1);
         drive.rightBack.setPower(0.13);
         drive.rightFront.setPower(0.13);
@@ -132,8 +135,8 @@ public class FarDIOAuto6Ball extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                    intake.autoIntake(camera, turntable),
-                    intake.reverse()
+                        intake.autoIntake(camera, turntable, limitTime),
+                        intake.reverse()
                 )
         );
 
