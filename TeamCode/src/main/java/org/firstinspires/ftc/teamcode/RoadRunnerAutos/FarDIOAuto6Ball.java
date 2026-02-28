@@ -62,7 +62,7 @@ public class FarDIOAuto6Ball extends LinearOpMode {
             telemetry.update();
         }
 
-        double shootAngle = 153.83*PoseStorage.isRed;
+        double shootAngle = 156.5*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
         int launchVelocity = 1495;
 
