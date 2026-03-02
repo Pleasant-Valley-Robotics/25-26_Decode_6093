@@ -117,6 +117,8 @@ public class FarDIOAuto6Ball extends LinearOpMode {
             turntable.addBall(2, Turntable.IndexColors.PURPLE);
         }
 
+        Actions.runBlocking(new SleepAction(6.0));
+
         shootBalls(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
