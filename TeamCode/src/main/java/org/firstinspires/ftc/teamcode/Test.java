@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.RoadRunnerAutos.PoseStorage;
 import org.firstinspires.ftc.teamcode.RoadRunnerAutos.Shooter;
-@Disabled
 @TeleOp(name="TEST", group="Linear OpMode")
 public class Test extends LinearOpMode {
 

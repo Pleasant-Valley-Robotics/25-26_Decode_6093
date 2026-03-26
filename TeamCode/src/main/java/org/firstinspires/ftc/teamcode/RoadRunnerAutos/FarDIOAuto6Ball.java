@@ -67,7 +67,7 @@ public class FarDIOAuto6Ball extends LinearOpMode {
         int launchVelocity = 1495;
 
 
-        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getFarStartPose(), Math.toRadians(180)));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.farStartPose.getVector2d(), Math.toRadians(180)));
         intake = new Intake(hardwareMap);
         turntable = new Turntable(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -93,19 +93,19 @@ public class FarDIOAuto6Ball extends LinearOpMode {
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.getFarShootPose(), Math.toRadians(shootAngle)).build());
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
 
         shootBalls(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.getIntakeFarPoseS(), Math.toRadians(intakeAngle)).build());
+                .strafeToLinearHeading(Positions.intakeFarPoseS.getVector2d(), Math.toRadians(intakeAngle)).build());
 
         intakeBalls(4.25);
 
         shooter.spinUp(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.getFarShootPose(), Math.toRadians(shootAngle)).build());
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
 
         if (PoseStorage.isRed == 1) {
             turntable.addBall(0, Turntable.IndexColors.PURPLE);
@@ -122,7 +122,7 @@ public class FarDIOAuto6Ball extends LinearOpMode {
         shootBalls(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToConstantHeading(Positions.getFarLeavePose()).build());
+                .strafeToConstantHeading(Positions.farLeavePose.getVector2d()).build());
 
         shooter.stop();
 

@@ -8,10 +8,12 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Light;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -49,6 +51,7 @@ public class ODODIO extends OpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
 
     public static int flyWheelSpeed = 1500;
+    public static double delay = 0.5;
     private double distanceFromGoal;
     Vector2d autoLockingTarget = new Vector2d(-72, 76 * PoseStorage.isRed);
 
@@ -131,6 +134,7 @@ public class ODODIO extends OpMode {
         }
 
         if (gamepad2.right_bumper) turntable.extraRange(false);
+        if (gamepad2.leftBumperWasPressed()) systemsActions.add(shooter.shootFast(turntable, delay));
         else if (gamepad2.rightBumperWasReleased()) turntable.extraRange(true);
 
 
@@ -165,7 +169,7 @@ public class ODODIO extends OpMode {
             manualRotate = !manualRotate;
             useCamera = false;
         }
-        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(Positions.getResetPose());
+        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(Positions.resetPose);
         if (gamepad1.right_trigger > 0) driveActions.clear();
 
         slowMode = gamepad1.left_trigger > 0;
@@ -177,7 +181,7 @@ public class ODODIO extends OpMode {
         }
  */
         if (gamepad1.dpadRightWasPressed()) {
-            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.getParkPose(), Math.toRadians(-90 * PoseStorage.isRed),null,new ProfileAccelConstraint(-20,50));
+            TrajectoryActionBuilder goPark = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.parkPose.getVector2d(), Math.toRadians(-90 * PoseStorage.isRed),null,new ProfileAccelConstraint(-20,50));
             driveActions.clear();
             driveActions.add(goPark.build());
         }
@@ -214,6 +218,17 @@ public class ODODIO extends OpMode {
                 systemsActions.set(i, null);
             }
         }
+
+        if (!manualRotate) {
+            if (shooter.isAtSpeed() && shooter.isMoving()) {
+                shooter.setLedIntensity(0.5);
+            } else {
+                shooter.setLedIntensity(0.388);
+            }
+        } else {
+            shooter.setLedIntensity(0);
+        }
+
 
         prevGamepad1.copy(gamepad1);
         prevGamepad2.copy(gamepad2);

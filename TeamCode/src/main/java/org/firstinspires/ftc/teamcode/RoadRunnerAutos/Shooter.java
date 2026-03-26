@@ -22,8 +22,9 @@ public class Shooter {
     private DcMotorEx shooter;
     private DcMotorEx shooter2;
     private Servo flickerServo;
-    final public double upPos = 0.3;
-    final public double downPos = .4;
+    private Servo led;
+    final public double upPos = 0.38;
+    final public double downPos = .43;
     public static double p = 500;
     public static double d = 0;
     public static double f = 12.5;
@@ -37,6 +38,7 @@ public class Shooter {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         shooter2 = hardwareMap.get(DcMotorEx.class, "shooter2");
         flickerServo = hardwareMap.get(Servo.class, "flicker");
+        led = hardwareMap.get(Servo.class, "led");
 
         shooter2.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -84,6 +86,25 @@ public class Shooter {
             }
         };
     }
+
+    public Action shootFast(Turntable turntable, double delay) {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!isMoving()) return false;
+                turntable.turnToPosition(0);
+                Actions.runBlocking(new SleepAction(delay));
+                Actions.runBlocking(shootOnce(turntable));
+                Actions.runBlocking(new SleepAction(delay));
+                Actions.runBlocking(shootOnce(turntable));
+                Actions.runBlocking(new SleepAction(delay));
+                Actions.runBlocking(shootOnce(turntable));
+                Actions.runBlocking(new SleepAction(delay));
+                return false;
+            }
+        };
+    }
+
 
     public Action shootInPattern(Turntable turntable) {
 
@@ -134,7 +155,9 @@ public class Shooter {
         shooter2.setVelocity(speed);
     }
 
-
+    public void setLedIntensity(double intensity) {
+        led.setPosition(intensity);
+    }
 
     public void stop() {
         spinUp(0);
@@ -142,7 +165,7 @@ public class Shooter {
     public int getLastSpeed() {return lastSpeed;}
     public boolean isMoving() {return shooter.getVelocity() > 100;}
     public boolean isAtSpeed() {
-        return Math.abs(shooter.getVelocity() - lastSpeed) < 20;
+        return Math.abs(shooter.getVelocity() - lastSpeed) < 45;
     }
 
     public double getVelocity() {

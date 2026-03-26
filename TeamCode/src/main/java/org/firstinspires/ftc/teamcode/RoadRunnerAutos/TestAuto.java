@@ -34,7 +34,6 @@ public class TestAuto extends LinearOpMode {
 
     int targetAprilTag = 24;
     public void runOpMode() {
-        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.getCloseStartPose(), Math.toRadians(131.9529 * PoseStorage.isRed)));
         camera = new Camera(hardwareMap);
         Actions.runBlocking(driveAutoLocking());
     }
