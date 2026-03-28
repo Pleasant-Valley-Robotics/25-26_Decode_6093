@@ -63,7 +63,7 @@ public class Camera {
 
         // Amount of times to turn the turntable LEFT
 
-        return 0;
+        return -1;
 
     }
 
@@ -87,7 +87,7 @@ public class Camera {
     }
 
     public boolean ballDetectedR() {
-        return loc1.getDistance(DistanceUnit.MM) < 175;
+        return loc1.getDistance(DistanceUnit.MM) < 135;
     }
 
     public boolean ballDetectedL() {

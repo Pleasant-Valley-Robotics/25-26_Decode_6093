@@ -70,21 +70,24 @@ public class Shooter {
 
 
     public Action shootAll(Turntable turntable) {
+
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!isMoving()) return false;
                 turntable.turnToPosition(0);
-                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(new SleepAction(0.2));
                 Actions.runBlocking(shootOnce(turntable));
-                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(new SleepAction(0.2));
                 Actions.runBlocking(shootOnce(turntable));
-                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(new SleepAction(0.2));
                 Actions.runBlocking(shootOnce(turntable));
-                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(new SleepAction(0.2));
                 return false;
             }
         };
+
+
     }
 
     public Action shootFast(Turntable turntable, double delay) {
@@ -110,7 +113,7 @@ public class Shooter {
 
         Turntable.IndexColors[] pattern = {Turntable.IndexColors.GREEN, Turntable.IndexColors.PURPLE, Turntable.IndexColors.PURPLE};
 
-        if (turntable.countGreen() != 1 || turntable.getNumBalls() != 3) {
+        if (turntable.countGreen() != 1 || turntable.getNumBalls() != 3 || PoseStorage.shotsToCycle == -1) {
             return shootAll(turntable);
         }
 
@@ -124,7 +127,7 @@ public class Shooter {
                 }
                 index++;
                 index %= 3;
-                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(new SleepAction(0.2));
                 Actions.runBlocking(shootOnce(turntable));
 
                 while (turntable.getBallAt(1) != pattern[index]) {
@@ -132,13 +135,13 @@ public class Shooter {
                 }
                 index++;
                 index %= 3;
-                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(new SleepAction(0.2));
                 Actions.runBlocking(shootOnce(turntable));
 
                 while (turntable.getBallAt(1) != pattern[index]) {
                     turntable.turnLeft();
                 }
-                Actions.runBlocking(new SleepAction(0.5));
+                Actions.runBlocking(new SleepAction(0.2));
                 Actions.runBlocking(shootOnce(turntable));
 
                 return false;

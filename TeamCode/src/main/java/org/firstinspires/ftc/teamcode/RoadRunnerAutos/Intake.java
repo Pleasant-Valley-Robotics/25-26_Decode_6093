@@ -103,6 +103,52 @@ public class Intake {
         };
     }
 
+    public Action aut2oIntake(Camera camera, Turntable turntable, double limitTime) {
+        return new Action() {
+            ElapsedTime limiter = new ElapsedTime(0);
+            char side = ' '; // space for unknown, r for right, l for left
+            boolean init = false;
+            int count = 0;
+            boolean hasBallL = false;
+            boolean hasBallR = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!init) {
+                    limiter.reset();
+                    init = true;
+                }
+
+
+
+                if ((side == ' ') && camera.ballDetectedL()) {
+                    Actions.runBlocking(new SleepAction(0.5));
+                    turntable.turnLeft();
+                    Actions.runBlocking(new SleepAction(0.5));
+                    side = 'l';
+                    count++;
+                } else if ((side == ' ') && camera.ballDetectedR()) {
+                    Actions.runBlocking(new SleepAction(0.5));
+                    turntable.turnRight();
+                    Actions.runBlocking(new SleepAction(0.5));
+                    side = 'r';
+                    count++;
+                } else if (camera.ballDetectedR() && !hasBallL) {
+                    hasBallL = true;
+                    count++;
+                } else if (camera.ballDetectedL() && !hasBallR) {
+                    hasBallR = true;
+                    count++;
+                }
+
+                if (limiter.seconds() > limitTime) {
+                    return false;
+                }
+                return count < 3;
+            }
+        };
+    }
+
 
     public void stopIntake() {
         intake.setPower(0);

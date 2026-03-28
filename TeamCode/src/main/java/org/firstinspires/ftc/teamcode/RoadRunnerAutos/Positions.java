@@ -11,7 +11,14 @@ public class Positions {
     public static final NewVector intakeClosePoseS = new NewVector(-11.5661, 28.9885); //90
     public static final NewVector intakeMedPoseS = new NewVector(11.9563, 28.9885); //90
     public static final NewVector intakeFarPoseS = new NewVector(35.6717, 28.9885); //90
-    public static final NewVector shootPose = new NewVector(-22.8829, 15.6723);// 130.662 for shoot, 180 for scan//132.9229
+
+    public static final NewVector diagIntakeClose = new NewVector(-22.5224, 34.269); // 52.5056
+    public static final NewVector diagIntakeMid = new NewVector(1.0, 34.269); // 52.5056
+    public static final NewVector diagIntakeFar = new NewVector(24.5224, 34.269); // 52.5056
+    public static final NewVector gate = new NewVector(4.7846, 46.0922); //90
+    public static final NewVector read = new NewVector(4.7846, 20); //90
+    public static final NewVector firstShootPose = new NewVector(-22.8829, 15.6723);// 130.662 for shoot, 180 for scan//132.9229
+    public static final NewVector shootPose = new NewVector(-11.6417, 24.9365);// 140.7181 for shoot, target speed 1335
     public static final NewVector farLeavePose = new NewVector(44.173,15.93); // 153.64
     public static final NewVector farShootPose = new NewVector(50.9675,15.0052); // 153.5
 

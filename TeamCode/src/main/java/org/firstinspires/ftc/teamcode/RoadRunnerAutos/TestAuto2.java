@@ -50,7 +50,7 @@ public class TestAuto2 extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        intake.autoIntake(camera, turntable, limitTime),
+                        intake.aut2oIntake(camera, turntable, limitTime),
                         intake.reverse()
                 )
         );

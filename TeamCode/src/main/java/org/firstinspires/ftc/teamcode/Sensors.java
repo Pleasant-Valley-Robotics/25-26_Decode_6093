@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RoadRunnerAutos.Camera;
-@Disabled
 @TeleOp(name="Sensors", group="Test")
 public class Sensors extends OpMode {
     private Camera camera;
