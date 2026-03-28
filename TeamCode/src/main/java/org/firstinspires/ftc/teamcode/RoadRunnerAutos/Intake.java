@@ -122,15 +122,15 @@ public class Intake {
 
 
                 if ((side == ' ') && camera.ballDetectedL()) {
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.35));
                     turntable.turnLeft();
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.35));
                     side = 'l';
                     count++;
                 } else if ((side == ' ') && camera.ballDetectedR()) {
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.35));
                     turntable.turnRight();
-                    Actions.runBlocking(new SleepAction(0.5));
+                    Actions.runBlocking(new SleepAction(0.35));
                     side = 'r';
                     count++;
                 } else if (camera.ballDetectedR() && !hasBallL) {

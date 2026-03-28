@@ -37,7 +37,7 @@ public class CloseDIOAuto12Ball extends LinearOpMode {
         double shootAngle = 142 *PoseStorage.isRed;
         double leaveShootAngle = 127.4*PoseStorage.isRed;
         double intakeAngle = 52.5056 * PoseStorage.isRed;
-        int launchVelocity = 1320;
+        int launchVelocity = 1330;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.closeStartPose.getVector2d(), Math.toRadians(131.9529 * PoseStorage.isRed)));
@@ -51,8 +51,9 @@ public class CloseDIOAuto12Ball extends LinearOpMode {
         turntable.addBall(1, Turntable.IndexColors.GREEN);
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
 
-        while (!isStopRequested() && !opModeIsActive()) {
+        shooter.setLedIntensity(.28);
 
+        while (!isStopRequested() && !opModeIsActive()) {
             if (gamepad1.dpadUpWasPressed()) {
                 timeBeforeStart += 1.0;
             }
@@ -62,11 +63,13 @@ public class CloseDIOAuto12Ball extends LinearOpMode {
 
             if (gamepad1.bWasPressed()) {
                 PoseStorage.isRed = 1;
+                shooter.setLedIntensity(.28);
                 targetAprilTag = 24;
             }
 
             if (gamepad1.xWasPressed()) {
                 PoseStorage.isRed = -1;
+                shooter.setLedIntensity(.611);
                 targetAprilTag = 20;
             }
 
@@ -91,24 +94,26 @@ public class CloseDIOAuto12Ball extends LinearOpMode {
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
 
-        shooter.spinUp(launchVelocity);
+        shooter.spinUp(launchVelocity - 10);
 
         //Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(Positions.firstShootPose.getVector2d(), Math.toRadians(130.662 * PoseStorage.isRed)).build());
 
-        shootFast(launchVelocity);
+        shootFast(launchVelocity - 10);
 
         turntable.turnToPosition(1);
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.diagIntakeMid.getVector2d(), Math.toRadians(intakeAngle)).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeTo(new NewVector(-20.8829, 15.6723).getVector2d()).strafeToLinearHeading(Positions.diagIntakeMid.getVector2d(), Math.toRadians(intakeAngle)).build());
 
-        intakeBalls(2.75);
+        intakeBalls(2);
 
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.gate.getVector2d(), Math.toRadians(90 * PoseStorage.isRed)).build());
 
         driveForward(.4, .4);
         Actions.runBlocking(new SleepAction(0.3));
+
+        shooter.spinUp(launchVelocity - 5);
 
         Actions.runBlocking(new RaceAction(
                 drive.actionBuilder(drive.localizer.getPose())
@@ -133,11 +138,11 @@ public class CloseDIOAuto12Ball extends LinearOpMode {
             turntable.addBall(2, Turntable.IndexColors.PURPLE);
         }
 
-        shootBalls(launchVelocity);
+        shootBalls(launchVelocity - 5);
 
         turntable.turnToPosition(1);
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.diagIntakeClose.getVector2d(), Math.toRadians(intakeAngle)).build());
-        intakeBalls(2.75);
+        intakeBalls(2);
 
         shooter.spinUp(launchVelocity);
 
@@ -161,9 +166,9 @@ public class CloseDIOAuto12Ball extends LinearOpMode {
 
         turntable.turnToPosition(1);
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.diagIntakeFar.getVector2d(), Math.toRadians(intakeAngle)).build());
-        intakeBalls(2.75);
+        intakeBalls(2);
 
-        shooter.spinUp(launchVelocity - 30);
+        shooter.spinUp(launchVelocity - 40);
 
         // Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.leaveShootPose.getVector2d(), Math.toRadians(leaveShootAngle)).build());
@@ -172,7 +177,7 @@ public class CloseDIOAuto12Ball extends LinearOpMode {
         turntable.addBall(1, Turntable.IndexColors.GREEN);
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
 
-        shootBalls(launchVelocity - 30);
+        shootBalls(launchVelocity - 40);
 
         shooter.stop();
         intake.stopIntake();
