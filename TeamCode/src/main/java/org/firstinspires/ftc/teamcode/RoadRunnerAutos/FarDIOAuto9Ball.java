@@ -34,12 +34,12 @@ public class FarDIOAuto9Ball extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        double shootAngle = 156.5*PoseStorage.isRed;
+        double shootAngle = 160.0*PoseStorage.isRed;
         double intakeAngle = 52.5056 * PoseStorage.isRed;
-        int launchVelocity = 1495;
+        int launchVelocity = 1500;
 
 
-        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.closeStartPose.getVector2d(), Math.toRadians(131.9529 * PoseStorage.isRed)));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.farStartPose.getVector2d(), Math.toRadians(180 * PoseStorage.isRed)));
         turntable = new Turntable(hardwareMap);
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
@@ -90,29 +90,33 @@ public class FarDIOAuto9Ball extends LinearOpMode {
         if (isStopRequested()) return;
         shooter.setServoPos(shooter.downPos);
         turntable.updatePosition();
+        turntable.turnToPosition(0);
 
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
         shooter.spinUp(launchVelocity);
         PoseStorage.shotsToCycle = camera.findShotsToCycle();
+        if (PoseStorage.shotsToCycle == -1) {
+            throw new RuntimeException("bro");
+        }
 
 
         //Drive to shoot
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.farStartPose.getVector2d(), Math.toRadians(shootAngle)).build());
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
 
         shootBalls(launchVelocity);
 
         turntable.turnToPosition(1);
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.diagIntakeFar.getVector2d(),Math.toRadians(intakeAngle)).build());
 
-        intakeBalls(2, 0.19);
+        intakeBalls(3, 0.19);
         drive.updatePoseEstimate();
 
         shooter.spinUp(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.farStartPose.getVector2d(), Math.toRadians(shootAngle)).build());
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
 
         Actions.runBlocking(new SleepAction(0.1));
 
@@ -122,21 +126,24 @@ public class FarDIOAuto9Ball extends LinearOpMode {
 
         shootBalls(launchVelocity);
 
-
-        turntable.turnToPosition(1);
+        if (PoseStorage.isRed == 1) {
+            turntable.turnToPosition(0);
+        } else {
+            turntable.turnToPosition(2);
+        }
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.humanPlayaIntake.getVector2d(),Math.toRadians(0)).build());
 
-        intakeBalls(2, 0.19);
+        inta2keBalls(3, 0.15);
         drive.updatePoseEstimate();
 
         shooter.spinUp(launchVelocity);
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.farStartPose.getVector2d(), Math.toRadians(shootAngle)).build());
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
 
         Actions.runBlocking(new SleepAction(0.1));
 
-        if (PoseStorage.isRed == 1) {
+        if (PoseStorage.isRed == -1) {
             turntable.addBall(0, Turntable.IndexColors.GREEN);
             turntable.addBall(1, Turntable.IndexColors.PURPLE);
             turntable.addBall(2, Turntable.IndexColors.PURPLE);
@@ -148,6 +155,7 @@ public class FarDIOAuto9Ball extends LinearOpMode {
 
         shootBalls(launchVelocity);
 
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.farLeavePose.getVector2d(), Math.toRadians(180)).build());
 
         shooter.stop();
         intake.stopIntake();
@@ -168,6 +176,28 @@ public class FarDIOAuto9Ball extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         intake.aut2oIntake(camera, turntable, limitTime),
+                        intake.reverse()
+                )
+        );
+
+        drive.rightBack.setPower(0);
+        drive.rightFront.setPower(0);
+        drive.leftBack.setPower(0);
+        drive.leftFront.setPower(0);
+
+        drive.updatePoseEstimate();
+    }
+
+    private void inta2keBalls(double limitTime, double intakeSpeed) {
+        intake.setPower(1);
+        drive.rightBack.setPower(intakeSpeed);
+        drive.rightFront.setPower(intakeSpeed);
+        drive.leftBack.setPower(intakeSpeed);
+        drive.leftFront.setPower(intakeSpeed);
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        intake.autoIntake(camera, turntable, limitTime),
                         intake.reverse()
                 )
         );
