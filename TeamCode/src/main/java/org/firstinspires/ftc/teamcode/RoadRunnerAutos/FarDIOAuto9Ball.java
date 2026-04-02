@@ -34,9 +34,9 @@ public class FarDIOAuto9Ball extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        double shootAngle = 160.0*PoseStorage.isRed;
+        double shootAngle = 158.5*PoseStorage.isRed;
         double intakeAngle = 52.5056 * PoseStorage.isRed;
-        int launchVelocity = 1500;
+        int launchVelocity = 1517;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.farStartPose.getVector2d(), Math.toRadians(180 * PoseStorage.isRed)));
@@ -51,6 +51,7 @@ public class FarDIOAuto9Ball extends LinearOpMode {
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
 
         shooter.setLedIntensity(.28);
+        PoseStorage.shotsToCycle = -1;
 
         while (!isStopRequested() && !opModeIsActive()) {
             if (gamepad1.dpadUpWasPressed()) {
@@ -81,10 +82,6 @@ public class FarDIOAuto9Ball extends LinearOpMode {
             telemetry.update();
         }
 
-
-
-
-
         waitForStart();
 
         if (isStopRequested()) return;
@@ -95,35 +92,17 @@ public class FarDIOAuto9Ball extends LinearOpMode {
         Actions.runBlocking(new SleepAction(timeBeforeStart));
 
         shooter.spinUp(launchVelocity);
-        PoseStorage.shotsToCycle = camera.findShotsToCycle();
-        if (PoseStorage.shotsToCycle == -1) {
-            throw new RuntimeException("bro");
-        }
 
 
         //Drive to shoot
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
 
-        shootBalls(launchVelocity);
+        Actions.runBlocking(new RaceAction(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build(),
+                readContinous()));
 
-        turntable.turnToPosition(1);
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.diagIntakeFar.getVector2d(),Math.toRadians(intakeAngle)).build());
-
-        intakeBalls(3, 0.19);
-        drive.updatePoseEstimate();
-
-        shooter.spinUp(launchVelocity);
-
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
-
-        Actions.runBlocking(new SleepAction(0.1));
-
-        turntable.addBall(0, Turntable.IndexColors.PURPLE);
-        turntable.addBall(1, Turntable.IndexColors.GREEN);
-        turntable.addBall(2, Turntable.IndexColors.PURPLE);
-
+        if (PoseStorage.shotsToCycle == -1) {
+            throw new RuntimeException("FIX YOUR LIMELIGHT!!!!!!!!!!!!!!!!!");
+        }
         shootBalls(launchVelocity);
 
         if (PoseStorage.isRed == 1) {
@@ -131,9 +110,11 @@ public class FarDIOAuto9Ball extends LinearOpMode {
         } else {
             turntable.turnToPosition(2);
         }
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.humanPlayaIntake.getVector2d(),Math.toRadians(0)).build());
 
-        inta2keBalls(3, 0.15);
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new NewVector(Positions.humanPlayaIntake.x + 4, Positions.humanPlayaIntake.y - 11.5).getVector2d(), 0).strafeTo(Positions.humanPlayaIntake.getVector2d()).build());
+
+        inta2keBalls(2.3, 0.15);
         drive.updatePoseEstimate();
 
         shooter.spinUp(launchVelocity);
@@ -155,10 +136,49 @@ public class FarDIOAuto9Ball extends LinearOpMode {
 
         shootBalls(launchVelocity);
 
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.farLeavePose.getVector2d(), Math.toRadians(180)).build());
+        turntable.turnToPosition(1);
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.diagIntakeFar.getVector2d(), Math.toRadians(52.5056 * PoseStorage.isRed)).build());
 
-        shooter.stop();
-        intake.stopIntake();
+        intakeBalls(2.3, 0.18);
+        drive.updatePoseEstimate();
+
+        shooter.spinUp(launchVelocity);
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
+
+        Actions.runBlocking(new SleepAction(0.1));
+
+        turntable.addBall(0, Turntable.IndexColors.PURPLE);
+        turntable.addBall(1, Turntable.IndexColors.GREEN);
+        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+
+        shootBalls(launchVelocity);
+
+        if (PoseStorage.isRed == 1) {
+            turntable.turnToPosition(2);
+        } else {
+            turntable.turnToPosition(0);
+        }
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.humanPlayaIntake.getVector2d(), Math.toRadians(180)).build());
+
+        inta2keBalls(2, 0.2);
+
+        drive.updatePoseEstimate();
+
+        shooter.spinUp(launchVelocity);
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
+                .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build());
+
+        turntable.addBall(0, Turntable.IndexColors.PURPLE);
+        turntable.addBall(1, Turntable.IndexColors.GREEN);
+        turntable.addBall(2, Turntable.IndexColors.PURPLE);
+
+        shootBalls(launchVelocity);
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeTo(Positions.farLeavePose.getVector2d()).build());
 
         Actions.runBlocking(new SleepAction(2));
 
@@ -186,6 +206,19 @@ public class FarDIOAuto9Ball extends LinearOpMode {
         drive.leftFront.setPower(0);
 
         drive.updatePoseEstimate();
+    }
+
+    private Action readContinous() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                int shots = camera.findShotsToCycle();
+                if (shots != -1) {
+                    PoseStorage.shotsToCycle = shots;
+                }
+                return true;
+            }
+        };
     }
 
     private void inta2keBalls(double limitTime, double intakeSpeed) {

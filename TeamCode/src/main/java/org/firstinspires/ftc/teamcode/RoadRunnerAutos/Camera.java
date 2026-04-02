@@ -47,7 +47,7 @@ public class Camera {
 
     public int findShotsToCycle() {
         LLResult result = limelight.getLatestResult();
-        if (result != null) {
+        if (result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
             if (!fiducials.isEmpty()) {
                 switch (fiducials.get(0).getFiducialId()) {
