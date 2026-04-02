@@ -112,7 +112,7 @@ public class FarDIOAuto9Ball extends LinearOpMode {
         }
 
 
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new NewVector(Positions.humanPlayaIntake.x + 4, Positions.humanPlayaIntake.y - 11.5).getVector2d(), 0).strafeTo(Positions.humanPlayaIntake.getVector2d()).build());
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new NewVector(Positions.humanPlayaIntake.x + 4, Positions.humanPlayaIntake.y - 7.6).getVector2d(), 0).strafeTo(Positions.humanPlayaIntake.getVector2d()).build());
 
         inta2keBalls(2.3, 0.15);
         drive.updatePoseEstimate();
@@ -124,7 +124,7 @@ public class FarDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(new SleepAction(0.1));
 
-        if (PoseStorage.isRed == -1) {
+        if (PoseStorage.isRed == 1) {
             turntable.addBall(0, Turntable.IndexColors.GREEN);
             turntable.addBall(1, Turntable.IndexColors.PURPLE);
             turntable.addBall(2, Turntable.IndexColors.PURPLE);
