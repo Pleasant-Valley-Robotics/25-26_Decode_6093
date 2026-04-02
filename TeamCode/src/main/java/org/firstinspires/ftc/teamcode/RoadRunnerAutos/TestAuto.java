@@ -27,7 +27,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.List;
 
-@Autonomous(name = "Test Auto", group = "Autonomous")
+@Autonomous(name = "Test Auto", group = "Test")
 public class TestAuto extends LinearOpMode {
     MecanumDrive drive;
     Camera camera;

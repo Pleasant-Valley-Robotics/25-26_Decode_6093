@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Config
-@Autonomous(name = "Test Aut2o", group = "Autonomous")
+@Autonomous(name = "Test Aut2o", group = "Test")
 public class TestAuto2 extends LinearOpMode {
     Turntable turntable;
     Shooter shooter;
