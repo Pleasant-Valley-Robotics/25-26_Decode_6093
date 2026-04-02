@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.List;
 
 @Config
-@Autonomous(name = "--------> CLOSE DIO AUTO 9 BALL - JESSE IT'S THIS ONE\n", group = "Autonomous")
+@Autonomous(name = "Close 9", group = "Close")
 public class CloseDIOAuto9Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive;

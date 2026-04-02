@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.List;
 
 @Config
-@Autonomous(name = "Far Dio Auto 6 Ball", group = "Autonomous")
+@Autonomous(name = "Far 6", group = "Far")
 public class FarDIOAuto6Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive;
@@ -62,9 +62,9 @@ public class FarDIOAuto6Ball extends LinearOpMode {
             telemetry.update();
         }
 
-        double shootAngle = 156.5*PoseStorage.isRed;
+        double shootAngle = 158.5*PoseStorage.isRed;
         double intakeAngle = 90*PoseStorage.isRed;
-        int launchVelocity = 1495;
+        int launchVelocity = 1517;
 
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(Positions.farStartPose.getVector2d(), Math.toRadians(180)));
@@ -97,10 +97,17 @@ public class FarDIOAuto6Ball extends LinearOpMode {
 
         shootBalls(launchVelocity);
 
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose())
-                .strafeToLinearHeading(Positions.intakeFarPoseS.getVector2d(), Math.toRadians(intakeAngle)).build());
+        if (PoseStorage.isRed == 1) {
+            turntable.turnToPosition(0);
+        } else {
+            turntable.turnToPosition(2);
+        }
 
-        intakeBalls(4.25);
+
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new NewVector(Positions.humanPlayaIntake.x + 4, Positions.humanPlayaIntake.y - 11.5).getVector2d(), 0).strafeTo(Positions.humanPlayaIntake.getVector2d()).build());
+
+        inta2keBalls(2.3, 0.15);
+        drive.updatePoseEstimate();
 
         shooter.spinUp(launchVelocity);
 
@@ -116,8 +123,6 @@ public class FarDIOAuto6Ball extends LinearOpMode {
             turntable.addBall(1, Turntable.IndexColors.PURPLE);
             turntable.addBall(2, Turntable.IndexColors.PURPLE);
         }
-
-        Actions.runBlocking(new SleepAction(6.0));
 
         shootBalls(launchVelocity);
 
@@ -145,6 +150,28 @@ public class FarDIOAuto6Ball extends LinearOpMode {
         drive.rightFront.setPower(0.13);
         drive.leftBack.setPower(0.13);
         drive.leftFront.setPower(0.13);
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        intake.autoIntake(camera, turntable, limitTime),
+                        intake.reverse()
+                )
+        );
+
+        drive.rightBack.setPower(0);
+        drive.rightFront.setPower(0);
+        drive.leftBack.setPower(0);
+        drive.leftFront.setPower(0);
+
+        drive.updatePoseEstimate();
+    }
+
+    private void inta2keBalls(double limitTime, double intakeSpeed) {
+        intake.setPower(1);
+        drive.rightBack.setPower(intakeSpeed);
+        drive.rightFront.setPower(intakeSpeed);
+        drive.leftBack.setPower(intakeSpeed);
+        drive.leftFront.setPower(intakeSpeed);
 
         Actions.runBlocking(
                 new SequentialAction(
