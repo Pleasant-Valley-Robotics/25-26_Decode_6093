@@ -73,9 +73,9 @@ public class Shooter {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 flickerServo.setPosition(upPos);
-                Actions.runBlocking(new SleepAction(0.15));
+                Actions.runBlocking(new SleepAction(0.10));
                 flickerServo.setPosition(downPos);
-                Actions.runBlocking(new SleepAction(0.15));
+                Actions.runBlocking(new SleepAction(0.10));
                 turntable.removeBall(1);
                 turntable.turnRight();
                 return false;
@@ -104,20 +104,61 @@ public class Shooter {
 
     }
 
-    public Action shootFastTele(Turntable turntable, double delay) {
+    private enum ShootFastStates {
+        START,
+        FLICKERUP,
+        FLICKERDOWN,
+    }
+
+    public Action shootFastTele(Turntable turntable, double delay, double ratio) {
         return new Action() {
+            ShootFastStates launchStates;
+            boolean init = false;
+            ElapsedTime timer = new ElapsedTime();
+            int count = 0;
+
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!isMoving()) return false;
-                turntable.turnToPosition(2);
-                Actions.runBlocking(new SleepAction(delay));
-                Actions.runBlocking(shootOnceR(turntable));
-                Actions.runBlocking(new SleepAction(delay));
-                Actions.runBlocking(shootOnceR(turntable));
-                Actions.runBlocking(new SleepAction(delay));
-                Actions.runBlocking(shootOnceR(turntable));
-                Actions.runBlocking(new SleepAction(delay));
-                return false;
+                double updatedDelay = (launchStates == ShootFastStates.FLICKERUP
+                        ? delay : delay * ratio);
+
+                if (!init) {
+                    init = true;
+                    launchStates = ShootFastStates.START;
+
+                    if (!isMoving()) return false;
+                    if (turntable.getPositionId() == 2) {
+                        updatedDelay = 0;
+                    }
+                    turntable.turnToPosition(2);
+                    timer.reset();
+                }
+
+
+                if (timer.seconds() > updatedDelay * 2) {
+                    if (launchStates == ShootFastStates.START) {
+                        launchStates = ShootFastStates.FLICKERUP;
+                        flickerServo.setPosition(upPos);
+                        timer.reset();
+                    } else if (launchStates == ShootFastStates.FLICKERUP) {
+                        launchStates = ShootFastStates.FLICKERDOWN;
+                        flickerServo.setPosition(downPos);
+                        turntable.removeBall(1);
+                        turntable.turnRight();
+                        timer.reset();
+                    } else if (launchStates == ShootFastStates.FLICKERDOWN) {
+                        if (count == 2) {
+                            launchStates = ShootFastStates.START;
+                            return false;
+                        } else {
+                            launchStates = ShootFastStates.FLICKERUP;
+                            flickerServo.setPosition(upPos);
+                            count++;
+                            timer.reset();
+                        }
+                    }
+                }
+                return true;
             }
         };
     }

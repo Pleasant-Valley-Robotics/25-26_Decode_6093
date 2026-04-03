@@ -52,6 +52,7 @@ public class ODODIO extends OpMode {
 
     public static int flyWheelSpeed = 1500;
     public static double delay = 0.12;
+    public static double ratio = 0.15;
     private double distanceFromGoal;
     Vector2d autoLockingTarget = new Vector2d(-72, 76 * PoseStorage.isRed);
 
@@ -128,7 +129,7 @@ public class ODODIO extends OpMode {
         }
 
         if (gamepad2.right_bumper) turntable.extraRange(false);
-        if (gamepad2.leftBumperWasPressed()) systemsActions.add(shooter.shootFast(turntable, delay));
+        if (gamepad2.leftBumperWasPressed() && systemsActions.isEmpty()) systemsActions.add(shooter.shootFastTele(turntable, delay, ratio));
         else if (gamepad2.rightBumperWasReleased()) turntable.extraRange(true);
 
 
