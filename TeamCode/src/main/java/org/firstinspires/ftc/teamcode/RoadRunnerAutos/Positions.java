@@ -28,6 +28,6 @@ public class Positions {
     public static final NewVector leaveShootPose = new NewVector(-26.9057, 12.6696); //-127.4056
     public static final NewVector parkPose = new NewVector(32.8103, -32.8103);
 
-    public static Pose2d getResetPose() {return new Pose2d(resetPose.position.x, resetPose.position.y * PoseStorage.isRed, Math.toRadians(90) * PoseStorage.isRed);}
+    public static Pose2d getResetPose() {return new Pose2d(resetPose.position.x, resetPose.position.y * PoseStorage.isRed, Math.toRadians(90 * PoseStorage.isRed));}
 
 }

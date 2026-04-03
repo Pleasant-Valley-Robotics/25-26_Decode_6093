@@ -51,7 +51,7 @@ public class ODODIO extends OpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
 
     public static int flyWheelSpeed = 1500;
-    public static double delay = 0.15;
+    public static double delay = 0.12;
     private double distanceFromGoal;
     Vector2d autoLockingTarget = new Vector2d(-72, 76 * PoseStorage.isRed);
 
@@ -169,7 +169,7 @@ public class ODODIO extends OpMode {
             manualRotate = !manualRotate;
             useCamera = false;
         }
-        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(Positions.resetPose);
+        if (gamepad1.dpadLeftWasPressed()) drive.localizer.setPose(Positions.getResetPose());
         if (gamepad1.right_trigger > 0) driveActions.clear();
 
         slowMode = gamepad1.left_trigger > 0;

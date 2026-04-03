@@ -190,7 +190,7 @@ public class CloseDIOAuto9Ball extends LinearOpMode {
 
         intake.setPower(1);
         Actions.runBlocking(new RaceAction(
-                shooter.shootInPattern(turntable),
+                shooter.shootInPattern(turntable, 0.22),
                 driveAutoLocking()
                 )
         );

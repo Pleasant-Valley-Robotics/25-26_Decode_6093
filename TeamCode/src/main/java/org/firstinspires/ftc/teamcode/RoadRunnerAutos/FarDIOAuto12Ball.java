@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.List;
 
 @Config
-@Autonomous(name = "--------> FAR DIO AUTO 9 BALL - JESSE IT'S THIS ONE\n", group = "Autonomous")
-public class FarDIOAuto9Ball extends LinearOpMode {
+@Autonomous(name = "Far 12\n", group = "Far")
+public class FarDIOAuto12Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive;
     Turntable turntable;
@@ -34,7 +34,7 @@ public class FarDIOAuto9Ball extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        double shootAngle = 158.5*PoseStorage.isRed;
+        double shootAngle = 157.2*PoseStorage.isRed;
         double intakeAngle = 52.5056 * PoseStorage.isRed;
         int launchVelocity = 1517;
 
@@ -114,7 +114,7 @@ public class FarDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(new NewVector(Positions.humanPlayaIntake.x + 4, Positions.humanPlayaIntake.y - 7.6).getVector2d(), 0).strafeTo(Positions.humanPlayaIntake.getVector2d()).build());
 
-        inta2keBalls(2.3, 0.15);
+        inta2keBalls(2, 0.16);
         drive.updatePoseEstimate();
 
         shooter.spinUp(launchVelocity);
@@ -124,22 +124,15 @@ public class FarDIOAuto9Ball extends LinearOpMode {
 
         Actions.runBlocking(new SleepAction(0.1));
 
-        if (PoseStorage.isRed == 1) {
-            turntable.addBall(0, Turntable.IndexColors.GREEN);
-            turntable.addBall(1, Turntable.IndexColors.PURPLE);
-            turntable.addBall(2, Turntable.IndexColors.PURPLE);
-        } else {
-            turntable.addBall(0, Turntable.IndexColors.PURPLE);
-            turntable.addBall(1, Turntable.IndexColors.PURPLE);
-            turntable.addBall(2, Turntable.IndexColors.GREEN);
-        }
+        turntable.addBall(0, Turntable.IndexColors.PURPLE);
+        turntable.addBall(1, Turntable.IndexColors.GREEN);
+        turntable.addBall(2, Turntable.IndexColors.PURPLE);
 
         shootBalls(launchVelocity);
 
         turntable.turnToPosition(1);
-        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.diagIntakeFar.getVector2d(), Math.toRadians(52.5056 * PoseStorage.isRed)).build());
-
-        intakeBalls(2.3, 0.18);
+        Actions.runBlocking(drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(Positions.otherDiagIntakeFar.getVector2d(), Math.toRadians(127.495 * PoseStorage.isRed)).build());
+        intakeBalls(2.1, 0.18);
         drive.updatePoseEstimate();
 
         shooter.spinUp(launchVelocity);
@@ -253,7 +246,7 @@ public class FarDIOAuto9Ball extends LinearOpMode {
 
         intake.setPower(1);
         Actions.runBlocking(new RaceAction(
-                        shooter.shootInPattern(turntable),
+                        shooter.shootInPattern(turntable, 0.25),
                         driveAutoLocking()
                 )
         );
