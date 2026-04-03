@@ -71,12 +71,6 @@ public class ODODIO extends OpMode {
         prevGamepad1.copy(gamepad1);
         prevGamepad2.copy(gamepad2);
 
-
-
-        for (int i = 0; i < 30; i++) {
-            systemsActions.add(null);
-        }
-
         if (PoseStorage.isRed == 1) {
             targetAprilTag = 24;
         } else {
@@ -213,11 +207,14 @@ public class ODODIO extends OpMode {
         }
 
         List<Action> newSystemsActions = new ArrayList<>();
-        for (int i = 0; i < systemsActions.size(); i++) {
-            if (systemsActions.get(i) == null || !systemsActions.get(i).run(packet)) {
-                systemsActions.set(i, null);
+        for (Action action : systemsActions) {
+            action.preview(packet.fieldOverlay());
+            if (action.run(packet)) {
+                newSystemsActions.add(action);
             }
         }
+
+        systemsActions = newSystemsActions;
 
         if (!manualRotate) {
             if (shooter.isAtSpeed() && shooter.isMoving()) {
