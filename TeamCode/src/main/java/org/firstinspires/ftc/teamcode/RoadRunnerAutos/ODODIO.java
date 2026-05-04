@@ -51,7 +51,7 @@ public class ODODIO extends OpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
 
     public static int flyWheelSpeed = 1500;
-    public static double delay = 0.12;
+    public static double delay = 0.17;
     public static double ratio = 0.15;
     private double distanceFromGoal;
     Vector2d autoLockingTarget = new Vector2d(-72, 76 * PoseStorage.isRed);

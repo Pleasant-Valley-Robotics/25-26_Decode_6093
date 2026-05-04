@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.List;
 
 @Config
-@Autonomous(name = "Far 12\n", group = "Far")
+@Autonomous(name = "Far 9+\n", group = "Far")
 public class FarDIOAuto12Ball extends LinearOpMode {
     public double timeBeforeStart = 0.0;
     private MecanumDrive drive;
@@ -51,7 +51,6 @@ public class FarDIOAuto12Ball extends LinearOpMode {
         turntable.addBall(2, Turntable.IndexColors.PURPLE);
 
         shooter.setLedIntensity(.28);
-        PoseStorage.shotsToCycle = -1;
 
         while (!isStopRequested() && !opModeIsActive()) {
             if (gamepad1.dpadUpWasPressed()) {
@@ -100,9 +99,6 @@ public class FarDIOAuto12Ball extends LinearOpMode {
                 .strafeToLinearHeading(Positions.farShootPose.getVector2d(), Math.toRadians(shootAngle)).build(),
                 readContinous()));
 
-        if (PoseStorage.shotsToCycle == -1) {
-            throw new RuntimeException("FIX YOUR LIMELIGHT!!!!!!!!!!!!!!!!!");
-        }
         shootBalls(launchVelocity);
 
         if (PoseStorage.isRed == 1) {
