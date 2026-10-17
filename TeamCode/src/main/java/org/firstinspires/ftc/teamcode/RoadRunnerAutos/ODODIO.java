@@ -191,20 +191,20 @@ public class ODODIO extends OpMode {
         }
         driveActions = newDriveActions;
 
-        if (!driveActions.isEmpty()) {
+        //if (!driveActions.isEmpty()) {
             // If drive actions is empty (we are going to a position), set rotate to 0 so we don't interfere
-            rotate = 0;
-        } else if (!manualRotate) {
+        //    rotate = 0;
+        //} else if (!manualRotate) {
             // If not manual rotate, let autoLock drive rotate
-            rotate = autoLockAngle();
-        } else {
+        //    rotate = autoLockAngle();
+        //} else {
             // Otherwise drive rotate with rstick x
             rotate = gamepad1.right_stick_x;
-        }
+        //}
 
         if (driveActions.isEmpty()) {
             // Drive field relative, but only if we aren't already going to a position
-            driveFieldRelative(gamepad1.left_stick_y, -gamepad1.left_stick_x, rotate);
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, rotate);
         }
 
         List<Action> newSystemsActions = new ArrayList<>();
